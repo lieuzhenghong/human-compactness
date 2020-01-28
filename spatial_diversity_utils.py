@@ -7,6 +7,8 @@ import json
 TRACT_SPATIAL_DIVERSITY_SCORES = '/home/lieu/dev/human_compactness/tract_spatial_diversity.csv'
 STARTING_PLAN_FILE = '/home/lieu/dev/human_compactness/Tract_Ensembles/13/starting_plan.json'
 
+SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (0.1464, 0.1182, 0.101, 0.0775, 0.0501, 0.0399, 0.0389, 0.0366)
+
 '''
 return a mapping of ID to GEOID
 '''
@@ -80,6 +82,9 @@ diversity for all districts
 
 
 Takes in a Partition which has a graph and a partition
+
+Returns the district's spatial diversity score, a weighted average of the
+individual standard deviations
 '''
 
 def calc_spatial_diversity(partition):
@@ -152,8 +157,27 @@ def calc_spatial_diversity(partition):
         #print(spatial_diversity_variances[district_id])
         spatial_diversity_scores[district_id] = [(x/sum_pop) ** 0.5 for x in spatial_diversity_variances[district_id]]
 
-    print(spatial_diversity_scores)
-    return spatial_diversity_scores
-    
+    # We now get each spatial diversity subscore and take the weighted sum to get the final score
+    fw = (SPATIAL_DIVERSITY_FACTOR_WEIGHTS)
+
+    spatial_diversity_final_scores = {}
+
+    for district_id in spatial_diversity_scores:
+        # Multiply each factor by the factor weight
+        score = sum([x*y for x, y in
+            zip(spatial_diversity_scores[district_id], fw)])
+        # After taking the weighted sum, divide it by the total factor weight
+        score /= sum(fw)
+        spatial_diversity_final_scores[district_id] = score
+
+    plan_overall_score = 0
+
+    for district_id in spatial_diversity_final_scores:
+        plan_overall_score += spatial_diversity_final_scores[district_id]
+
+    # Normalise from 0 to 1 by dividing by the number of districts
+    plan_overall_score /= len(spatial_diversity_final_scores)
+
+    return (plan_overall_score, spatial_diversity_final_scores)
 
 build_spatial_diversity_dict(*get_all_tract_geoids())

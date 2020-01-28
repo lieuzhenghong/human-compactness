@@ -140,10 +140,10 @@ for state_fips in fips_list:
             )
             
             print(step)
-            print(new_partition['spatial_diversity'])
-            
+            #print(new_partition['spatial_diversity'])
 
-        data[-1].append() #INSERT YOUR FUNCTIONS EVALUATED ON new_partition HERE
+            #INSERT YOUR FUNCTIONS EVALUATED ON new_partition HERE
+            data[-1].append(new_partition['spatial_diversity']) 
 
         with open(newdir + "data" + str(t) + ".csv", "w") as tf1:
             writer = csv.writer(tf1, lineterminator="\n")
