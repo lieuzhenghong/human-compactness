@@ -35,14 +35,19 @@ num_elections = 1
 
 plan_name = "Enacted"
 
-election_name = election_names[0]
+# [TODO ask daryl why this is here]
+#election_name = election_names[0]
 
 
 
 from gerrychain import Graph, Partition, Election
 from gerrychain.updaters import Tally, cut_edges
 
-fips_list = ['13','25','49','51','55']
+# Import utilities for calculating spatial diversity
+import spatial_diversity_utils as spatial_diversity
+
+#fips_list = ['13','25','49','51','55']
+fips_list = ['13']
     
 
 for state_fips in fips_list:
@@ -60,7 +65,25 @@ for state_fips in fips_list:
 
     graph = Graph.from_json(datadir + 'starting_plan.json')
 
-#election = Election("PRES2008", {"Dem": "P2008_D", "Rep": "P2008_R"})
+    # add population and spatial diversity data to the graph
+    spatial_diversity_dict = spatial_diversity.build_spatial_diversity_dict(*spatial_diversity.get_all_tract_geoids())
+
+    # just for reference
+    num_Nones = 0
+    for node in graph.nodes():
+
+        if spatial_diversity_dict[node]['pfs'] is None:
+            num_Nones += 1
+
+        graph.nodes[node]['pfs'] = spatial_diversity_dict[node]['pfs']
+        graph.nodes[node]['pop'] = spatial_diversity_dict[node]['pop']
+        #print(graph.nodes[node])
+    
+    # 884 Nones! That's too many. What's going on?
+    # [TODO] investigate why there are so many None values in the build_spatial_diversity_dict fn
+    # [TODO] this is because we are using the 2010 Census Tract values and Stephanopoulos uses
+    # 2000 Census Tract values and many of them have changed 
+    print(num_Nones)
 
 
     initial_partition = Partition(
@@ -69,13 +92,13 @@ for state_fips in fips_list:
         updaters={
             "cut_edges": cut_edges,
             "population": Tally("population", alias="population"),
+            "spatial_diversity": spatial_diversity.calc_spatial_diversity,
             #"PRES2008": election
         }
     )
             
     new_assignment = dict(initial_partition.assignment)
     #load graph and make initial partition
-
 
     #load json one at a time
     max_steps = 100000
@@ -97,11 +120,14 @@ for state_fips in fips_list:
         
 
             #Make new partition by updating dictionary
+
             
             
         for step in range(step_size):
+
+            changes_this_step = (dict_list[step].items())
         
-            new_assignment.update({int(item[0]):int(item[1]) for item in dict_list[step].items()})
+            new_assignment.update({int(item[0]):int(item[1]) for item in changes_this_step})
             
             new_partition = Partition(
                 graph,
@@ -109,17 +135,19 @@ for state_fips in fips_list:
                 updaters={
                     "cut_edges": cut_edges,
                     "population": Tally("population", alias="population"),
-                    #"PRES2008": election
+                    "spatial_diversity": spatial_diversity.calc_spatial_diversity,
                 }
             )
             
-        data[-1].append(#INSERT YOUR FUNCTIONS EVALUATED ON new_partition HERE)
+            print(step)
+            print(new_partition['spatial_diversity'])
             
 
+        data[-1].append() #INSERT YOUR FUNCTIONS EVALUATED ON new_partition HERE
 
         with open(newdir + "data" + str(t) + ".csv", "w") as tf1:
             writer = csv.writer(tf1, lineterminator="\n")
             writer.writerows(data)            
                       
         
-        data = []
+        step_changesdata = []
