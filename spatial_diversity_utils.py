@@ -10,7 +10,7 @@ STARTING_PLAN_FILE = '/home/lieu/dev/human_compactness/Tract_Ensembles/13/starti
 SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (0.1464, 0.1182, 0.101, 0.0775, 0.0501, 0.0399, 0.0389, 0.0366)
 
 '''
-return a mapping of ID to GEOID
+return a mapping of ID to {GEOID, pop, pfs}, as well as a reverse mapping of GEOID to ID
 '''
 
 # TODO allow specifiying which state

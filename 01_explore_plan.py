@@ -1,5 +1,6 @@
 import json
 
+
 with open("Tract_Ensembles/13/starting_plan.json") as f:
     data = json.load(f)
     print(len(data["nodes"]))

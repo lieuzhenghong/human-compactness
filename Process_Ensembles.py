@@ -42,6 +42,7 @@ plan_name = "Enacted"
 
 from gerrychain import Graph, Partition, Election
 from gerrychain.updaters import Tally, cut_edges
+from gerrychain.metrics import polsby_popper
 
 # Import utilities for calculating spatial diversity
 import spatial_diversity_utils as spatial_diversity
@@ -93,6 +94,7 @@ for state_fips in fips_list:
             "cut_edges": cut_edges,
             "population": Tally("population", alias="population"),
             "spatial_diversity": spatial_diversity.calc_spatial_diversity,
+            "polsby_compactness": polsby_popper,
             #"PRES2008": election
         }
     )
@@ -113,19 +115,12 @@ for state_fips in fips_list:
         with open(datadir+f'flips_{t}.json') as f:
             dict_list = ast.literal_eval(f.read())
 
-            #if t = ts[0]:
-            #    data.remove(0)
- 
-            
-        
-
             #Make new partition by updating dictionary
-
-            
             
         for step in range(step_size):
 
             changes_this_step = (dict_list[step].items())
+            print(len(changes_this_step))
         
             new_assignment.update({int(item[0]):int(item[1]) for item in changes_this_step})
             
@@ -136,11 +131,13 @@ for state_fips in fips_list:
                     "cut_edges": cut_edges,
                     "population": Tally("population", alias="population"),
                     "spatial_diversity": spatial_diversity.calc_spatial_diversity,
+                    "polsby_compactness": polsby_popper,
                 }
             )
             
             print(step)
             #print(new_partition['spatial_diversity'])
+            #print(new_partition['polsby_compactness'])
 
             #INSERT YOUR FUNCTIONS EVALUATED ON new_partition HERE
             data[-1].append(new_partition['spatial_diversity']) 
