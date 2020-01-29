@@ -19,7 +19,7 @@ from gerrychain import Graph
 state_fips = '49'
 num_districts = 4
 
-newdir = f"./Tract_Ensemble/{state_fips}/"
+newdir = f"./Tract_Ensemble/2000/{state_fips}/"
 os.makedirs(os.path.dirname(newdir + "init.txt"), exist_ok=True)
 with open(newdir + "init.txt", "w") as f:
     f.write("Created Folder")
@@ -31,15 +31,16 @@ with open(newdir + "init.txt", "w") as f:
 from gerrychain import Graph, Partition, Election
 from gerrychain.updaters import Tally, cut_edges
 
-graph = Graph.from_json(f'./TRACT_DATA/TRACT_{state_fips}.json')
+graph = Graph.from_json(f'./Data_2000/Dual_Graphs/Tract2000_{state_fips}.json')
 
 totpop = 0
 
 for n in graph.nodes():
-    totpop += graph.nodes[n]["TOTPOP"]
+    graph.nodes[n]["FL5001"] = int(graph.nodes[n]["FL5001"])
+    totpop += graph.nodes[n]["FL5001"]
 
 cddict =  recursive_tree_part(graph, range(num_districts), 
-                                          totpop / num_districts, "TOTPOP", .02, 1)
+                                          totpop / num_districts, "FL5001", .02, 1)
 
             
 for node in graph.nodes():
@@ -48,14 +49,12 @@ for node in graph.nodes():
 graph.to_json(newdir + 'starting_plan.json')
 
 
-
-
 initial_partition = Partition(
     graph,
     assignment='New_Seed',
     updaters={
         "cut_edges": cut_edges,
-        "population": Tally("TOTPOP", alias="population"),
+        "population": Tally("FL5001", alias="population"),
     }
 )
 
@@ -159,7 +158,7 @@ ideal_population = sum(initial_partition["population"].values()) / len(
 )
 
 proposal = partial(
-    recom, pop_col="TOTPOP", pop_target=ideal_population, epsilon=0.01, node_repeats=1, method =my_uu_bipartition_tree_random)
+    recom, pop_col="FL5001", pop_target=ideal_population, epsilon=0.01, node_repeats=1, method =my_uu_bipartition_tree_random)
     
 threshold = 0.02
     
