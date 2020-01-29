@@ -66,20 +66,30 @@ print(points_downsampled[:10])
 
 print(list(points_downsampled))
 
+# We only need the points' geometry for our purpose
+points_downsampled = points_downsampled[['geometry', 'party']]
 
-CENSUS_TRACTS = gpd.read_file("/home/lieu/dev/human_compactness/TRACT_DATA/Shapefiles/TRACT/TRACT_13.shp")
+CENSUS_TRACTS = gpd.read_file("/home/lieu/dev/human_compactness/Data_2000/Shapefiles/Tract2000_13.shp")
 
+CENSUS_TRACTS = CENSUS_TRACTS.to_crs({'init': 'epsg:4326'})
 print(CENSUS_TRACTS[:10])
 
 print(list(CENSUS_TRACTS))
 
-# Spatial join
-tracts_with_points = gpd.sjoin(points_downsampled, CENSUS_TRACTS, how='inner', op='within')
+# Spatial join all points that lie in a Census Tract
+points_mapped = gpd.sjoin(points_downsampled, CENSUS_TRACTS, how='inner', op='within')
 
-print(tracts_with_points[:10])
-print(tracts_with_points[['GEOID10', 'geometry']])
+# The important ones are GEOID, geometry and index_right, possibly party
+print(points_mapped[:10])
+print(list(points_mapped))
+print(points_mapped[['GEOID', 'geometry']])
 
-# Return a dictionary where key is ID and values are the GEOID, the 
+# Return a dictionary where key is GEOID (of tract) and values are the points
+# in the GEOID
+
+tracts_mapped = points_mapped.groupby(['GEOID'])['geometry'].apply(list).reset_index()
+
+print(tracts_mapped)
 
 
 # Duration matrix
