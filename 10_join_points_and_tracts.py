@@ -16,12 +16,16 @@ from distance_matrix import read_duration_matrix_from_file
 # sum_of_driving_durations_to_knn(voter, dds, k: int)
 # voter is a row of the table, dds is a numpy 2D array where dds[idx] gives the distance
 # from a voter idx to all others
-#from sum_driving_durations import sum_of_driving_durations_to_knn
+from sum_driving_durations import sum_of_driving_durations_to_knn
 
 # Import utilities for getting GEOIDs and ids of all Census Tracts
 from spatial_diversity_utils import get_all_tract_geoids
 
+# Import KD Tree to get nearest neighbours
+from calculate_pd import create_kd_tree
+
 tract_dict, geoid_to_id_mapping = get_all_tract_geoids()
+
 
 '''
 Returns a dictionary with key ID and values: {
@@ -52,6 +56,8 @@ STATE_CODE = 13
 DEM_RVPS = f'{GEOG_WD}00_representative_voter_points/points_D_13_2_10000_run1.shp'
 REP_RVPS = f'{GEOG_WD}00_representative_voter_points/points_R_13_2_10000_run1.shp'
 SAMPLE_SIZE = 14000
+
+DM_PATH = '/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx'
 
 # after we get the points, downsample
 
@@ -84,41 +90,89 @@ print(points_mapped[:10])
 print(list(points_mapped))
 print(points_mapped[['GEOID', 'geometry']])
 
+# We can't do this --- Python runs out of memory
+# print("Reading duration matrix from file...")
+# dm = read_duration_matrix_from_file(DM_PATH)
+# Get the 1000 nearest voters
+# print("Getting nearest-1000-voters...")
+# points_mapped['knn_dd_sum'] = points_mapped.apply(sum_driving_durations_to_knn, args = (dm, 1000))
+# print(points_mapped[['knn_dd_sum']])
+
+'''
+#pairwise[2000][2000] = {0};
+pairwise = np.zeros((2000, 2000))
+fh = open(file_name, 'rt')
+line = fh.readline()
+i = 0
+while line:
+    dist = [float(x) for x in line.split('  ')]
+    for j in range(len(dist)):
+    	pairwise[tract[i]][tract[j]] += dist[j]
+    i+=1
+    line = fh.readline()
+'''
+
 # Return a dictionary where key is GEOID (of tract) and values are the points
 # in the GEOID
 
-tracts_mapped = points_mapped.groupby(['GEOID'])['geometry'].apply(list).reset_index()
+tracts_mapped = points_mapped.groupby(['GEOID'])['geometry'].apply(list)
 
 print(tracts_mapped)
 
-
 # Duration matrix
-'''
-with open("/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx") as f:
-'''
+
 
 '''
-# doesn't work
-import sample_rvps
+# Let pairwise be a NxN array where pairwise[i][j] (including pairwise[i][i])
+# is the sum of distances from all points in the tract i to the tract j
 
-if __name__ == "__main__":
-    args = docopt(__doc__)
-    print(args)
-    STATE_CODE = args['STATE_CODE']
-    DEM_RVPS = args['DEM_RVPS']
-    REP_RVPS = args['REP_RVPS']
-    SAVE_DM_TO = args['SAVE_DM_TO']
-    SAMPLE_SIZE = 14000
-    MATRIX_SIZE = 2000
+pairwise = [
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
+        [9, 10, 11, 12],
+        [13, 14, 15, 16],
+        ]
 
-    CDB = gpd.read_file(
-        "/home/lieu/dev/geographically_sensitive_dislocation/00_source_data/\
-10_US_Congressional_districts/nhgis0190_shapefile_tl2014_us_cd114th_2014/US_cd114th_2014_wgs84.shp")
+# Let assignment be an assignment of census tract IDs to districts
+assignment = {
+        0: 3,
+        1: 3,
+        2: 0,
+        3: 2,
+    }
 
-    # after we get the points, downsample
+num_districts = 14
 
-    points_downsampled = sample_rvps.sample_rvps(CDB, STATE_CODE, DEM_RVPS,
-                                                 REP_RVPS, SAMPLE_SIZE)
+tracts_in_districts = [[] for x in range(num_districts)]
+dd_sum = [0 for x in range(num_districts)]
 
-    # do a spatial join with the census tracts
+# Loop through once to fill up the array
+for tract_id in assignment:
+    tracts_in_districts[assignment[tract_id]].append(tract_id)
+
+print(tracts_in_districts)
+
+for idx, district in enumerate(tracts_in_districts):
+    # Calculates the sum of driving durations from each tract to all others in the district.
+    # Starts with sum of distances from the last element to every other element in the district
+    # Then pops off the last element
+    while district != []:
+        last_elem = district[-1]
+
+        # TODO ask mark about converting this loop into C
+
+        for tract in district:
+            # distances may not be symmetric
+            dd_sum[idx] += (pairwise[tract][last_elem] +
+                    pairwise[last_elem][tract])
+
+        # we've double-counted the last element with itself;
+        dd_sum[idx] -= pairwise[last_elem][last_elem]
+        
+        # pop the last element; we're done with it
+        district.pop()
+
+
+print(tracts_in_districts)
+print(dd_sum)
 '''
