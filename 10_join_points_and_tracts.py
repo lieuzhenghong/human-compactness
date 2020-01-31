@@ -21,8 +21,6 @@ from sum_driving_durations import sum_of_driving_durations_to_knn
 # Import utilities for getting GEOIDs and ids of all Census Tracts
 from spatial_diversity_utils import get_all_tract_geoids
 
-# Import KD Tree to get nearest neighbours
-from calculate_pd import create_kd_tree
 
 tract_dict, geoid_to_id_mapping = get_all_tract_geoids()
 
@@ -86,9 +84,32 @@ print(list(CENSUS_TRACTS))
 points_mapped = gpd.sjoin(points_downsampled, CENSUS_TRACTS, how='inner', op='within')
 
 # The important ones are GEOID, geometry and index_right, possibly party
-print(points_mapped[:10])
+#print(points_mapped[:10])
 print(list(points_mapped))
 print(points_mapped[['GEOID', 'geometry']])
+
+def (voter):
+    print(voter.name)
+
+points_mapped.apply(a, axis=1)
+
+# We now have a mapping from VRPs to GEOID, and from GEOID to id (geoid_to_id_mapping).
+
+
+'''
+tract_distances = np.zeros((2000,2000))
+with open(DM_PATH, 'rt') as fh:
+    line = fh.readline()
+    # This is currently looking at the durations from point i to all other points
+    i = 0
+    while line:
+    # Get the distances
+    dist = [float(x) for x in line.split('  ')]
+    for j in range(len(dist)):
+    	pairwise[tract[i]][tract[j]] += dist[j]
+    i+=1
+    line = fh.readline()
+'''
 
 # We can't do this --- Python runs out of memory
 # print("Reading duration matrix from file...")
@@ -99,7 +120,6 @@ print(points_mapped[['GEOID', 'geometry']])
 # print(points_mapped[['knn_dd_sum']])
 
 '''
-#pairwise[2000][2000] = {0};
 pairwise = np.zeros((2000, 2000))
 fh = open(file_name, 'rt')
 line = fh.readline()
