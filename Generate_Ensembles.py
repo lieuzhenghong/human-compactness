@@ -16,10 +16,25 @@ from gerrychain import Graph
 # and convert
 ###########
 
-state_fips = '49'
-num_districts = 4
+state_fips = '08'
+num_districts = 7
 
-newdir = f"./Tract_Ensemble/2000/{state_fips}/"
+'''
+Currently Running:
+1 - UT
+2 - PA 
+3 - OH (1 Island)
+4 - GA (3 Islands)
+5 - WI (1 Island)
+6 - LA
+7 - AZ
+8 - KY
+9 - CO
+'''
+
+
+
+newdir = f"./Tract_Ensembles/2000/{state_fips}/"
 os.makedirs(os.path.dirname(newdir + "init.txt"), exist_ok=True)
 with open(newdir + "init.txt", "w") as f:
     f.write("Created Folder")
@@ -32,6 +47,12 @@ from gerrychain import Graph, Partition, Election
 from gerrychain.updaters import Tally, cut_edges
 
 graph = Graph.from_json(f'./Data_2000/Dual_Graphs/Tract2000_{state_fips}.json')
+
+print(nx.is_connected(graph))
+print([len(x) for x in nx.connected_components(graph)])
+
+#graph = graph.subgraph(list(nx.connected_components(graph))[0])
+#print(len(graph))
 
 totpop = 0
 
