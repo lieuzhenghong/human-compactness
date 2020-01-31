@@ -56,7 +56,8 @@ for state_fips in fips_list:
     data = []
 
         
-    datadir = f"./Tract_Ensembles/{state_fips}/"
+    #datadir = f"./Tract_Ensembles/{state_fips}/"
+    datadir = f"./Data_2000/Dual_Graphs/"
     
     newdir = f"./Tract_Ensembles/{state_fips}/rerun/"
     
@@ -64,7 +65,8 @@ for state_fips in fips_list:
     with open(newdir + "init.txt", "w") as f:
         f.write("Created Folder")
 
-    graph = Graph.from_json(datadir + 'starting_plan.json')
+    #graph = Graph.from_json(datadir + 'starting_plan.json')
+    graph = Graph.from_json(datadir + 'Tract2000_13.json')
 
     # add population and spatial diversity data to the graph
     spatial_diversity_dict = spatial_diversity.build_spatial_diversity_dict(*spatial_diversity.get_all_tract_geoids())
@@ -78,13 +80,15 @@ for state_fips in fips_list:
 
         graph.nodes[node]['pfs'] = spatial_diversity_dict[node]['pfs']
         graph.nodes[node]['pop'] = spatial_diversity_dict[node]['pop']
-        #print(graph.nodes[node])
+        print(graph.nodes[node])
     
     # 884 Nones! That's too many. What's going on?
     # [TODO] investigate why there are so many None values in the build_spatial_diversity_dict fn
     # [TODO] this is because we are using the 2010 Census Tract values and Stephanopoulos uses
     # 2000 Census Tract values and many of them have changed 
     print(num_Nones)
+
+    '''
 
 
     initial_partition = Partition(
@@ -148,3 +152,4 @@ for state_fips in fips_list:
                       
         
         step_changesdata = []
+'''

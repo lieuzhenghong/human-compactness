@@ -5,7 +5,9 @@ import json
 # TODO make this a command-line param
 
 TRACT_SPATIAL_DIVERSITY_SCORES = '/home/lieu/dev/human_compactness/tract_spatial_diversity.csv'
-STARTING_PLAN_FILE = '/home/lieu/dev/human_compactness/Tract_Ensembles/13/starting_plan.json'
+#STARTING_PLAN_FILE = '/home/lieu/dev/human_compactness/Tract_Ensembles/13/starting_plan.json'
+STARTING_PLAN_FILE = '/home/lieu/dev/human_compactness/Data_2000/Dual_Graphs/Tract2000_13.json'
+
 
 SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (0.1464, 0.1182, 0.101, 0.0775, 0.0501, 0.0399, 0.0389, 0.0366)
 
@@ -24,9 +26,15 @@ def get_all_tract_geoids():
         data = json.load(f)
         
         for node in data["nodes"]:
-            tract_dict[node["id"]] = {'geoid': node["GEOID10"], 'pop': None, 'pfs': None}
-            geoid_to_id_mapping[node["GEOID10"]] = node["id"]
+            #tract_dict[node["id"]] = {'geoid': node["GEOID10"], 'pop': None, 'pfs': None}
+            #geoid_to_id_mapping[node["GEOID10"]] = node["id"]
 
+            # Mapping for 2000 Census Tracts
+            tract_dict[node["id"]] = {'geoid': node["GEOID"], 'pop': None, 'pfs': None}
+            geoid_to_id_mapping[node["GEOID"]] = node["id"]
+
+
+    #print(tract_dict)
     return (tract_dict, geoid_to_id_mapping)
 
 
