@@ -16,8 +16,10 @@ from gerrychain import Graph
 # and convert
 ###########
 
-state_fips = '08'
-num_districts = 7
+#state_fips = '08'
+state_fips = '13'
+#num_districts = 7
+num_districts = 14
 
 '''
 Currently Running:
@@ -188,7 +190,8 @@ chain = MarkovChain(
     constraints=[within_percent_of_ideal_population(initial_partition, threshold)],
     accept=always_accept,
     initial_state=initial_partition,
-    total_steps=100000
+    #total_steps=100000
+    total_steps=10
 )
 
 pos = {node:(float(graph.nodes[node]['C_X']), float(graph.nodes[node]['C_Y'])) for node in graph.nodes}
@@ -219,7 +222,8 @@ for part in chain:
     pop_vec.append(sorted(list(part["population"].values())))
     cut_vec.append(len(part["cut_edges"]))
         
-    if step_index % 10000 == 0:
+    #if step_index % 10000 == 0:
+    if True:
         print(step_index)
         
         with open(newdir+f'flips_{step_index}.json', 'w') as fp1:

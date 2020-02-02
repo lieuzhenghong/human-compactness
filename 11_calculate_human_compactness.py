@@ -1,46 +1,60 @@
+def duration_between(tract_id, other_id, duration_dict):
+    '''Gets the sum of driving durations between one tract and another'''
+    if tract_id not in duration_dict:
+        raise TractNotFoundError
+    elif other_id not in duration_dict[tract_id]:
+        raise TractNotFoundError
+    else:
+        return duration_dict[tract_id][other_id]
 
-'''
-Given the Census Tract duration dict and an assignment from IDs,
-calculate the human compactness of every district in the plan
 
-The duration dict is in the following format:
-    {
-        tractid: {tractid: distance, ... },
-        tractid: {tractid: distance, ...},
-        ...
-    }
+def calculate_human_compactness(assignment, duration_dict)
+    '''
+    Given the Census Tract duration dict and an assignment from IDs,
+    calculate the human compactness of every district in the plan
 
-The assignment dict is in the following format:
-    {
-        tractid: districtid
-        tractid: districtid
-        ...
-    }
+    The duration dict is in the following format:
+        {
+            tractid: {tractid: distance, ... },
+            tractid: {tractid: distance, ...},
+            ...
+        }
 
-Maintain a total sum as a tally
-Maintain an array of tracts in each district
+    The assignment dict is in the following format:
+        {
+            tractid: districtid
+            tractid: districtid
+            ...
+        }
 
-For each tract in assignment, check which district it comes from.
-Then add both itself and everyone else in the district to the total human compactness sum.
+    Maintain a total sum as a tally
+    Maintain an array of tracts in each district
 
-1. add 
-2. 
-'''
+    For each tract in assignment, check which district it comes from.
+    Then add both itself and everyone else in the district to the total human compactness sum.
+    '''
 
-# assume we have something called tract_dd and assignment
+    # O(n^2) runtime
 
-NUM_DISTRICTS = 14
+    total_durations = {}
+    tracts_in_districts = {}
 
-total_durations = np.zeros(NUM_DISTRICTS)
-tracts_in_districts = {}
+    for tract_id in assignments:
+        district_id = assignments[tract_id]
 
-for i in range(NUM_DISTRICTS):
-    tracts_in_districts[i] = {}
+        # Fill up dictionary of tracts in a specific district
+        if district_id not in tracts_in_districts:
+            tracts_in_districts[district_id] = [tract_id]
+        else:
+            tracts_in_districts[district_id].append(tract_id)
 
-for tract_id in assignments:
-    
-    total_durations += 
-
+        # Add to the total duration sum
+        for other_tract_id in tracts_in_districts[district_id]:
+            if district_id not in total_durations:
+                total_durations[district_id] = duration_between(tract_id, other_tract_id)
+            else:
+                total_durations[district_id] += duration_between(tract_id, other_tract_id)
+    return total_durations
 
 '''
 # Let pairwise be a NxN array where pairwise[i][j] (including pairwise[i][i])
