@@ -1,14 +1,25 @@
+import json
+
+
 def duration_between(tract_id, other_id, duration_dict):
     '''Gets the sum of driving durations between one tract and another'''
+
+    tract_id = str(tract_id)
+    other_id = str(other_id)
+
     if tract_id not in duration_dict:
-        raise TractNotFoundError
+        # Don't raise value error
+        #raise ValueError(f'Tract not found: tract id {tract_id}')
+        return 0
     elif other_id not in duration_dict[tract_id]:
-        raise TractNotFoundError
+        #raise ValueError(f'Other Tract not found: tract_id {other_id}')
+        # Don't raise value error. Some tracts have no points in them
+        return 0
     else:
         return duration_dict[tract_id][other_id]
 
 
-def calculate_human_compactness(assignment, duration_dict)
+def calculate_human_compactness(duration_dict, partition):
     '''
     Given the Census Tract duration dict and an assignment from IDs,
     calculate the human compactness of every district in the plan
@@ -40,27 +51,27 @@ def calculate_human_compactness(assignment, duration_dict)
     total_durations = {}
     tracts_in_districts = {}
 
-    for tract_id in assignments:
-            district_id = assignments[tract_id]
+    for tract_id in partition.graph.nodes:
+        district_id = partition.assignment[tract_id]
 
-            # Fill up dictionary of tracts in a specific district
-            if district_id not in tracts_in_districts:
-                tracts_in_districts[district_id] = [tract_id]
+        # Fill up dictionary of tracts in a specific district
+        if district_id not in tracts_in_districts:
+            tracts_in_districts[district_id] = [tract_id]
+        else:
+            tracts_in_districts[district_id].append(tract_id)
+
+        # Add to the total duration sum. Notice we append to
+        # tracts_in_districts first: this is so that we get the sum of driving
+        # distances from a tract to itself as well, which makes sense
+
+        for other_tract_id in tracts_in_districts[district_id]:
+            if district_id not in total_durations:
+                total_durations[district_id] = duration_between(
+                    tract_id, other_tract_id, duration_dict)
             else:
-                tracts_in_districts[district_id].append(tract_id)
-
-            # Add to the total duration sum. Notice we append to
-            # tracts_in_districts first: this is so that we get the sum of driving
-            # distances from a tract to itself as well, which makes sense
-
-            for other_tract_id in tracts_in_districts[district_id]:
-                if district_id not in total_durations:
-                    total_durations[district_id] = duration_between(
-                        tract_id, other_tract_id)
-                else:
-                    total_durations[district_id] += duration_between(
-                        tract_id, other_tract_id)
-        return total_durations
+                total_durations[district_id] += duration_between(
+                    tract_id, other_tract_id, duration_dict)
+    return total_durations
 
 
 def convert_point_distances_to_tract_distances(pttm, DM_PATH, SAVE_FILE_TO):
@@ -97,12 +108,12 @@ def convert_point_distances_to_tract_distances(pttm, DM_PATH, SAVE_FILE_TO):
             # Very rarely, points may not lie within tracts. This is strange, but we'll ignore it
             print(f'Now processing line {i}..')
             if i not in pttm:
-                pass
+                print(f'Point ID not in point_to_tract_mapping: {i}')
             # Otherwise, update the tract-pairwise-distance matrix with the pointwise distances
             else:
                 for j in range(len(dist)):
                     if j not in pttm:
-                        pass
+                        print(f'Point ID not in point_to_tract_mapping: {i}')
                     elif pttm[i] not in tract_distances:
                         tract_distances[pttm[i]] = {pttm[j]: dist[j]}
                     elif pttm[j] not in tract_distances[pttm[i]]:
@@ -110,10 +121,15 @@ def convert_point_distances_to_tract_distances(pttm, DM_PATH, SAVE_FILE_TO):
                     else:
                         tract_distances[pttm[i]][pttm[j]] += dist[j]
                     # print(tract_distances)
-            i+=1
+            i += 1
             line = fh.readline()
 
     # Save tract matrix to file
     # TODO set filename
     with open(f'{SAVE_FILE_TO}', 'w') as f:
         f.write(json.dumps(tract_distances))
+
+
+def read_tract_duration_json(DD_PATH):
+    with open(DD_PATH) as f:
+        return(json.load(f))

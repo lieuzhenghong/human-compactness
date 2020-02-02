@@ -39,7 +39,7 @@ def get_all_tract_geoids():
     return (tract_dict, geoid_to_id_mapping)
 
 
-def build_spatial_diversity_dict(tract_dict, geoid_to_id_mapping, tract_spatial_diversity_scores):
+def build_spatial_diversity_dict(tract_dict, geoid_to_id_mapping):
     '''
     Fills in values of spatial diversity according to the CSV
     return a mapping of ID to {GEOID, [pf1, ... pf8], pop}
@@ -193,4 +193,5 @@ def calc_spatial_diversity(partition):
     return (plan_overall_score, spatial_diversity_final_scores)
 
 
-build_spatial_diversity_dict(*get_all_tract_geoids())
+if __name__ == "__main__":
+    build_spatial_diversity_dict(*get_all_tract_geoids())

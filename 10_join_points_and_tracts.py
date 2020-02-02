@@ -111,12 +111,11 @@ print(points_downsampled[:10])
 
 tract_dict, geoid_to_id_mapping = sd_utils.get_all_tract_geoids()
 
-tract_dict = sd_utils.build_spatial_diversity_dict(tract_dict, geoid_to_id_mapping, TRACT_SPATIAL_DIVERSITY_SCORES):
-
-print(tract_dict)
+# tract_dict = sd_utils.build_spatial_diversity_dict(tract_dict, geoid_to_id_mapping, TRACT_SPATIAL_DIVERSITY_SCORES):
 
 # Reproject 2000 Census Tracts to use the same projection as downsampled tracts
 CENSUS_TRACTS = CENSUS_TRACTS.to_crs({'init': 'epsg:4326'})
+print(CENSUS_TRACTS)
 
 # Spatial join all points that lie in a Census Tract
 # This gives us a GeoDataFrame of each VRP mapped to a GEOID of the tract
@@ -127,12 +126,16 @@ points_mapped = gpd.sjoin(
 print(points_mapped[:10])
 print(list(points_mapped))
 
-
 # Populate the point_to_tract_mapping dictionary
+# We need this in order to generate the tract distance JSON file
+
 points_mapped.apply(form_point_to_tract_mapping, axis=1,
                     args=[POINT_TO_TRACT_MAPPING])
 
-# We already have the
+# We already have the tract distances, but if we didn't, we should regenerate it
+
+print(len(POINT_TO_TRACT_MAPPING))
+
 
 # tracts_mapped is a GeoDataFrame which maps Census Tract GEOIDs to a list of points under them
 # why do we need this again?
