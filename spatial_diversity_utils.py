@@ -11,12 +11,12 @@ STARTING_PLAN_FILE = '/home/lieu/dev/human_compactness/Data_2000/Dual_Graphs/Tra
 
 SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (0.1464, 0.1182, 0.101, 0.0775, 0.0501, 0.0399, 0.0389, 0.0366)
 
-'''
-return a mapping of ID to {GEOID, pop, pfs}, as well as a reverse mapping of GEOID to ID
-'''
 
 # TODO allow specifiying which state
 def get_all_tract_geoids():
+    '''
+    return a mapping of ID to {GEOID, pop, pfs}, as well as a reverse mapping of GEOID to ID
+    '''
     # first read the starting plan json to get all the IDs
 
     tract_dict = {}
@@ -37,7 +37,60 @@ def get_all_tract_geoids():
     #print(tract_dict)
     return (tract_dict, geoid_to_id_mapping)
 
+def convert_point_distances_to_tract_distances(pttm, DM_PATH, SAVE_FILE_TO):
+    '''Returns a JSON file giving driving durations from all points in the Census Tract
+    to all other points in every other Census Tract.
+    Takes in three things:
 
+        1. A mapping from points to tracts (Dict[PointId : TractId]
+        2. The distance matrix file path
+        3. The path to save the output tract distance file to
+
+    Reads line by line
+    Returns a JSON file with the following schema:
+    {
+        tractid: {tractid: distance, ... },
+        tractid: {tractid: distance, ...},
+        ...
+    }
+    Each entry in the dictionary is the sum of driving durations from each point in
+    the tract to each other point in the tract.
+
+    Note that the duration from tract_id to tract_id can (in fact is almost always nonzero)
+    because it measures the sum of durations from all points in the tract
+    '''
+    tract_distances = {}
+
+    with open(DM_PATH, 'rt') as fh:
+        line = fh.readline()
+        # This is currently looking at the durations from point i to all other points
+        i = 0
+        while line:
+            # Get the distances from point i; two spaces is not a typo
+            dist = [float(x) for x in line.split('  ')]
+            # Very rarely, points may not lie within tracts. This is strange, but we'll ignore it
+            print(f'Now processing line {i}..')
+            if i not in pttm:
+                pass
+            # Otherwise, update the tract-pairwise-distance matrix with the pointwise distances
+            else:
+                for j in range(len(dist)):
+                    if j not in pttm:
+                        pass
+                    elif pttm[i] not in tract_distances:
+                        tract_distances[pttm[i]] = {pttm[j]: dist[j]}
+                    elif pttm[j] not in tract_distances[pttm[i]]:
+                        tract_distances[pttm[i]][pttm[j]] = dist[j]
+                    else:
+                        tract_distances[pttm[i]][pttm[j]] += dist[j]
+                    #print(tract_distances)
+            i+=1
+            line = fh.readline()
+
+    # Save tract matrix to file
+    # TODO set filename
+    with open(f'{SAVE_FILE_TO}', 'w') as f:
+        f.write(json.dumps(tract_distances))
 
 '''
 return a mapping of ID to {GEOID, [pf1, ... pf8], pop}
@@ -188,4 +241,8 @@ def calc_spatial_diversity(partition):
 
     return (plan_overall_score, spatial_diversity_final_scores)
 
+
+
 build_spatial_diversity_dict(*get_all_tract_geoids())
+
+
