@@ -39,12 +39,11 @@ def get_all_tract_geoids():
     return (tract_dict, geoid_to_id_mapping)
 
 
-'''
-return a mapping of ID to {GEOID, [pf1, ... pf8], pop}
-'''
-
-
-def build_spatial_diversity_dict(tract_dict, geoid_to_id_mapping):
+def build_spatial_diversity_dict(tract_dict, geoid_to_id_mapping, tract_spatial_diversity_scores):
+    '''
+    Fills in values of spatial diversity according to the CSV
+    return a mapping of ID to {GEOID, [pf1, ... pf8], pop}
+    '''
 
     def tryParse(value):
         try:
