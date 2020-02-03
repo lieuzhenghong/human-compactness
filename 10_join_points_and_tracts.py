@@ -4,6 +4,7 @@ import json
 import sys
 
 import spatial_diversity_utils as sd_utils
+import human_compactness_utils as hc_utils
 
 sys.path.append('/home/lieu/dev/geographically_sensitive_dislocation/10_code')
 
@@ -133,9 +134,22 @@ points_mapped.apply(form_point_to_tract_mapping, axis=1,
                     args=[POINT_TO_TRACT_MAPPING])
 
 # We already have the tract distances, but if we didn't, we should regenerate it
-
 print(len(POINT_TO_TRACT_MAPPING))
 
+DM_PATH = '/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx'
+
+#print('Calculating the sum of driving durations for each tract...')
+#hc_utils.convert_point_distances_to_tract_distances(POINT_TO_TRACT_MAPPING,
+#                                                    DM_PATH, './13_georgia_tract_dds.json')
+
+# Similarly, regenerate the knn_sum_dds
+#
+# This takes a damn long time. I'm not sure why --- maybe sorting? Or maybe my
+# computer's just throttled. It seems to freeze for some reason
+
+print('Calculating the sum of KNN driving durations for each tract...')
+hc_utils.calc_knn_sum_durations_by_tract(POINT_TO_TRACT_MAPPING,
+                                         1000, DM_PATH, './13_georgia_knn_dd_sums.json')
 
 # tracts_mapped is a GeoDataFrame which maps Census Tract GEOIDs to a list of points under them
 # why do we need this again?

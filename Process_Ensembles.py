@@ -15,7 +15,7 @@ from maup import assign
 
 import human_compactness_utils as hc_utils
 import spatial_diversity_utils as spatial_diversity
-from gerrychain import Election, Graph, Partition
+from gerrychain import Election, Graph, Partition, GeographicPartition
 from gerrychain.metrics import polsby_popper
 from gerrychain.updaters import Tally, cut_edges
 
@@ -38,12 +38,14 @@ state_names = {"02": "Alaska", "01": "Alabama", "05": "Arkansas", "04": "Arizona
 
 num_elections = 1
 
-DD_PATH = './GEORGIA_13_TRACT_DISTANCES.json'
+DD_PATH = './13_georgia_tract_dds.json'
 DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
+KNN_DD_PATH = './13_georgia_knn_dd_sums.json'
+KNN_DICT = hc_utils.read_tract_duration_json(KNN_DD_PATH)
 
 plan_name = "Enacted"
 
-#fips_list = ['13','25','49','51','55']
+# fips_list = ['13','25','49','51','55']
 fips_list = ['13']
 
 
@@ -51,10 +53,10 @@ for state_fips in fips_list:
 
     data = []
 
-    #datadir = f"./Tract_Ensembles/{state_fips}/"
+    # datadir = f"./Tract_Ensembles/{state_fips}/"
     datadir = f"./Tract_Ensembles/2000/{state_fips}/"
 
-    newdir = f"./Tract_Ensembles/{state_fips}/rerun/"
+    newdir = f"./Tract_Ensembles/2000/{state_fips}/rerun/"
 
     os.makedirs(os.path.dirname(newdir + "init.txt"), exist_ok=True)
     with open(newdir + "init.txt", "w") as f:
@@ -79,7 +81,7 @@ for state_fips in fips_list:
 
     print(f'Number of districts without a PF score: {num_Nones}')
 
-    initial_partition = Partition(
+    initial_partition = GeographicPartition(
         graph,
         assignment='New_Seed',
         updaters={
@@ -87,7 +89,7 @@ for state_fips in fips_list:
             "population": Tally("population", alias="population"),
             "spatial_diversity": spatial_diversity.calc_spatial_diversity,
             "human_compactness": partial(hc_utils.calculate_human_compactness, DURATION_DICT),
-            # "polsby_compactness": polsby_popper,
+            "polsby_compactness": polsby_popper,
             # "PRES2008": election
         }
     )
@@ -118,28 +120,32 @@ for state_fips in fips_list:
             new_assignment.update(
                 {int(item[0]): int(item[1]) for item in changes_this_step})
 
-            new_partition = Partition(
+            new_partition = GeographicPartition(
                 graph,
                 assignment=new_assignment,
                 updaters={
                     "cut_edges": cut_edges,
                     "population": Tally("population", alias="population"),
                     "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-                    "human_compactness": partial(hc_utils.calculate_human_compactness, DURATION_DICT),
-                    # "polsby_compactness": polsby_popper,
+                    "human_compactness": partial(hc_utils.calculate_human_compactness, DURATION_DICT, KNN_DICT),
+                    "polsby_compactness": polsby_popper,
                 }
             )
 
-            print(step)
+            print(f'Step number: {step}')
             print("Calculating spatial diversity...")
             print(new_partition['spatial_diversity'])
             print("Calculating human compactness...")
             print(new_partition['human_compactness'])
             print("Calculating Polsby-Popper compactness...")
-            # print(new_partition['polsby_compactness'])
+            print(new_partition['polsby_compactness'])
 
             # INSERT YOUR FUNCTIONS EVALUATED ON new_partition HERE
-            data[-1].append(new_partition['spatial_diversity'])
+            data[-1].append({
+                'spatial_diversity': new_partition['spatial_diversity'],
+                'human_compactness': new_partition['human_compactness'],
+                'polsby_compactness': new_partition['polsby_compactness']
+            })
 
         with open(newdir + "data" + str(t) + ".csv", "w") as tf1:
             writer = csv.writer(tf1, lineterminator="\n")
