@@ -16,6 +16,30 @@ def duration_between(tract_id, other_id, duration_dict):
         return duration_dict[tract_id][other_id]
 
 
+# TODO
+def calculate_knn_of_all_tracts_in_partition(duration_dict, partition):
+    '''
+    First run through the districts' tracts and get the points in that district
+    (form a list of points) by aggregating points in all tracts in the district.
+
+    Then count the number of points in each district. This is that district's k.
+
+    Read the duration_dict line by line.
+    Each line corresponds to a point: find which district that point
+    belongs to (if any --- check this), then get the k-nearest-neighbours
+
+    It might be helpful instead of reading the same file at every single step,
+    try to memoise, save it down somewhere...
+
+    Really the problem is that the duration dict doesn't fit in memory.
+    We can use heuristics to do something like double the size at every
+    iteration but I think that's too complicated.
+    '''
+
+    # Ask Mark or Zun Yuan about this. We know file read is slow.
+    pass
+
+
 def calculate_human_compactness(duration_dict, knn_dd_dict, partition):
     '''
     Given the Census Tract duration dict and an assignment from IDs,
@@ -34,8 +58,7 @@ def calculate_human_compactness(duration_dict, knn_dd_dict, partition):
             tractid: Float
             ...
         }
-
-    The assignment dict is in the following format:
+The assignment dict is in the following format:
         {
             tractid: districtid
             tractid: districtid

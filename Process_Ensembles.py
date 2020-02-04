@@ -1,3 +1,4 @@
+import tract_generation
 import ast
 import csv
 import os
@@ -65,18 +66,20 @@ for state_fips in fips_list:
     graph = Graph.from_json(datadir + 'starting_plan.json')
 
     # add population and spatial diversity data to the graph
-    spatial_diversity_dict = spatial_diversity.build_spatial_diversity_dict(
-        *spatial_diversity.get_all_tract_geoids())
+    # tract_dict = spatial_diversity.build_spatial_diversity_dict(
+    #    *spatial_diversity.get_all_tract_geoids())
+
+    tract_dict = tract_generation.generate_tracts_with_vrps()
 
     # just for reference
     num_Nones = 0
     for node in graph.nodes():
 
-        if spatial_diversity_dict[node]['pfs'] is None:
+        if tract_dict[node]['pfs'] is None:
             num_Nones += 1
 
-        graph.nodes[node]['pfs'] = spatial_diversity_dict[node]['pfs']
-        graph.nodes[node]['pop'] = spatial_diversity_dict[node]['pop']
+        graph.nodes[node]['pfs'] = tract_dict[node]['pfs']
+        graph.nodes[node]['pop'] = tract_dict[node]['pop']
         # print(graph.nodes[node])
 
     print(f'Number of districts without a PF score: {num_Nones}')
