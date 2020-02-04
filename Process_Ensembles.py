@@ -4,6 +4,7 @@ import os
 import pickle
 import random
 import sys
+import json
 from functools import partial
 
 import geopandas as gpd
@@ -20,6 +21,7 @@ import tract_generation
 from gerrychain import Election, GeographicPartition, Graph, Partition
 from gerrychain.metrics import polsby_popper
 from gerrychain.updaters import Tally, cut_edges
+from timeit import default_timer as timer
 
 matplotlib.use('Agg')
 
@@ -122,6 +124,7 @@ for state_fips in fips_list:
 
     max_steps = 100000
     step_size = 10000
+    save_step_size = 1000
 
     ts = [x * step_size for x in range(1, int(max_steps / step_size) + 1)]
 
@@ -166,18 +169,23 @@ for state_fips in fips_list:
             # print(new_partition['polsby_compactness'])
 
             # INSERT YOUR FUNCTIONS EVALUATED ON new_partition HERE
-            data[-1].append({
-                'spatial_diversity': new_partition['spatial_diversity'],
-                'human_compactness': new_partition['human_compactness'],
-                'polsby_compactness': new_partition['polsby_compactness']
-            })
+            data[-1].append(
+                {
+                    'spatial_diversity': new_partition['spatial_diversity'],
+                    'human_compactness': new_partition['human_compactness'],
+                    'polsby_compactness': new_partition['polsby_compactness']
+                })
 
             end = timer()
 
             print(f"Time taken for step {step}: {end-start}")
 
-        with open(newdir + "data" + str(t) + ".csv", "w") as tf1:
-            writer = csv.writer(tf1, lineterminator="\n")
-            writer.writerows(data)
+            if step % save_step_size == 0:
+                print(f'Saving results as {str(t-step_size + step)}.json')
+                with open(newdir + "data" + str(t-step_size + step) + ".json", "w") as tf1:
+                    json.dump(data[-1], tf1)
+                    data.append([])
+                    #writer = csv.writer(tf1, lineterminator="\n")
+                    # writer.writerows(data)
 
         step_changesdata = []

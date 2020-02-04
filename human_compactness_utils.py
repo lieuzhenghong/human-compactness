@@ -1,4 +1,5 @@
 import json
+from timeit import default_timer as timer
 
 
 def duration_between(tract_id, other_id, duration_dict):
@@ -41,7 +42,7 @@ def calculate_knn_of_all_points_in_district(dmx, all_districts, tract_dict, trac
         }
     '''
 
-    print('Calculating KNN durations for all points in current district assignment ...')
+    #print('Calculating KNN durations for all points in current district assignment ...')
 
     points_in_each_district = {}
     num_points_in_each_district = {}
@@ -71,7 +72,7 @@ def calculate_knn_of_all_points_in_district(dmx, all_districts, tract_dict, trac
         num_points_in_each_district[district_id] = len(
             points_in_each_district[district_id])
 
-    print(f'Number of points in each district: {num_points_in_each_district}')
+    #print(f'Number of points in each district: {num_points_in_each_district}')
 
     # Read duration dict line by line
     # Each line corresponds to a specific point_id
@@ -127,8 +128,6 @@ def calculate_human_compactness(duration_dict, tract_dict, dmx, partition):
 
     # O(n^2) runtime
 
-    print("This function runs fine")
-
     total_durations = {}
     total_knn_dds = {}
     tracts_in_districts = {}
@@ -174,7 +173,6 @@ def calculate_human_compactness(duration_dict, tract_dict, dmx, partition):
     # Now we've got the total durations, divide by the sum of all
     # the knns. We have the sums by tract: all that remains is to
     # aggregate by district.
-    from timeit import default_timer as timer
     start = timer()
 
     total_knn_dds = calculate_knn_of_all_points_in_district(dmx, all_districts,
@@ -182,7 +180,7 @@ def calculate_human_compactness(duration_dict, tract_dict, dmx, partition):
 
     end = timer()
 
-    print(f"Time taken to get KNN durations: {end-start}")
+    #print(f"Time taken to get KNN durations: {end-start}")
 
     # OK, so now we have the sum of point-to-point driving
     # durations in a district, and also the sum of KNN dds
