@@ -96,7 +96,6 @@ individual standard deviations
 
 
 def calc_spatial_diversity(partition):
-    print("calculating spatial diversity")
     spatial_diversity_scores = {}
     spatial_diversity_variances = {}
     spatial_diversity_sums = {}

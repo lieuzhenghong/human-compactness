@@ -1,9 +1,9 @@
-import tract_generation
 import ast
 import csv
 import os
 import pickle
 import random
+import sys
 from functools import partial
 
 import geopandas as gpd
@@ -36,13 +36,15 @@ state_names = {"02": "Alaska", "01": "Alabama", "05": "Arkansas", "04": "Arizona
                "48": "Texas", "49": "Utah", "51": "Virginia", "50": "Vermont", "53": "Washington",
                "55": "Wisconsin", "54": "West_Virginia", "56": "Wyoming"}
 
-
 num_elections = 1
 
 DD_PATH = './13_georgia_tract_dds.json'
 DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
-KNN_DD_PATH = './13_georgia_knn_dd_sums.json'
-KNN_DICT = hc_utils.read_tract_duration_json(KNN_DD_PATH)
+#DM_PATH = '/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx'
+DM_PATH = './13_georgia_knn_sum_dd.dmx'
+
+print("Reading KNN duration matrix file into memory...")
+DMX = distance_matrix.read_duration_matrix_from_file(DM_PATH)
 
 plan_name = "Enacted"
 
@@ -82,7 +84,16 @@ for state_fips in fips_list:
         graph.nodes[node]['pop'] = tract_dict[node]['pop']
         # print(graph.nodes[node])
 
-    print(f'Number of districts without a PF score: {num_Nones}')
+    # Checking the number of empty tracts (tracts without VRPs)
+    empty_tracts = []
+
+    for tract_id in tract_dict:
+        if len(tract_dict[tract_id]['vrps']) == 0:
+            #print(f"Tract {tract_id} is empty")
+            empty_tracts.append(tract_id)
+
+    print(f"Number of empty tracts: {len(empty_tracts)}")
+    #print(f"IDs of empty tracts: {empty_tracts}")
 
     initial_partition = GeographicPartition(
         graph,
@@ -91,7 +102,8 @@ for state_fips in fips_list:
             "cut_edges": cut_edges,
             "population": Tally("population", alias="population"),
             "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-            "human_compactness": partial(hc_utils.calculate_human_compactness, DURATION_DICT),
+            "human_compactness": partial(hc_utils.calculate_human_compactness,
+                                         DURATION_DICT, tract_dict, DMX),
             "polsby_compactness": polsby_popper,
             # "PRES2008": election
         }
@@ -101,6 +113,8 @@ for state_fips in fips_list:
     # load graph and make initial partition
 
     # load json one at a time
+    print("Loading JSON files...")
+
     max_steps = 100000
     step_size = 10000
 
@@ -117,8 +131,10 @@ for state_fips in fips_list:
 
         for step in range(step_size):
 
+            start = timer()
+
             changes_this_step = (dict_list[step].items())
-            print(len(changes_this_step))
+            print(f'Changes this step: {len(changes_this_step)}')
 
             new_assignment.update(
                 {int(item[0]): int(item[1]) for item in changes_this_step})
@@ -130,18 +146,19 @@ for state_fips in fips_list:
                     "cut_edges": cut_edges,
                     "population": Tally("population", alias="population"),
                     "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-                    "human_compactness": partial(hc_utils.calculate_human_compactness, DURATION_DICT, KNN_DICT),
+                    "human_compactness": partial(hc_utils.calculate_human_compactness,
+                                                 DURATION_DICT, tract_dict, DMX),
                     "polsby_compactness": polsby_popper,
                 }
             )
 
             print(f'Step number: {step}')
-            print("Calculating spatial diversity...")
-            print(new_partition['spatial_diversity'])
-            print("Calculating human compactness...")
-            print(new_partition['human_compactness'])
-            print("Calculating Polsby-Popper compactness...")
-            print(new_partition['polsby_compactness'])
+            # print("Calculating spatial diversity...")
+            # print(new_partition['spatial_diversity'])
+            # print("Calculating human compactness...")
+            # print(new_partition['human_compactness'])
+            # print("Calculating Polsby-Popper compactness...")
+            # print(new_partition['polsby_compactness'])
 
             # INSERT YOUR FUNCTIONS EVALUATED ON new_partition HERE
             data[-1].append({
@@ -149,6 +166,10 @@ for state_fips in fips_list:
                 'human_compactness': new_partition['human_compactness'],
                 'polsby_compactness': new_partition['polsby_compactness']
             })
+
+            end = timer()
+
+            print(f"Time taken for step {step}: {end-start}")
 
         with open(newdir + "data" + str(t) + ".csv", "w") as tf1:
             writer = csv.writer(tf1, lineterminator="\n")

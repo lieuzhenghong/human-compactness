@@ -4,66 +4,118 @@ import json
 def duration_between(tract_id, other_id, duration_dict):
     '''Gets the sum of driving durations between one tract and another'''
 
+    #print(f'Getting the driving duration between {tract_id} and {other_id}')
+
     tract_id = str(tract_id)
     other_id = str(other_id)
 
     if tract_id not in duration_dict:
         # Don't raise value error. Some tracts have no points in them
+        #print(f'Tract_id {tract_id} not in duration dictionary')
         return 0
     elif other_id not in duration_dict[tract_id]:
+        #print(f'{tract_id} doesn\'t have {other_id} in its duration dictionary')
         return 0
     else:
         return duration_dict[tract_id][other_id]
 
 
 # TODO
-def calculate_knn_of_all_tracts_in_partition(duration_dict, partition):
+def calculate_knn_of_all_points_in_district(dmx, all_districts, tract_dict, tract_to_district_mapping):
     '''
-    First run through the districts' tracts and get the points in that district
-    (form a list of points) by aggregating points in all tracts in the district.
+    all_districts is a Set of district_ids.
 
-    Then count the number of points in each district. This is that district's k.
+    tract_dict:
+        {
+            tract_id: {
+                'geoid': GEOID,
+                'pop': Int,
+                'pfs': List[Float],
+                'vrps': List[PointIDs]
+            }
+        }
 
-    Read the duration_dict line by line.
-    Each line corresponds to a point: find which district that point
-    belongs to (if any --- check this), then get the k-nearest-neighbours
-
-    It might be helpful instead of reading the same file at every single step,
-    try to memoise, save it down somewhere...
-
-    Really the problem is that the duration dict doesn't fit in memory.
-    We can use heuristics to do something like double the size at every
-    iteration but I think that's too complicated.
+    tract_to_district_mapping:
+        {
+            tract_id: DistrictID
+        }
     '''
 
-    # Ask Mark or Zun Yuan about this. We know file read is slow.
-    pass
+    print('Calculating KNN durations for all points in current district assignment ...')
+
+    points_in_each_district = {}
+    num_points_in_each_district = {}
+    point_to_district_mapping = {}
+    sum_of_knn_distances_in_each_district = {}
+
+    # Initialise points_in_districts so we don't have to check for existence condition
+    for district_id in all_districts:
+        points_in_each_district[district_id] = []
+        num_points_in_each_district[district_id] = []
+        sum_of_knn_distances_in_each_district[district_id] = 0
+
+    # get all points in a certain district and form a mapping of points to district
+    # so now we have the forward mapping, point-> district, as well as the inverse
+    # mapping, district -> points
+    for tract_id in tract_to_district_mapping:
+        district_id = tract_to_district_mapping[tract_id]
+        # print(f"Printing tract {tract_id}")
+        # print(tract_dict[tract_id])
+        points_in_each_district[district_id] += tract_dict[tract_id]['vrps']
+
+        for point_id in tract_dict[tract_id]['vrps']:
+            point_to_district_mapping[point_id] = district_id
+
+    # get number of points in each district
+    for district_id in all_districts:
+        num_points_in_each_district[district_id] = len(
+            points_in_each_district[district_id])
+
+    print(f'Number of points in each district: {num_points_in_each_district}')
+
+    # Read duration dict line by line
+    # Each line corresponds to a specific point_id
+
+    ptdm = point_to_district_mapping
+
+    for point_id in ptdm:
+        district_id = ptdm[point_id]
+        K = num_points_in_each_district[district_id]
+        assert(K < 3000)
+        #print(district_id, point_id, K)
+        # print(len(dmx))  # 14000
+        # print(len(dmx[0]))  # 3000
+        # print(len(dmx[point_id]))  # 3000
+        # print(dmx[point_id][K])  # OK
+        sum_of_knn_distances_in_each_district[district_id] += dmx[point_id][K]
+
+    return sum_of_knn_distances_in_each_district
 
 
-def calculate_human_compactness(duration_dict, knn_dd_dict, partition):
+def calculate_human_compactness(duration_dict, tract_dict, dmx, partition):
     '''
     Given the Census Tract duration dict and an assignment from IDs,
     calculate the human compactness of every district in the plan
 
     The duration dict is in the following format:
-        {
-            tractid: {tractid: distance, ... },
-            tractid: {tractid: distance, ...},
-            ...
-        }
+    {
+        tractid: {tractid: distance, ... },
+        tractid: {tractid: distance, ...},
+        ...
+    }
 
     The KNN dict is in the following format:
-        {
-            tractid: Float,
-            tractid: Float
-            ...
-        }
-The assignment dict is in the following format:
-        {
-            tractid: districtid
-            tractid: districtid
-            ...
-        }
+    {
+        tractid: Float,
+        tractid: Float
+        ...
+    }
+    The assignment dict is in the following format:
+    {
+        tractid: districtid
+        tractid: districtid
+        ...
+    }
 
     Maintain a total sum as a tally
     Maintain an array of tracts in each district
@@ -74,6 +126,8 @@ The assignment dict is in the following format:
     '''
 
     # O(n^2) runtime
+
+    print("This function runs fine")
 
     total_durations = {}
     total_knn_dds = {}
@@ -96,107 +150,86 @@ The assignment dict is in the following format:
         # tracts_in_districts first: this is so that we get the sum of driving
         # distances from a tract to itself as well, which makes sense
 
+        # print(
+        #    f"Getting pairwise distances between {tract_id} and {tracts_in_districts[district_id]}")
+
         for other_tract_id in tracts_in_districts[district_id]:
             if district_id not in total_durations:
                 total_durations[district_id] = duration_between(
                     tract_id, other_tract_id, duration_dict)
+                total_durations[district_id] += duration_between(
+                    other_tract_id, tract_id, duration_dict)
             else:
                 total_durations[district_id] += duration_between(
                     tract_id, other_tract_id, duration_dict)
+                total_durations[district_id] += duration_between(
+                    other_tract_id, tract_id, duration_dict)
+
+        # We've double-counted the last self-distance: subtract away
+
+        assert(tract_id == other_tract_id)
+        total_durations[district_id] -= duration_between(
+            other_tract_id, tract_id, duration_dict)
 
     # Now we've got the total durations, divide by the sum of all
     # the knns. We have the sums by tract: all that remains is to
     # aggregate by district.
+    from timeit import default_timer as timer
+    start = timer()
 
-    for district_id in all_districts:
-        for tract_id in tracts_in_districts[district_id]:
-            if district_id not in total_knn_dds:
-                try:
-                    total_knn_dds[district_id] = knn_dd_dict[str(tract_id)]
-                except KeyError:  # Some tracts have no points in them
-                    pass
-            else:
-                try:
-                    total_knn_dds[district_id] += knn_dd_dict[str(tract_id)]
-                except KeyError:
-                    pass
+    total_knn_dds = calculate_knn_of_all_points_in_district(dmx, all_districts,
+                                                            tract_dict, partition.assignment)
+
+    end = timer()
+
+    print(f"Time taken to get KNN durations: {end-start}")
 
     # OK, so now we have the sum of point-to-point driving
     # durations in a district, and also the sum of KNN dds
     # in a district. Last step is to divide knn_dd by total_durations
     # to get the final human compactness score.
 
-    print(f"Total KNN DDs: {total_knn_dds}")
-    print(f"Total DDs in district: {total_durations}")
+    #print(f"Total KNN DDs: {total_knn_dds}")
+    #print(f"Total DDs in district: {total_durations}")
 
     for district_id in all_districts:
         hc_scores[district_id] = total_knn_dds[district_id] / \
             total_durations[district_id]
 
-    print(f"HC scores: {hc_scores}")
+    # print(f"HC scores: {hc_scores}")
 
     return hc_scores
 
 
-def calc_knn_sum_durations_by_tract(pttm, N, DM_PATH, SAVE_FILE_TO):
-    '''Returns a dictionary and prints a file of 
-    {
-        tractid: Float
-    }
-    where the value is the sum of k-nearest-neighbour driving durations for
-    each point in the tract'''
-    knn_sum_dd_by_tract = {}
-
-    # First populate with tracts and initialise to 0
-
-    for p in pttm:
-        knn_sum_dd_by_tract[pttm[p]] = 0
-
-    # I know I'm violating DRY here, but refactoring would take too much time
+def build_knn_sum_duration_matrix(K, DM_PATH, SAVE_FILE_TO):
     with open(DM_PATH, 'rt') as fh:
-        line = fh.readline()
-        # This is currently looking at the durations from point i to all other points
-        i = 0
-        while line:
-            # Get the distances from point i; two spaces is not a typo
-            dist = [float(x) for x in line.split('  ')]
+        with open(f'{SAVE_FILE_TO}', 'w') as outfile:
+            line = fh.readline()
+            # This is currently looking at the durations from point i to all other points
+            i = 0
+            while line:
+                # Get the distances from point i; two spaces is not a typo
+                dist = [float(x) for x in line.split('  ')]
+                dd_sum = []
 
-            # Very rarely, points may not lie within tracts. This is strange, but we'll ignore it
-            print(f'Now processing line {i}..')
-            if i not in pttm:
-                print(f'Point ID not in point_to_tract_mapping: {i}')
-            else:
-                # We want to get the nearest N neighbours, but at
-                # the same time we want to make sure the tracts are in
-                # the point-to-tract mapping.
+                if (i % 1000 == 0):
+                    print(f'Now processing line {i}..')
 
-                # So we sort, but maintain the index
-                # enumerate gives a enumeration giving indexes and values
-                # key=lambda i:i[1] sorts based on the original values
-
-                sorted_dist = [i for i in sorted(
-                    enumerate(dist), key=lambda a:a[1])]
-
-                num_neighbours = 0
+                sorted_dist = sorted(dist)
                 j = 0
-
-                while num_neighbours < N:
-                    if j not in pttm:
-                        print(f'Point ID not in point_to_tract_mapping: {j}')
+                while j < K:
+                    if j == 0:
+                        dd_sum.append(sorted_dist[0])
                     else:
-                        knn_sum_dd_by_tract[pttm[i]] += sorted_dist[j][1]
-                        num_neighbours += 1
+                        dd_sum.append(dd_sum[-1] + sorted_dist[j])
                     j += 1
 
-                print(
-                    f"Sum of KNN distances for point {i} in tract {pttm[i]}: {knn_sum_dd_by_tract[pttm[i]]}")
-            i += 1
-            line = fh.readline()
-
-    with open(f'{SAVE_FILE_TO}', 'w') as f:
-        f.write(json.dumps(knn_sum_dd_by_tract))
-
-    return knn_sum_dd_by_tract
+                # print(sorted_dist[:50])
+                # print(dd_sum[:50])
+                outfile.writelines([f" {x:.2f} " for x in dd_sum])
+                outfile.write('\n')
+                i += 1
+                line = fh.readline()
 
 
 def convert_point_distances_to_tract_distances(pttm, DM_PATH, SAVE_FILE_TO):
