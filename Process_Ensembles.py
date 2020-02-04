@@ -16,7 +16,8 @@ from maup import assign
 
 import human_compactness_utils as hc_utils
 import spatial_diversity_utils as spatial_diversity
-from gerrychain import Election, Graph, Partition, GeographicPartition
+import tract_generation
+from gerrychain import Election, GeographicPartition, Graph, Partition
 from gerrychain.metrics import polsby_popper
 from gerrychain.updaters import Tally, cut_edges
 
@@ -42,6 +43,10 @@ DD_PATH = './13_georgia_tract_dds.json'
 DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
 #DM_PATH = '/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx'
 DM_PATH = './13_georgia_knn_sum_dd.dmx'
+
+sys.path.append('/home/lieu/dev/geographically_sensitive_dislocation/10_code')
+
+import distance_matrix  # noqa: E402
 
 print("Reading KNN duration matrix file into memory...")
 DMX = distance_matrix.read_duration_matrix_from_file(DM_PATH)
