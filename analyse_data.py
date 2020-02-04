@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+import matplotlib.pyplot as plt
 
 
 def read_results_from_file(FILE_PATH):
@@ -37,12 +38,23 @@ if __name__ == "__main__":
     #    './Tract_Ensembles/2000/13/rerun/data1000.json')
 
     path = './Tract_Ensembles/2000/13/rerun/data'
-    files = [(f'{path}{i}.json', i) for i in range(1000, 4000, 1000)]
+    files = [(f'{path}{i}.json', i) for i in range(1000, 10000, 1000)]
+    print(files)
 
     df = pd.concat([build_dataframe_from_list(read_results_from_file(f[0]), f[1] - 1000)
                     for f in files])
     print(df)
 
-    print(df.min(), df.max(), df.mean(), df.median(), df.std())
+    # print(df.min(), df.max(), df.mean(), df.median(), df.std())
 
-    df.plot.kde()
+    # df[['sd', 'hc', 'pp']].plot.kde()
+    print(df[['sd', 'hc', 'pp']].corr())
+
+    #df.plot.scatter(x='hc', y='sd')
+    #df.plot.scatter(x='pp', y='sd')
+
+    # This plot looks interesting. There are some plans whereby HC is
+    # very high, but PP is very low. This is strange.
+    df.plot.scatter(x='hc', y='pp')
+
+    plt.show()

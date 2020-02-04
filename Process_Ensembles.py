@@ -184,7 +184,10 @@ for state_fips in fips_list:
                 print(f'Saving results as {str(t-step_size + step)}.json')
                 with open(newdir + "data" + str(t-step_size + step) + ".json", "w") as tf1:
                     json.dump(data[-1], tf1)
-                    data.append([])
+                    # We need to throw away the old data
+                    # otherwise we'll run out of memory
+                    # data.append([])
+                    data = []
                     #writer = csv.writer(tf1, lineterminator="\n")
                     # writer.writerows(data)
 
