@@ -126,6 +126,7 @@ def generate_tracts_with_vrps():
                         args=[point_to_tract_mapping, geoid_to_id_mapping])
 
     # We already have the tract distances, but if we didn't, we should regenerate it
+<<<<<<< HEAD
     print(f'Length of point_to_tract_mapping: {len(point_to_tract_mapping)}')
 
     DM_PATH = '/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx'
@@ -150,6 +151,25 @@ def generate_tracts_with_vrps():
         tract_dict[pttm[point]]['vrps'].append(point)
 
     print(f'Length of tract_dict: {len(tract_dict)}')
+=======
+    # print(len(point_to_tract_mapping))
+
+    #DM_PATH = '/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx'
+
+    #print('Calculating the sum of driving durations for each tract...')
+    # hc_utils.convert_point_distances_to_tract_distances(POINT_TO_TRACT_MAPPING,
+    #                                                    DM_PATH, './13_georgia_tract_dds.json')
+
+    # Append the point ids to each census tract (where point ID is matrix row)
+
+    pttm = point_to_tract_mapping
+
+    for point in pttm:
+        if 'vrps' not in tract_dict[pttm[point]]:
+            tract_dict[pttm[point]]['vrps'] = [point]
+        else:
+            tract_dict[pttm[point]]['vrps'].append(point)
+>>>>>>> 263e3578deef1efd55c8a335a2bf604ac7ca3c9b
 
     '''
     # Similarly, regenerate the knn_sum_dds
@@ -163,5 +183,9 @@ def generate_tracts_with_vrps():
     return tract_dict
 
 
+<<<<<<< HEAD
 if __name__ == "__main__":
     generate_tracts_with_vrps()
+=======
+generate_tracts_with_vrps()
+>>>>>>> 263e3578deef1efd55c8a335a2bf604ac7ca3c9b

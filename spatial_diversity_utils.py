@@ -4,7 +4,6 @@ import json
 
 # TODO make this a command-line param
 
-TRACT_SPATIAL_DIVERSITY_SCORES = '/home/lieu/dev/human_compactness/tract_spatial_diversity.csv'
 #STARTING_PLAN_FILE = '/home/lieu/dev/human_compactness/Tract_Ensembles/13/starting_plan.json'
 STARTING_PLAN_FILE = '/home/lieu/dev/human_compactness/Data_2000/Dual_Graphs/Tract2000_13.json'
 
@@ -57,7 +56,7 @@ def build_spatial_diversity_dict(tract_dict, geoid_to_id_mapping, tract_spatial_
         except ValueError:
             return None
 
-    with open(TRACT_SPATIAL_DIVERSITY_SCORES) as f:
+    with open(tract_spatial_diversity_scores) as f:
         rdr = csv.DictReader(f)
         for row in rdr:
             #print(row['geo'], row['pf1'])
@@ -193,4 +192,5 @@ def calc_spatial_diversity(partition):
     return (plan_overall_score, spatial_diversity_final_scores)
 
 
-build_spatial_diversity_dict(*get_all_tract_geoids())
+if __name__ == "__main__":
+    build_spatial_diversity_dict(*get_all_tract_geoids())
