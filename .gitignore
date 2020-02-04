@@ -1,4 +1,4 @@
 *.swp
 *.swo
 __pycache__/
-./Tract_Ensembles/2010/*
+/Tract_Ensembles/2010/*
