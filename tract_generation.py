@@ -2,6 +2,7 @@ import numpy as np
 import geopandas as gpd
 import json
 import sys
+import os
 
 import spatial_diversity_utils as sd_utils
 import human_compactness_utils as hc_utils
@@ -37,14 +38,14 @@ def read_and_process_vrp_shapefile(STATE_CODE, NUM_DISTRICTS):
     STATE_CODE = 13
     DEM_RVPS = f'{GEOG_WD}00_representative_voter_points/points_D_{STATE_CODE}_2_10000_run1.shp'
     REP_RVPS = f'{GEOG_WD}00_representative_voter_points/points_R_{STATE_CODE}_2_10000_run1.shp'
-    SAMPLE_SIZE = 1000 * NUM_DISTRICTS
+    SAMPLE_SIZE = 1000 * int(NUM_DISTRICTS)
 
     DM_PATH = '/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx'
 
     # after we get the points, downsample
 
     print("Calculating spatial join of VRPs and district shapefile...")
-    points_downsampled = sample_rvps.sample_rvps(CDB, STATE_CODE, DEM_RVPS,
+    points_downsampled = sample_rvps.sample_rvps(CDB, int(STATE_CODE), DEM_RVPS,
                                                  REP_RVPS, SAMPLE_SIZE)
 
     # Convert to WGS84
@@ -66,7 +67,6 @@ def form_point_to_tract_mapping(voter, mapping, geoid_to_id_mapping):
 
 
 def generate_tracts_with_vrps(state_code, state_name, num_districts):
-    # TODO fix this to take parameters when called with Process_Ensembles
     '''
     Returns a tract_dict with the following schema:
 
@@ -167,4 +167,4 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
 
 
 if __name__ == "__main__":
-    generate_tracts_with_vrps()
+    generate_tracts_with_vrps(sys.argv[1], sys.argv[2], sys.argv[3])
