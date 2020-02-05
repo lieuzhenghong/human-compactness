@@ -65,7 +65,7 @@ def form_point_to_tract_mapping(voter, mapping, geoid_to_id_mapping):
     mapping[voter.name] = geoid_to_id_mapping[voter['GEOID']]
 
 
-def generate_tracts_with_vrps(state_code, num_districts):
+def generate_tracts_with_vrps(state_code, state_name, num_districts):
     # TODO fix this to take parameters when called with Process_Ensembles
     '''
     Returns a tract_dict with the following schema:
@@ -126,23 +126,32 @@ def generate_tracts_with_vrps(state_code, num_districts):
     points_mapped.apply(form_point_to_tract_mapping, axis=1,
                         args=[point_to_tract_mapping, geoid_to_id_mapping])
 
-    # We already have the tract distances, but if we didn't, we should regenerate it
     print(f'Length of point_to_tract_mapping: {len(point_to_tract_mapping)}')
-
-    DM_PATH = '/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx'
+    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{state_name}_{state_code}.dmx'
 
     # Append the point ids to each census tract (where point ID is matrix row)
-
     pttm = point_to_tract_mapping
 
-    # print('Calculating the sum of driving durations for each tract...')
-    # hc_utils.convert_point_distances_to_tract_distances(pttm,
-    #                                                    DM_PATH, './13_georgia_tract_dds.json')
+    # We already have the tract distances, but if we didn't, we should regenerate it
+
+    tract_dds_filename = f'./{state_code}_{state_name}_tract_dds.json'
+
+    if not os.path.isfile(tract_dds_filename):
+        print(
+            f"Building pairwise tract distances JSON from point matrix and saving as {tract_dds_filename}...")
+        hc_utils.convert_point_distances_to_tract_distances(
+            pttm, DM_PATH, tract_dds_filename)
+    else:
+        print("Pairwise tract distance JSON already exists, skipping...")
 
     # Build sum of driving distances
-    #print("Building sum of K-nearest neighbour driving distance (up to 3000)...")
-    # hc_utils.build_knn_sum_duration_matrix(
-    #    3000, DM_PATH, '13_georgia_knn_sum_dd.dmx')
+    knn_dmx_filename = f'./{state_code}_{state_name}_knn_sum_dd.dmx'
+    if not os.path.isfile(knn_dmx_filename):
+        print("Building sum of K-nearest neighbour driving distance (up to 3000)...")
+        hc_utils.build_knn_sum_duration_matrix(
+            3000, DM_PATH, knn_dmx_filename)
+    else:
+        print("K-nearest driving distance matrix already exists, skipping...")
 
     for tract_id in tract_dict:
         tract_dict[tract_id]['vrps'] = []
@@ -151,13 +160,6 @@ def generate_tracts_with_vrps(state_code, num_districts):
         tract_dict[pttm[point]]['vrps'].append(point)
 
     print(f'Length of tract_dict: {len(tract_dict)}')
-
-    '''
-    # Similarly, regenerate the knn_sum_dds
-    print('Calculating the sum of KNN driving durations for each tract...')
-    hc_utils.calc_knn_sum_durations_by_tract(point_to_tract_mapping,
-                                            1000, DM_PATH, './13_georgia_knn_dd_sums.json')
-    '''
 
     # print(tract_dict)
 

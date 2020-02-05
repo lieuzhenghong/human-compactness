@@ -200,6 +200,11 @@ def calculate_human_compactness(duration_dict, tract_dict, dmx, partition):
 
 
 def build_knn_sum_duration_matrix(K, DM_PATH, SAVE_FILE_TO):
+    '''
+    Given a point matrix in DM_PATH, builds and saves a knn_sum_duration
+    matrix to parameter SAVE_FILE_TO, where matrix[i][j] is the sum of
+    distances from point i to its j closest neighbours.
+    '''
     with open(DM_PATH, 'rt') as fh:
         with open(f'{SAVE_FILE_TO}', 'w') as outfile:
             line = fh.readline()
