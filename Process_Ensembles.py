@@ -50,7 +50,7 @@ fips_list = ['13']
 for state_fips in fips_list:
     DD_PATH = f'./{state_fips}_{state_names[state_fips]}_tract_dds.json'
     DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
-    DM_PATH = f'./{state_fips}_{state_names[state_fips]}_knn_dd_sums.dmx'
+    DM_PATH = f'./{state_fips}_{state_names[state_fips]}_knn_sum_dd.dmx'
 
     sys.path.append(
         '/home/lieu/dev/geographically_sensitive_dislocation/10_code')

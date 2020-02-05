@@ -87,9 +87,10 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
     '''
     # All global variables here
     TRACT_SPATIAL_DIVERSITY_SCORES = '/home/lieu/dev/human_compactness/tract_spatial_diversity.csv'
-    point_to_tract_mapping = {}
     CENSUS_TRACTS = gpd.read_file(
         f"/home/lieu/dev/human_compactness/Data_2000/Shapefiles/Tract2000_{state_code}.shp")
+
+    point_to_tract_mapping = {}
 
     # Read in Nick's VRP shapefile and downsample
 
@@ -102,7 +103,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
     # Get dictionary of tracts {id: {GEOID: geoid, pop: None, pfs: None}} and the
     # GEOID to ID mapping
 
-    tract_dict, geoid_to_id_mapping = sd_utils.get_all_tract_geoids()
+    tract_dict, geoid_to_id_mapping = sd_utils.get_all_tract_geoids(state_code)
 
     tract_dict = sd_utils.build_spatial_diversity_dict(tract_dict,
                                                        geoid_to_id_mapping, TRACT_SPATIAL_DIVERSITY_SCORES)
@@ -134,16 +135,15 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
     pttm = point_to_tract_mapping
 
     # We already have the tract distances, but if we didn't, we should regenerate it
-
-    tract_dds_filename = f'./{state_code}_{state_name}_tract_dds.json'
-
     input("Everything OK? Press Enter if Yes, quit here if no.")
 
+    tract_dds_filename = f'./{state_code}_{state_name}_tract_dds.json'
     if not os.path.isfile(tract_dds_filename):
         print(
             f"Building pairwise tract distances JSON from point matrix and saving as {tract_dds_filename}...")
         hc_utils.convert_point_distances_to_tract_distances(
             pttm, DM_PATH, tract_dds_filename)
+        print(f"Saved file as {tract_dds_filename}.")
     else:
         print("Pairwise tract distance JSON already exists, skipping...")
 
@@ -153,6 +153,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
         print("Building sum of K-nearest neighbour driving distance (up to 3000)...")
         hc_utils.build_knn_sum_duration_matrix(
             3000, DM_PATH, knn_dmx_filename)
+        print(f"Saved file as {knn_dmx_filename}.")
     else:
         print("K-nearest driving distance matrix already exists, skipping...")
 

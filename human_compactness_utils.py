@@ -21,7 +21,6 @@ def duration_between(tract_id, other_id, duration_dict):
         return duration_dict[tract_id][other_id]
 
 
-# TODO
 def calculate_knn_of_all_points_in_district(dmx, all_districts, tract_dict, tract_to_district_mapping):
     '''
     all_districts is a Set of district_ids.
@@ -104,19 +103,11 @@ def calculate_human_compactness(duration_dict, tract_dict, dmx, partition):
         tractid: {tractid: distance, ...},
         ...
     }
+    Tract dict:
 
-    The KNN dict is in the following format:
-    {
-        tractid: Float,
-        tractid: Float
-        ...
-    }
-    The assignment dict is in the following format:
-    {
-        tractid: districtid
-        tractid: districtid
-        ...
-    }
+    DMX:
+
+    Partition:
 
     Maintain a total sum as a tally
     Maintain an array of tracts in each district
