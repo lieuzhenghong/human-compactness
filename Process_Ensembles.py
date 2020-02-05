@@ -192,7 +192,7 @@ for state_fips in fips_list:
                     # We need to throw away the old data
                     # otherwise we'll run out of memory
                     # data.append([])
-                    data = []
+                    data = [[]]
                     #writer = csv.writer(tf1, lineterminator="\n")
                     # writer.writerows(data)
 

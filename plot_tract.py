@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 # Plot vrps on census tracts.
 #
 # Takes in two shapefiles, census_tracts and points, and plots an overlay of
-# VRPS. Saves it in 
+# VRPS. Saves it in
+
 
 def plot_vrps_on_census_tracts(census_tracts, vrps, filename):
     # First convert to epsg 2163
@@ -18,4 +19,3 @@ def plot_vrps_on_census_tracts(census_tracts, vrps, filename):
     fig = plt.gcf()
     fig.set_size_inches(30, 20)
     fig.savefig(f'{filename}.png', dpi=100)
-
