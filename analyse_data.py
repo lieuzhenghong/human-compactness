@@ -45,9 +45,10 @@ if __name__ == "__main__":
                     for f in files])
     print(df)
 
-    # print(df.min(), df.max(), df.mean(), df.median(), df.std())
+    print(df.min(), df.max(), df.mean(), df.median(), df.std())
+    print(df.mean(), df.std())
 
-    # df[['sd', 'hc', 'pp']].plot.kde()
+    df[['sd', 'hc', 'pp']].plot.kde()
     print(df[['sd', 'hc', 'pp']].corr())
 
     #df.plot.scatter(x='hc', y='sd')
@@ -56,5 +57,21 @@ if __name__ == "__main__":
     # This plot looks interesting. There are some plans whereby HC is
     # very high, but PP is very low. This is strange.
     df.plot.scatter(x='hc', y='pp')
+
+    # Let's do a filter on those plans where pp < 0.05 and hc > 0.9
+    #filtered_df = df[(df['hc'] >= 0.9) & (df['pp'] <= 0.05)]
+
+    filtered_df = df[((df['hc'] <= 0.7) | (df['pp'] >= 0.06))]
+    # We find that spatial diversity is lower (0.64 vs 0.68 --- significant?)
+    # in this region, compared to the mean. The standard deviation of the
+    # spatial diversity is also lower
+
+    filtered_df.plot.scatter(x='hc', y='pp')
+
+    filtered_df.plot.scatter(x='hc', y='sd')
+    print(filtered_df[['sd', 'hc', 'pp']].corr())
+
+    print(filtered_df)
+    print(filtered_df.mean(), filtered_df.std())
 
     plt.show()
