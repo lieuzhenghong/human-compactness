@@ -41,18 +41,6 @@ state_names = {"02": "Alaska", "01": "Alabama", "05": "Arkansas", "04": "Arizona
 
 num_elections = 1
 
-DD_PATH = './13_georgia_tract_dds.json'
-DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
-#DM_PATH = '/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx'
-DM_PATH = './13_georgia_knn_sum_dd.dmx'
-
-sys.path.append('/home/lieu/dev/geographically_sensitive_dislocation/10_code')
-
-import distance_matrix  # noqa: E402
-
-print("Reading KNN duration matrix file into memory...")
-DMX = distance_matrix.read_duration_matrix_from_file(DM_PATH)
-
 plan_name = "Enacted"
 
 # fips_list = ['13','25','49','51','55']
@@ -60,6 +48,17 @@ fips_list = ['13']
 
 
 for state_fips in fips_list:
+    DD_PATH = f'./{state_fips}_{state_names[state_fips]}_tract_dds.json'
+    DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
+    DM_PATH = f'./{state_fips}_{state_names[state_fips]}_knn_dd_sums.dmx'
+
+    sys.path.append(
+        '/home/lieu/dev/geographically_sensitive_dislocation/10_code')
+
+    import distance_matrix  # noqa: E402
+
+    print("Reading KNN duration matrix file into memory...")
+    DMX = distance_matrix.read_duration_matrix_from_file(DM_PATH)
 
     data = []
 
