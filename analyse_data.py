@@ -39,15 +39,25 @@ if __name__ == "__main__":
 
     path = './Tract_Ensembles/2000/13/rerun/data'
     files = [(f'{path}{i}.json', i) for i in range(1000, 10000, 1000)]
-    print(files)
 
     df = pd.concat([build_dataframe_from_list(read_results_from_file(f[0]), f[1] - 1000)
                     for f in files])
     print(df)
 
-    print(df.min(), df.max(), df.mean(), df.median(), df.std())
-    print(df.mean(), df.std())
+    grouped_df = (df.groupby('plan').sum())
+    grouped_df = grouped_df.div(13)
+    print(grouped_df)
 
+    grouped_df[['sd', 'hc', 'pp']].plot.kde()
+    print(grouped_df[['sd', 'hc', 'pp']].corr())
+
+    grouped_df.plot.scatter(x='hc', y='pp')  # pretty strong correlation, 0.38
+    grouped_df.plot.scatter(x='hc', y='sd')  # weak negative correlation, -0.07
+    grouped_df.plot.scatter(x='pp', y='sd')  # weak negative correlation, -0.09
+
+    ''' Analysis of individual-level tract data
+    #print(df.min(), df.max(), df.mean(), df.median(), df.std())
+    #print(df.mean(), df.std())
     df[['sd', 'hc', 'pp']].plot.kde()
     print(df[['sd', 'hc', 'pp']].corr())
 
@@ -56,7 +66,7 @@ if __name__ == "__main__":
 
     # This plot looks interesting. There are some plans whereby HC is
     # very high, but PP is very low. This is strange.
-    df.plot.scatter(x='hc', y='pp')
+    #df.plot.scatter(x='hc', y='pp')
 
     # Let's do a filter on those plans where pp < 0.05 and hc > 0.9
     #filtered_df = df[(df['hc'] >= 0.9) & (df['pp'] <= 0.05)]
@@ -69,9 +79,12 @@ if __name__ == "__main__":
     filtered_df.plot.scatter(x='hc', y='pp')
 
     filtered_df.plot.scatter(x='hc', y='sd')
-    print(filtered_df[['sd', 'hc', 'pp']].corr())
+    filtered_df.plot.scatter(x='pp', y='sd')
+
+    #print(filtered_df[['sd', 'hc', 'pp']].corr())
 
     print(filtered_df)
-    print(filtered_df.mean(), filtered_df.std())
+    #print(filtered_df.mean(), filtered_df.std())
+    '''
 
     plt.show()
