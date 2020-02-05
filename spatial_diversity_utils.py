@@ -3,13 +3,10 @@ import csv
 import json
 
 # TODO make this a command-line param
-
-
 SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (
     0.1464, 0.1182, 0.101, 0.0775, 0.0501, 0.0399, 0.0389, 0.0366)
 
 
-# TODO allow specifiying which state
 def get_all_tract_geoids(state_code):
     '''
     return a mapping of ID to {GEOID, pop, pfs}, as well as a reverse mapping of GEOID to ID
@@ -82,19 +79,17 @@ def build_spatial_diversity_dict(tract_dict, geoid_to_id_mapping, tract_spatial_
     return tract_dict
 
 
-'''
-Given a Graph and an assignment of tracts to districts, calculate the spatial
-diversity for all districts
-
-
-Takes in a Partition which has a graph and a partition
-
-Returns the district's spatial diversity score, a weighted average of the
-individual standard deviations
-'''
-
-
 def calc_spatial_diversity(partition):
+    '''
+    Given a Graph and an assignment of tracts to districts, calculate the spatial
+    diversity for all districts
+
+
+    Takes in a Partition which has a graph and a partition
+
+    Returns the district's spatial diversity score, a weighted average of the
+    individual standard deviations
+    '''
     spatial_diversity_scores = {}
     spatial_diversity_variances = {}
     spatial_diversity_sums = {}
