@@ -4,16 +4,13 @@ import json
 
 # TODO make this a command-line param
 
-#STARTING_PLAN_FILE = '/home/lieu/dev/human_compactness/Tract_Ensembles/13/starting_plan.json'
-STARTING_PLAN_FILE = '/home/lieu/dev/human_compactness/Data_2000/Dual_Graphs/Tract2000_13.json'
-
 
 SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (
     0.1464, 0.1182, 0.101, 0.0775, 0.0501, 0.0399, 0.0389, 0.0366)
 
 
 # TODO allow specifiying which state
-def get_all_tract_geoids():
+def get_all_tract_geoids(state_code):
     '''
     return a mapping of ID to {GEOID, pop, pfs}, as well as a reverse mapping of GEOID to ID
     '''
@@ -22,7 +19,9 @@ def get_all_tract_geoids():
     tract_dict = {}
     geoid_to_id_mapping = {}
 
-    with open(STARTING_PLAN_FILE) as f:
+    starting_plan = f'/home/lieu/dev/human_compactness/Data_2000/Dual_Graphs/Tract2000_{state_code}.json'
+
+    with open(starting_plan) as f:
         data = json.load(f)
 
         for node in data["nodes"]:

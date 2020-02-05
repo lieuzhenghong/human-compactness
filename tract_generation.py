@@ -23,28 +23,27 @@ def get_vrps_within_tracts():
     pass
 
 
-def read_and_process_vrp_shapefile(STATE_CODE, NUM_DISTRICTS):
+def read_and_process_vrp_shapefile(STATE_CODE, STATE_NAME, NUM_DISTRICTS):
     '''
         Returns points_downsampled
     '''
-    # TODO make it not only read the state of Georgia
-
     GEOG_WD = "/home/lieu/dev/geographically_sensitive_dislocation/00_source_data/"
 
     print("Reading district shapefile...")
     CDB = gpd.read_file(GEOG_WD +
                         "10_US_Congressional_districts/nhgis0190_shapefile_tl2014_us_cd114th_2014/US_cd114th_2014_wgs84.shp")
 
-    STATE_CODE = 13
     DEM_RVPS = f'{GEOG_WD}00_representative_voter_points/points_D_{STATE_CODE}_2_10000_run1.shp'
     REP_RVPS = f'{GEOG_WD}00_representative_voter_points/points_R_{STATE_CODE}_2_10000_run1.shp'
     SAMPLE_SIZE = 1000 * int(NUM_DISTRICTS)
 
-    DM_PATH = '/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx'
+    print(DEM_RVPS)
+
+    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}.dmx'
 
     # after we get the points, downsample
 
-    print("Calculating spatial join of VRPs and district shapefile...")
+    print("Downsampling points...")
     points_downsampled = sample_rvps.sample_rvps(CDB, int(STATE_CODE), DEM_RVPS,
                                                  REP_RVPS, SAMPLE_SIZE)
 
@@ -95,7 +94,8 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
     # Read in Nick's VRP shapefile and downsample
 
     points_downsampled = read_and_process_vrp_shapefile(
-        state_code, num_districts)
+        state_code, state_name, num_districts)
+    print(points_downsampled)
     # print(list(points_downsampled))
     # print(points_downsampled[:10])
 
@@ -109,15 +109,16 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
 
     # Reproject 2000 Census Tracts to use the same projection as downsampled tracts
     CENSUS_TRACTS = CENSUS_TRACTS.to_crs({'init': 'epsg:4326'})
-    print(CENSUS_TRACTS)
+    # print(CENSUS_TRACTS)
 
     # Spatial join all points that lie in a Census Tract
     # This gives us a GeoDataFrame of each VRP mapped to a GEOID of the tract
+    print("Calculating spatial join of VRPs and district shapefile...")
     points_mapped = gpd.sjoin(
         points_downsampled, CENSUS_TRACTS, how='inner', op='within')
 
     # The important ones are GEOID, geometry and index_right, possibly party
-    # print(points_mapped[:10])
+    print(points_mapped[:10])
     # print(list(points_mapped))
 
     # Populate the point_to_tract_mapping dictionary
@@ -135,6 +136,8 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
     # We already have the tract distances, but if we didn't, we should regenerate it
 
     tract_dds_filename = f'./{state_code}_{state_name}_tract_dds.json'
+
+    input("Everything OK? Press Enter if Yes, quit here if no.")
 
     if not os.path.isfile(tract_dds_filename):
         print(
