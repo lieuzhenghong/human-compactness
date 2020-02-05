@@ -22,7 +22,7 @@ def get_vrps_within_tracts():
     pass
 
 
-def read_and_process_vrp_shapefile():
+def read_and_process_vrp_shapefile(STATE_CODE, NUM_DISTRICTS):
     '''
         Returns points_downsampled
     '''
@@ -35,9 +35,9 @@ def read_and_process_vrp_shapefile():
                         "10_US_Congressional_districts/nhgis0190_shapefile_tl2014_us_cd114th_2014/US_cd114th_2014_wgs84.shp")
 
     STATE_CODE = 13
-    DEM_RVPS = f'{GEOG_WD}00_representative_voter_points/points_D_13_2_10000_run1.shp'
-    REP_RVPS = f'{GEOG_WD}00_representative_voter_points/points_R_13_2_10000_run1.shp'
-    SAMPLE_SIZE = 14000
+    DEM_RVPS = f'{GEOG_WD}00_representative_voter_points/points_D_{STATE_CODE}_2_10000_run1.shp'
+    REP_RVPS = f'{GEOG_WD}00_representative_voter_points/points_R_{STATE_CODE}_2_10000_run1.shp'
+    SAMPLE_SIZE = 1000 * NUM_DISTRICTS
 
     DM_PATH = '/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_georgia_13.dmx'
 
@@ -65,7 +65,7 @@ def form_point_to_tract_mapping(voter, mapping, geoid_to_id_mapping):
     mapping[voter.name] = geoid_to_id_mapping[voter['GEOID']]
 
 
-def generate_tracts_with_vrps():
+def generate_tracts_with_vrps(state_code, num_districts):
     # TODO fix this to take parameters when called with Process_Ensembles
     '''
     Returns a tract_dict with the following schema:
@@ -90,11 +90,12 @@ def generate_tracts_with_vrps():
     TRACT_SPATIAL_DIVERSITY_SCORES = '/home/lieu/dev/human_compactness/tract_spatial_diversity.csv'
     point_to_tract_mapping = {}
     CENSUS_TRACTS = gpd.read_file(
-        "/home/lieu/dev/human_compactness/Data_2000/Shapefiles/Tract2000_13.shp")
+        f"/home/lieu/dev/human_compactness/Data_2000/Shapefiles/Tract2000_{state_code}.shp")
 
     # Read in Nick's VRP shapefile and downsample
 
-    points_downsampled = read_and_process_vrp_shapefile()
+    points_downsampled = read_and_process_vrp_shapefile(
+        state_code, num_districts)
     # print(list(points_downsampled))
     # print(points_downsampled[:10])
 
