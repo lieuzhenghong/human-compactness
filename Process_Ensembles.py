@@ -44,13 +44,14 @@ num_elections = 1
 plan_name = "Enacted"
 
 # fips_list = ['13','25','49','51','55']
-fips_list = ['13']
+#fips_list = ['13']
+fips_list = ['22']
 
 
 for state_fips in fips_list:
-    DD_PATH = f'./{state_fips}_{state_names[state_fips]}_tract_dds.json'
+    DD_PATH = f'./{state_fips}_{state_names[state_fips].lower()}_tract_dds.json'
     DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
-    DM_PATH = f'./{state_fips}_{state_names[state_fips]}_knn_sum_dd.dmx'
+    DM_PATH = f'./{state_fips}_{state_names[state_fips].lower()}_knn_sum_dd.dmx'
 
     sys.path.append(
         '/home/lieu/dev/geographically_sensitive_dislocation/10_code')
