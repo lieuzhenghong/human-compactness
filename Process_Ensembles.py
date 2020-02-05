@@ -39,6 +39,9 @@ state_names = {"02": "Alaska", "01": "Alabama", "05": "Arkansas", "04": "Arizona
                "48": "Texas", "49": "Utah", "51": "Virginia", "50": "Vermont", "53": "Washington",
                "55": "Wisconsin", "54": "West_Virginia", "56": "Wyoming"}
 
+# TODO fill this in
+num_districts = {"01": 7, "13": 14, "22": 6, "24": 8}
+
 num_elections = 1
 
 plan_name = "Enacted"
@@ -49,9 +52,10 @@ fips_list = ['22']
 
 
 for state_fips in fips_list:
-    DD_PATH = f'./{state_fips}_{state_names[state_fips].lower()}_tract_dds.json'
+    state_name = state_names[state_fips].lower()
+    DD_PATH = f'./{state_fips}_{state_name}_tract_dds.json'
     DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
-    DM_PATH = f'./{state_fips}_{state_names[state_fips].lower()}_knn_sum_dd.dmx'
+    DM_PATH = f'./{state_fips}_{state_name}_knn_sum_dd.dmx'
 
     sys.path.append(
         '/home/lieu/dev/geographically_sensitive_dislocation/10_code')
@@ -78,7 +82,8 @@ for state_fips in fips_list:
     # tract_dict = spatial_diversity.build_spatial_diversity_dict(
     #    *spatial_diversity.get_all_tract_geoids())
 
-    tract_dict = tract_generation.generate_tracts_with_vrps()
+    tract_dict = tract_generation.generate_tracts_with_vrps(
+        state_fips, state_name, num_districts[state_fips])
 
     # just for reference
     num_Nones = 0
