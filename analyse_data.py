@@ -3,6 +3,7 @@ import geopandas as gpd
 import json
 import matplotlib.pyplot as plt
 import sys
+import seaborn as sns
 
 
 def read_results_from_file(FILE_PATH):
@@ -49,10 +50,22 @@ def build_initial_district_assignment(state_code, path, census_tracts_df):
         starting_dict['id'].append(key['id'])
         starting_dict['district_assignment'].append(key['New_Seed'])
 
-    df2 = pd.DataFrame.from_dict(starting_dict)
+    assert(len(starting_dict['GEOID']) == len(starting_dict['id']))
+
+    assert(len(starting_dict['id']) == len(
+        starting_dict['district_assignment']))
+
+    df2 = pd.DataFrame.from_dict(starting_dict, dtype='int')
 
     ctdf = census_tracts_df
+    ctdf['GEOID'] = ctdf['GEOID'].astype('int')
+
     ctdf = ctdf.join(df2.set_index('GEOID'), on='GEOID')
+    ctdf['id'].fillna(-1, inplace=True)
+    ctdf['district_assignment'].fillna(-1, inplace=True)
+
+    ctdf['id'] = ctdf['id'].astype('int').astype('str')
+    ctdf['district_assignment'] = ctdf['district_assignment'].astype('int')
 
     return ctdf
 
@@ -87,11 +100,28 @@ def read_assignment_file(state_code, plan_number, path):
         return assignment_list
 
 
+def fill_district_assignments(assignment_list):
+    import copy
+    all_assignments = []
+
+    all_assignments.append(assignment_list[0])
+
+    for step in assignment_list[1:]:
+        all_assignments.append(copy.deepcopy(all_assignments[-1]))
+        for ass in step:
+            all_assignments[-1][ass] = step[ass]
+
+    assert(all_assignments[1] != all_assignments[8704])
+
+    return all_assignments
+
+
 if __name__ == "__main__":
     # read_results_from_file('./Tract_Ensembles/2000/13/rerun/data0.json')
 
     # data_list = read_results_from_file(
     #    './Tract_Ensembles/2000/13/rerun/data1000.json')
+    sns.set(color_codes=True)
 
     STATE_CODE = sys.argv[1]
     NUM_DISTRICTS = int(sys.argv[2])
@@ -100,28 +130,33 @@ if __name__ == "__main__":
     files = [(f'{PATH}/rerun/data{i}.json', i)
              for i in range(1000, 10000, 1000)]
 
+    print("Reading points...")
     df = pd.concat([build_dataframe_from_list(read_results_from_file(f[0]), f[1] - 1000)
                     for f in files])
     print(df)
 
+    print("Reading shapefile...")
     SHAPEFILE_PATH = f'./Data_2000/Shapefiles'
     ctdf = read_shapefile(STATE_CODE, SHAPEFILE_PATH)
 
     ctdf = build_initial_district_assignment(STATE_CODE, PATH, ctdf)
 
     print(ctdf)
-    ctdf.plot(column='district_assignment', cmap='tab20')
+    #ctdf.plot(column='district_assignment', cmap='tab20')
 
     assignment_list = read_assignment_file(STATE_CODE, 10000, PATH)
+    assignment_list = fill_district_assignments(assignment_list)
 
     print(assignment_list[1])
 
     s = ctdf['id'].astype(str).map(assignment_list[1])
 
-    ctdf['district_assignment'] = s.fillna(ctdf['district_assignment']).astype(int)
+    ctdf['district_assignment'] = s.fillna(
+        ctdf['district_assignment']).astype(int)
+
     print(ctdf)
 
-    ctdf.plot(column='district_assignment', cmap='tab20')
+    #ctdf.plot(column='district_assignment', cmap='tab20')
 
     grouped_df = (df.groupby('plan').sum())
     grouped_df = grouped_df.div(NUM_DISTRICTS)
@@ -130,8 +165,30 @@ if __name__ == "__main__":
     #grouped_df[['sd', 'hc', 'pp']].plot.kde()
     print(grouped_df[['sd', 'hc', 'pp']].corr())
 
-    '''
-    # pretty strong correlation, 0.38
+    print(grouped_df[grouped_df['sd'] == grouped_df['sd'].max()])
+    print(grouped_df[grouped_df['sd'] == grouped_df['sd'].min()])
+
+    print(grouped_df[grouped_df['pp'] == grouped_df['pp'].max()])
+    print(grouped_df[grouped_df['pp'] == grouped_df['pp'].min()])
+
+    print(grouped_df[grouped_df['hc'] == grouped_df['hc'].max()])
+    print(grouped_df[grouped_df['hc'] == grouped_df['hc'].min()])
+
+    max_hc = grouped_df['hc'].idxmax()
+    print(max_hc)
+
+    s = ctdf['id'].astype(str).map(assignment_list[max_hc])
+    ctdf['district_assignment'] = s.fillna(
+        ctdf['district_assignment']).astype(int)
+
+    ctdf.plot(column='district_assignment', cmap='tab20')
+
+    s = ctdf['id'].astype(str).map(assignment_list[8306])
+
+    ctdf['district_assignment'] = s.fillna(
+        ctdf['district_assignment']).astype(int)
+    ctdf.plot(column='district_assignment', cmap='tab20')
+
     grouped_df.plot.scatter(x='hc', y='pp', c='sd', cmap='Oranges')
     grouped_df.plot.scatter(x='hc', y='sd')  # weak negative correlation, -0.07
     grouped_df.plot.scatter(x='pp', y='sd')  # weak negative correlation, -0.09
@@ -141,45 +198,7 @@ if __name__ == "__main__":
     grouped_df['hc_pp_delta'] = grouped_df['hc'] - grouped_df['pp']
     print(grouped_df[['hc_pp_delta', 'pp', 'hc', 'sd']].corr())
     grouped_df.plot.scatter(x='hc_pp_delta', y='sd')
-    '''
 
-    # When human compactness is high,
-
-    # Analysis of individual-level tract data
-    # print(df.min(), df.max(), df.mean(), df.median(), df.std())
-    # print(df.mean(), df.std())
-    df[['sd', 'hc', 'pp']].plot.kde()
-    print(df[['sd', 'hc', 'pp']].corr())
-    #df.plot.scatter(x='hc', y='sd')
-    #df.plot.scatter(x='pp', y='sd')
-
-    df['hc_pp_delta'] = df['hc'] - df['pp']
-    #print(df[['hc_pp_delta', 'pp', 'hc', 'sd']].corr())
-    #df.plot.scatter(x='hc_pp_delta', y='sd')
-
-    # This plot looks interesting. There are some plans whereby HC is
-    # very high, but PP is very low. This is strange.
-    # df.plot.scatter(x='hc', y='pp')
-
-    # Let's do a filter on those plans where pp < 0.05 and hc > 0.9
-    # filtered_df = df[(df['hc'] >= 0.9) & (df['pp'] <= 0.05)]
-
-    '''
-
-    filtered_df = df[((df['hc'] <= 0.7) | (df['pp'] >= 0.06))]
-    # We find that spatial diversity is lower (0.64 vs 0.68 --- significant?)
-    # in this region, compared to the mean. The standard deviation of the
-    # spatial diversity is also lower
-
-    filtered_df.plot.scatter(x='hc', y='pp')
-
-    filtered_df.plot.scatter(x='hc', y='sd')
-    filtered_df.plot.scatter(x='pp', y='sd')
-
-    # print(filtered_df[['sd', 'hc', 'pp']].corr())
-
-    print(filtered_df)
-    # print(filtered_df.mean(), filtered_df.std())
-    '''
+    sns.lmplot(x="hc_pp_delta", y="sd", data=grouped_df)
 
     plt.show()
