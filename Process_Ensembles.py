@@ -40,7 +40,7 @@ state_names = {"02": "Alaska", "01": "Alabama", "05": "Arkansas", "04": "Arizona
                "55": "Wisconsin", "54": "West_Virginia", "56": "Wyoming"}
 
 # TODO fill this in
-num_districts = {"01": 7, "13": 14, "22": 6, "24": 8}
+num_districts = {"01": 7, "13": 14, "22": 6, "24": 8, "55": 8}
 
 num_elections = 1
 
@@ -48,7 +48,8 @@ plan_name = "Enacted"
 
 # fips_list = ['13','25','49','51','55']
 #fips_list = ['13']
-fips_list = ['22']
+#fips_list = ['22']
+fips_list = ['55']
 
 
 for state_fips in fips_list:
