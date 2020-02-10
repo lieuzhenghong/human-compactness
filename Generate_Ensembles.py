@@ -17,9 +17,9 @@ from gerrychain import Graph
 ###########
 
 #state_fips = '08'
-state_fips = '13'
+state_fips = '25'
 #num_districts = 7
-num_districts = 14
+num_districts = 10
 
 '''
 Currently Running:
@@ -49,6 +49,48 @@ from gerrychain import Graph, Partition, Election
 from gerrychain.updaters import Tally, cut_edges
 
 graph = Graph.from_json(f'./Data_2000/Dual_Graphs/Tract2000_{state_fips}.json')
+""" #FOR MD
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "811000":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "810700":
+        ind_b = node
+        print(ind_b)
+    
+graph.add_edge(ind_a,ind_b)
+graph[ind_a][ind_b]["shared_perim"] = 0
+
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "990100":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "990700":
+        ind_b = node
+        print(ind_b)
+"""
+#FOR MA
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "200400":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "014900":
+        ind_b = node
+        print(ind_b)
+    
+graph.add_edge(ind_a,ind_b)
+graph[ind_a][ind_b]["shared_perim"] = 0
+
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "200300":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "950300":
+        ind_b = node
+        print(ind_b)    
+graph.add_edge(ind_a,ind_b)
+graph[ind_a][ind_b]["shared_perim"] = 0
+
 
 print(nx.is_connected(graph))
 print([len(x) for x in nx.connected_components(graph)])
@@ -191,7 +233,7 @@ chain = MarkovChain(
     accept=always_accept,
     initial_state=initial_partition,
     #total_steps=100000
-    total_steps=10
+    total_steps=10000
 )
 
 pos = {node:(float(graph.nodes[node]['C_X']), float(graph.nodes[node]['C_Y'])) for node in graph.nodes}
@@ -222,8 +264,8 @@ for part in chain:
     pop_vec.append(sorted(list(part["population"].values())))
     cut_vec.append(len(part["cut_edges"]))
         
-    #if step_index % 10000 == 0:
-    if True:
+    if step_index % 10000 == 0:
+    #if True:
         print(step_index)
         
         with open(newdir+f'flips_{step_index}.json', 'w') as fp1:
