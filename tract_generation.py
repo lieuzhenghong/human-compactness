@@ -135,7 +135,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
     pttm = point_to_tract_mapping
 
     # We already have the tract distances, but if we didn't, we should regenerate it
-    input("Everything OK? Press Enter if Yes, quit here if no.")
+    #input("Everything OK? Press Enter if Yes, quit here if no.")
 
     tract_dds_filename = f'./{state_code}_{state_name}_tract_dds.json'
     if not os.path.isfile(tract_dds_filename):

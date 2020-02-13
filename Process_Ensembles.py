@@ -18,6 +18,7 @@ from maup import assign
 import human_compactness_utils as hc_utils
 import spatial_diversity_utils as spatial_diversity
 import tract_generation
+import reock as reock
 from gerrychain import Election, GeographicPartition, Graph, Partition
 from gerrychain.metrics import polsby_popper
 from gerrychain.updaters import Tally, cut_edges
@@ -49,7 +50,7 @@ plan_name = "Enacted"
 # fips_list = ['13','25','49','51','55']
 #fips_list = ['13']
 #fips_list = ['22']
-fips_list = ['55']
+fips_list = ['24']
 
 
 for state_fips in fips_list:
@@ -57,6 +58,10 @@ for state_fips in fips_list:
     DD_PATH = f'./{state_fips}_{state_name}_tract_dds.json'
     DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
     DM_PATH = f'./{state_fips}_{state_name}_knn_sum_dd.dmx'
+    SHAPEFILE_PATH = f'./Data_2000/Shapefiles/Tract2000_{state_fips}.shp'
+
+    print("Reading tract shapefile into memory...")
+    state_shp = gpd.read_file(SHAPEFILE_PATH)
 
     sys.path.append(
         '/home/lieu/dev/geographically_sensitive_dislocation/10_code')
@@ -82,6 +87,8 @@ for state_fips in fips_list:
     # add population and spatial diversity data to the graph
     # tract_dict = spatial_diversity.build_spatial_diversity_dict(
     #    *spatial_diversity.get_all_tract_geoids())
+
+    tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(state_fips)
 
     tract_dict = tract_generation.generate_tracts_with_vrps(
         state_fips, state_name, num_districts[state_fips])
@@ -118,6 +125,7 @@ for state_fips in fips_list:
             "human_compactness": partial(hc_utils.calculate_human_compactness,
                                          DURATION_DICT, tract_dict, DMX),
             "polsby_compactness": polsby_popper,
+            "reock_compactness": partial(reock.reock, state_shp, geoid_to_id_mapping),
             # "PRES2008": election
         }
     )
@@ -133,8 +141,6 @@ for state_fips in fips_list:
     save_step_size = 1000
 
     ts = [x * step_size for x in range(1, int(max_steps / step_size) + 1)]
-
-    data.append([])
 
     for t in ts:
 
@@ -163,6 +169,7 @@ for state_fips in fips_list:
                     "human_compactness": partial(hc_utils.calculate_human_compactness,
                                                  DURATION_DICT, tract_dict, DMX),
                     "polsby_compactness": polsby_popper,
+                    "reock_compactness": partial(reock.reock, state_shp, geoid_to_id_mapping),
                 }
             )
 
@@ -175,11 +182,15 @@ for state_fips in fips_list:
             # print(new_partition['polsby_compactness'])
 
             # INSERT YOUR FUNCTIONS EVALUATED ON new_partition HERE
-            data[-1].append(
+
+            reock_compactness = new_partition['reock_compactness']
+
+            data.append(
                 {
                     'spatial_diversity': new_partition['spatial_diversity'],
                     'human_compactness': new_partition['human_compactness'],
-                    'polsby_compactness': new_partition['polsby_compactness']
+                    'polsby_compactness': new_partition['polsby_compactness'],
+                    'reock_compactness': reock_compactness,
                 })
 
             end = timer()
@@ -187,14 +198,14 @@ for state_fips in fips_list:
             print(f"Time taken for step {step}: {end-start}")
 
             if step % save_step_size == 0:
-                print(f'Saving results as {str(t-step_size + step)}.json')
+                print(f'Saving results as {newdir + "data" + str(t-step_size + step)}.json')
                 with open(newdir + "data" + str(t-step_size + step) + ".json", "w") as tf1:
-                    json.dump(data[-1], tf1)
+                    json.dump(data, tf1)
                     # We need to throw away the old data
                     # otherwise we'll run out of memory
                     # data.append([])
-                    data = [[]]
                     #writer = csv.writer(tf1, lineterminator="\n")
                     # writer.writerows(data)
+                    data = []
 
         step_changesdata = []
