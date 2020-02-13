@@ -7,6 +7,11 @@ import sys
 import seaborn as sns
 
 
+sys.path.append('/home/lieu/dev/geographically_sensitive_dislocation/10_code')
+
+import sample_rvps  # noqa: E402
+
+
 def read_results_from_file(FILE_PATH):
     '''
     read a json file
@@ -18,7 +23,7 @@ def read_results_from_file(FILE_PATH):
 
 
 def build_dataframe_from_list(data_list, start_from):
-    data_dict = {'plan': [], 'district': [], 'sd': [], 'hc': [], 'pp': []}
+    data_dict = {'plan': [], 'district': [], 'sd': [], 'hc': [], 'pp': [], 'reock': []}
 
     for plan_id, step in enumerate(data_list):
         for (district_id, district) in enumerate(step['human_compactness']):
@@ -29,6 +34,12 @@ def build_dataframe_from_list(data_list, start_from):
             data_dict['hc'].append(step['human_compactness'][str(district_id)])
             data_dict['pp'].append(
                 step['polsby_compactness'][str(district_id)])
+            
+            if 'reock_compactness' in step:
+                data_dict['reock'].append(
+                    step['reock_compactness'][str(district_id)])
+            else:
+                data_dict['reock'].append(None)
 
     df = pd.DataFrame.from_dict(data_dict)
     # print(df)
@@ -91,7 +102,7 @@ def read_starting_assignment(state_code, path):
 def read_shapefile(state_code, path):
     '''Returns a GeoDataFrame'''
     ctdf = gpd.read_file(
-        f'{SHAPEFILE_PATH}/Tract2000_{STATE_CODE}.shp')
+        f'{path}/Tract2000_{state_code}.shp')
 
     return(ctdf)
 
@@ -158,8 +169,6 @@ def plot_district(step_number, district_number, ctdf):
 
 
 def plot_plan(step_number, assignment_list, ctdf, ax=None):
-
-    print(ctdf)
     s = ctdf['id'].astype(str).map(assignment_list[step_number])
     ctdf['district_assignment'] = s.fillna(
         ctdf['district_assignment']).astype(int)
@@ -169,51 +178,161 @@ def plot_plan(step_number, assignment_list, ctdf, ax=None):
     else:
         ctdf.plot(column='district_assignment', cmap='tab20', ax=ax)
 
+def plot_vrps_on_census_tracts(census_tracts, STATE_CODE):
+    # First convert to epsg 2163
+    GEOG_WD = "/home/lieu/dev/geographically_sensitive_dislocation/00_source_data/"
 
-if __name__ == "__main__":
-    # read_results_from_file('./Tract_Ensembles/2000/13/rerun/data0.json')
+    print("Reading district shapefile...")
+    CDB = gpd.read_file(GEOG_WD +
+                        "10_US_Congressional_districts/nhgis0190_shapefile_tl2014_us_cd114th_2014/US_cd114th_2014_wgs84.shp")
 
-    # data_list = read_results_from_file(
-    #    './Tract_Ensembles/2000/13/rerun/data1000.json')
+    DEM_RVPS = f'{GEOG_WD}00_representative_voter_points/points_D_{STATE_CODE}_2_10000_run1.shp'
+    REP_RVPS = f'{GEOG_WD}00_representative_voter_points/points_R_{STATE_CODE}_2_10000_run1.shp'
+    SAMPLE_SIZE = 1000 * int(NUM_DISTRICTS)
+    # after we get the points, downsample
 
-    STATE_CODE = sys.argv[1]
-    NUM_DISTRICTS = int(sys.argv[2])
+    print("Downsampling points...")
+    vrps = sample_rvps.sample_rvps(CDB, int(STATE_CODE), DEM_RVPS,
+                                                 REP_RVPS, SAMPLE_SIZE)
+
+    census_tracts = census_tracts.to_crs({'init': 'epsg:2163'})
+
+    vrps = vrps.to_crs({'init': 'epsg:2163'})
+
+    ax0 = census_tracts.plot(column='district_assignment', cmap='tab20')
+    vrps.plot(ax=ax0)
+    fig = plt.gcf()
+    fig.set_size_inches(30, 20)
+    fig.savefig(f'./30_results/{STATE_CODE}_points_on_tracts.png', dpi=100)
+
+
+def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
+    '''
+    Returns df, ctdf and assignment_list.
+    
+    df:                 DataFrame of districts
+    ctdf:               DataFrame of Census Tracts
+    assignment_list:    List of district assignments (dictionary mapping districts to IDs)
+    
+    '''
 
     PATH = f'./Tract_Ensembles/2000/{STATE_CODE}'
     files = [(f'{PATH}/rerun/data{i}.json', i)
              for i in range(1000, 10000, 1000)]
 
     print("Reading points...")
-    # df = pd.concat([build_dataframe_from_list(read_results_from_file(f[0]), f[1] - 1000)
-    #                for f in files])
-    # print(df)
-    df = pd.read_csv(f'./30_results/{STATE_CODE}_df.csv')
-
-    # df.plot.scatter(x='pp', y='sd')
-    # df.plot.scatter(x='hc', y='sd')
-    # df.plot.scatter(x='hc', y='pp')
+    df = pd.concat([build_dataframe_from_list(read_results_from_file(f[0]), f[1] - 1000)
+                   for f in files])
 
     print("Reading shapefile...")
-    SHAPEFILE_PATH = f'./Data_2000/Shapefiles'
     ctdf = read_shapefile(STATE_CODE, SHAPEFILE_PATH)
-
     ctdf = build_initial_district_assignment(STATE_CODE, PATH, ctdf)
-    # print(ctdf)
-    # ctdf.plot(column='district_assignment', cmap='tab20')
 
-    sns.set(color_codes=True)
+    print("Reading assignment list...")
     assignment_list = read_assignment_file(STATE_CODE, 10000, PATH)
     print("Expanding assignment list...")
     assignment_list = fill_district_assignments(assignment_list)
 
-    '''
-    print("Filling all areas for all districts...")
-    fill_all_district_areas(assignment_list, ctdf, df)
+    try:
+        print(f"Trying to read CSV file for {STATE_CODE}_df.csv...")
+        df = pd.read_csv(f'./30_results/{STATE_CODE}_df.csv')
+    except:
+        print(f"Could not find ./30_results/{STATE_CODE}_df.csv, generating one now...")
+        print("Filling all areas for all districts...")
+        fill_all_district_areas(assignment_list, ctdf, df)
+        print(f"Saving to {STATE_CODE}_df.csv...")
+        df.to_csv(f'./30_results/{STATE_CODE}_df.csv')
 
-    print(df)
-    df.to_csv(f'./30_results/{STATE_CODE}_df.csv')
-    '''
+    return df, ctdf, assignment_list
 
+if __name__ == "__main__":
+
+    #STATE_CODE = sys.argv[1]
+    #NUM_DISTRICTS = int(sys.argv[2])
+
+    #num_districts = {"24": 8}
+    num_districts = {"13": 14, "22": 6, "24": 8, "55": 8}
+    SHAPEFILE_PATH = f'./Data_2000/Shapefiles'
+
+    sns.set(color_codes=True)
+
+    for STATE_CODE in num_districts:
+        NUM_DISTRICTS = num_districts[STATE_CODE]
+        print(STATE_CODE, NUM_DISTRICTS)
+        df, ctdf, assignment_list = build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH)
+        print(df)
+        plot_vrps_on_census_tracts(ctdf, STATE_CODE)
+
+        # Plot hc and sd by area
+
+        df.plot.scatter(x="hc", y="sd", c='log_area', cmap='Reds')
+        fig = plt.gcf()
+        fig.set_size_inches(30, 20)
+        fig.savefig(f'./30_results/{STATE_CODE}_hc_sd_log_area.png', dpi=100)
+
+        grouped_df = (df.groupby('plan').sum())
+        grouped_df = grouped_df.div(NUM_DISTRICTS)
+        print(grouped_df)
+
+        # grouped_df[['sd', 'hc', 'pp']].plot.kde()
+        # print(grouped_df[['sd', 'hc', 'pp']].corr())
+
+        # Plot max and min HC
+        fig, axes = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=True)
+        fig.set_size_inches(30, 20)
+
+        max_hc = grouped_df['hc'].idxmax()
+        min_hc = grouped_df['hc'].idxmin()
+        max_pp = grouped_df['pp'].idxmax()
+        min_pp = grouped_df['pp'].idxmin()
+        max_sd = grouped_df['sd'].idxmax()
+        min_sd = grouped_df['sd'].idxmin()
+
+        plot_plan(max_hc, assignment_list, ctdf, ax=axes[0, 0])
+        plot_plan(min_hc, assignment_list, ctdf, ax=axes[0, 1])
+        plot_plan(max_pp, assignment_list, ctdf, ax=axes[1, 0])
+        plot_plan(min_pp, assignment_list, ctdf, ax=axes[1, 1])
+        plot_plan(max_sd, assignment_list, ctdf, ax=axes[2, 0])
+        plot_plan(min_sd, assignment_list, ctdf, ax=axes[2, 1])
+
+        fig.savefig(f'./30_results/{STATE_CODE}_min_max_subplots.png', dpi=100)
+
+        '''
+        grouped_df.plot.scatter(x='pp', y='sd')
+        fig = plt.gcf()
+        fig.set_size_inches(30, 20)
+        fig.savefig(f'./30_results/{STATE_CODE}_pp_sd_scatter.png', dpi=100)
+
+        grouped_df.plot.scatter(x='hc', y='sd')
+        fig = plt.gcf()
+        fig.set_size_inches(30, 20)
+        fig.savefig(f'./30_results/{STATE_CODE}_hc_sd_scatter.png', dpi=100)
+
+        grouped_df.plot.scatter(x='hc', y='pp')
+        fig = plt.gcf()
+        fig.set_size_inches(30, 20)
+        fig.savefig(f'./30_results/{STATE_CODE}_hc_pp_scatter.png', dpi=100)
+        '''
+
+        grouped_df['hc_pp_delta'] = grouped_df['hc'] - grouped_df['pp']
+        print(grouped_df[['hc_pp_delta', 'pp', 'hc', 'sd']].corr())
+
+        sns_plot = sns.lmplot(x="hc", y="sd", data=grouped_df)
+        sns_plot.savefig(f'./30_results/{STATE_CODE}_hc_sd_scatter.png')
+
+        sns_plot = sns.lmplot(x="pp", y="sd", data=grouped_df)
+        sns_plot.savefig(f'./30_results/{STATE_CODE}_pp_sd_scatter.png')
+
+        sns_plot = sns.lmplot(x="hc", y="pp", data=grouped_df)
+        sns_plot.savefig(f'./30_results/{STATE_CODE}_hc_pp_scatter.png')
+
+        sns_plot = sns.lmplot(x="hc_pp_delta", y="sd", data=grouped_df)
+        sns_plot.savefig(f'./30_results/{STATE_CODE}_delta_sdscatter.png')
+
+    '''
+    # df.plot.scatter(x='pp', y='sd')
+    # df.plot.scatter(x='hc', y='sd')
+    # df.plot.scatter(x='hc', y='pp')
     # sns.lmplot(x="log_area", y="sd", data=df[df['log_area'].gt(21)])
     # sns.lmplot(x="log_area", y="hc", data=df)
     # df.plot.scatter(x="hc", y="sd", c='log_area', cmap='Reds')
@@ -264,3 +383,4 @@ if __name__ == "__main__":
     #sns.lmplot(x="hc_pp_delta", y="sd", data=grouped_df)
 
     plt.show()
+    '''
