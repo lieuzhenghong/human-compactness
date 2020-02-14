@@ -138,8 +138,6 @@ for state_fips in fips_list:
         with open(datadir+f'flips_{t}.json') as f:
             #dict_list = ast.literal_eval(f.read())
             dict_list = json.load(f)
-            print(dict_list)
-
             # Make new partition by updating dictionary
 
         for step in range(step_size):
@@ -178,7 +176,7 @@ for state_fips in fips_list:
                     'spatial_diversity': new_partition['spatial_diversity'],
                     'polsby_compactness': new_partition['polsby_compactness'],
                     #'human_compactness': new_partition['human_compactness'],
-                    #'reock_compactness': new_partition['reock_compactness']
+                    'reock_compactness': new_partition['reock_compactness']
                 })
 
             end = timer()
