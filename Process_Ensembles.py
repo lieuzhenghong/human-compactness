@@ -7,9 +7,7 @@ from functools import partial
 import geopandas as gpd
 import matplotlib
 import matplotlib.pyplot as plt
-import networkx as nx
 import numpy as np
-import seaborn as sns
 from maup import assign
 
 import human_compactness_utils as hc_utils
@@ -45,9 +43,9 @@ num_elections = 1
 plan_name = "Enacted"
 
 # fips_list = ['13','25','49','51','55']
-#fips_list = ['13']
-fips_list = ['22']
-#fips_list = ['24']
+# fips_list = ['13'] # Georgia
+fips_list = ['22'] # Louisiana
+# fips_list = ['24'] # Maryland
 
 
 for state_fips in fips_list:
@@ -106,11 +104,9 @@ for state_fips in fips_list:
 
     for tract_id in tract_dict:
         if len(tract_dict[tract_id]['vrps']) == 0:
-            #print(f"Tract {tract_id} is empty")
             empty_tracts.append(tract_id)
 
     print(f"Number of empty tracts: {len(empty_tracts)}")
-    #print(f"IDs of empty tracts: {empty_tracts}")
 
     initial_partition = GeographicPartition(
         graph,
@@ -123,7 +119,6 @@ for state_fips in fips_list:
                                          DURATION_DICT, tract_dict, DMX),
             "polsby_compactness": polsby_popper,
             "reock_compactness": partial(reock.reock, state_shp, geoid_to_id_mapping),
-            # "PRES2008": election
         }
     )
 
@@ -183,7 +178,7 @@ for state_fips in fips_list:
                     'spatial_diversity': new_partition['spatial_diversity'],
                     'human_compactness': new_partition['human_compactness'],
                     'polsby_compactness': new_partition['polsby_compactness'],
-                    'reock_compactness' = new_partition['reock_compactness']
+                    'reock_compactness': new_partition['reock_compactness']
                 })
 
             end = timer()
@@ -196,5 +191,3 @@ for state_fips in fips_list:
                 with open(newdir + "data" + str(t-step_size + step) + ".json", "w") as tf1:
                     json.dump(data, tf1)
                     data = []
-
-        step_changesdata = []
