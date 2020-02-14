@@ -53,8 +53,18 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
         y_points = []
 
         district_group = state_grouped2.get_group(i)
-        #print(district_group)
-        group_geom = state_grouped2.get_group(i).geometry
+        #print(district_group) # list of census tracts
+
+        '''
+             NHGISST NHGISCTY         GISJOIN  ...                                           geometry     id  assignment
+        25       220     0330  G2200330003804  ...  POLYGON ((470835.387 -779019.555, 471198.998 -...  27091           4
+        27       220     0330  G2200330003805  ...  POLYGON ((473429.377 -780011.781, 473639.173 -...  27093           4
+        30       220     0470  G2200470952700  ...  POLYGON ((448458.044 -787874.090, 448468.579 -...  27195           4
+        47       220     0050  G2200050030500  ...  POLYGON ((500706.735 -792557.784, 500734.728 -...  27218           4
+        48       220     0050  G2200050030900  ...  POLYGON ((479970.671 -805914.430, 480782.226 -...  27219           4
+        '''
+
+        group_geom = district_group.geometry
         #print(group_geom) # OK. 
 
         nodes = partition.parts[i]
@@ -79,18 +89,21 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
         end_2 = timer()
         print(f"Time taken to do data pre-processing (extracting edges and nodes): {end_2 - start_0}")
 
-        for j in nodes:
-            #print(district_group.dtypes)
-            #print(f"Node: {j}")
-            group_geom_j = district_group.loc[district_group['id'] == j].geometry
-            #print(group_geom_j)
-            #print(len(group_geom_j))
+        start_1 = timer()
+
+
+        # Get all the external points of all Census Tract in a district
+        # Idea: exterior_points only has to be calculated once!
+        # Then, given a specific assignment of tracts to districts, we can do a GroupBy assignment and
+        # concatenate the external points.
+
+        for j in nodes: # For each Census Tract in a district
 
             if j not in boundary_nodes:
                 continue
 
-            if group_geom_j.exterior.iloc[0] is None: # Tract not in GEOID to ID mapping
-                continue
+            # Find the geometry of that Census Tract
+            group_geom_j = district_group.loc[district_group['id'] == j].geometry
 
             if 'multi' in str(type(group_geom_j)):
                 raise ValueError("I've commented this code out because i don't expect to deal with MultiPolygons")
@@ -102,27 +115,27 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
                 '''
 
             else:
-                #x, y = district_group.loc['id' == j].geometry.exterior.coords.xy
-                #print(group_geom_j.exterior)
-                #print(type(group_geom_j.exterior))
-                #print(type(group_geom_j.exterior.iloc[0]))
+                start_j = timer()
+                exterior_points = group_geom_j.exterior.iloc[0] 
+                end_j = timer()
+                #print(f"Time taken to find exterior point of Census Tract {j}: {end_j - start_j}")
 
-                x, y = group_geom_j.exterior.iloc[0].coords.xy # OK
+                if exterior_points is None: # Tract not in GEOID to ID mapping
+                    continue
 
-                #x, y = group_geom[j].exterior.coords.xy #this line is the issue
-
+                x, y = exterior_points.coords.xy # OK
                 x_points = x_points + list(x)
-
                 y_points = y_points + list(y)
 
         end_3 = timer()
-        print(f"Time taken to find all external points: {end_3 - start_0}")
+        print(f"Time taken to find all external points: {end_3 - start_1}")
         points = list(zip(x_points, y_points))
 
+        start_2 = timer()
         print(f"Calculating Convex Hull...")
         hull = ConvexHull(points)
         end_4 = timer()
-        print(f"Time taken to calculate convex hull: {end_4 - start_0}")
+        print(f"Time taken to calculate convex hull: {end_4 - start_2}")
 
         vertices = hull.vertices
         area_district = partition["area"][i]
@@ -131,9 +144,10 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
         print("Calculating Reock score...")
         new_points = [points[i] for i in vertices]
 
+        start_3 = timer()
         radius_bound_circle = make_circle(new_points)[2]
         end_5 = timer()
-        print(f"Time taken to call make_circle: {end_5 - start_0}")
+        print(f"Time taken to call make_circle: {end_5 - start_3}")
 
         area_circle = math.pi*(radius_bound_circle**2)
         reock_score = area_district/area_circle
