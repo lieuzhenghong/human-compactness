@@ -70,7 +70,6 @@ for state_fips in fips_list:
 
     # datadir = f"./Tract_Ensembles/{state_fips}/"
     datadir = f"./Tract_Ensembles/2000/{state_fips}/"
-
     newdir = f"./Tract_Ensembles/2000/{state_fips}/rerun/"
 
     os.makedirs(os.path.dirname(newdir + "init.txt"), exist_ok=True)
@@ -176,18 +175,18 @@ for state_fips in fips_list:
             data.append(
                 {
                     'spatial_diversity': new_partition['spatial_diversity'],
-                    'human_compactness': new_partition['human_compactness'],
                     'polsby_compactness': new_partition['polsby_compactness'],
-                    'reock_compactness': new_partition['reock_compactness']
+                    #'human_compactness': new_partition['human_compactness'],
+                    #'reock_compactness': new_partition['reock_compactness']
                 })
 
             end = timer()
 
             print(f"Time taken for step {step}: {end-start}")
 
-            if step % save_step_size == 0:
+            if step % save_step_size == save_step_size - 1: # 999 
                 newdir = "./test_dir/"
-                print(f'Saving results as {newdir + "data" + str(t-step_size + step)}.json')
+                print(f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json')
                 with open(newdir + "data" + str(t-step_size + step) + ".json", "w") as tf1:
                     json.dump(data, tf1)
                     data = []
