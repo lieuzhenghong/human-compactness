@@ -1,21 +1,15 @@
 # -*- coding: utf-8 -*-
 
 """
-
 Created on Thu Feb  6 22:43:43 2020
-
-​
-
 @author: darac
-
 """
 
 import geopandas as gpd
 from scipy.spatial import ConvexHull
-from min_bound_circle import *
+from smallestenclosingcircle import *
+from timeit import default_timer as timer
 
-#plot_path = 'bgs_south/bgs_south.shp'
-#state_gdf = gpd.read_file(plot_path)
 
 def assign_district_to_row(row, geoid_to_id_mapping, partition):
     if row['id'] not in partition.assignment:
@@ -29,17 +23,30 @@ def assign_id_to_row(row, geoid_to_id_mapping, partition):
     return tract_id
 
 def reock(state_shapefile, geoid_to_id_mapping, partition):
+    start = timer()
+
     dist_scores = {}
     ch_scores = []
     #state_shapefile["assignment"] = [partition.assignment[i]
     #                                 for i in state_shapefile.index]
 
+    print("Assinging ID and assignment to each row in shapefile...")
     state_shapefile['id'] = state_shapefile.apply(assign_id_to_row, axis=1, args=[geoid_to_id_mapping, partition])
     state_shapefile['assignment'] = state_shapefile.apply(assign_district_to_row, axis=1, args=[geoid_to_id_mapping, partition])
 
+    end_0 = timer()
+    print(f"Time taken to do dataframe.apply: {end_0 - start}")
+
+    print("Grouping by assignment...")
     state_grouped2 = state_shapefile.groupby("assignment")
 
+    end_1 = timer()
+    print(f"Time taken to do groupby: {end_1 - start}")
+
+
+    print("Now in each district in the partition...")
     for i in range(len(partition)):
+        start_0 = timer()
 
         x_points = []
 
@@ -69,6 +76,8 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
         
         #print(f"Boundary nodes: {boundary_nodes}") # OK
 
+        end_2 = timer()
+        print(f"Time taken to do data pre-processing (extracting edges and nodes): {end_2 - start_0}")
 
         for j in nodes:
             #print(district_group.dtypes)
@@ -106,17 +115,31 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
 
                 y_points = y_points + list(y)
 
+        end_3 = timer()
+        print(f"Time taken to find all external points: {end_3 - start_0}")
         points = list(zip(x_points, y_points))
+
+        print(f"Calculating Convex Hull...")
         hull = ConvexHull(points)
+        end_4 = timer()
+        print(f"Time taken to calculate convex hull: {end_4 - start_0}")
+
         vertices = hull.vertices
         area_district = partition["area"][i]
+
         # Calculation of Reock here
+        print("Calculating Reock score...")
         new_points = [points[i] for i in vertices]
+
         radius_bound_circle = make_circle(new_points)[2]
+        end_5 = timer()
+        print(f"Time taken to call make_circle: {end_5 - start_0}")
+
         area_circle = math.pi*(radius_bound_circle**2)
         reock_score = area_district/area_circle
-        #print(f"Reock score: {reock_score}")
         dist_scores[i] = reock_score
 
-    print(f"Reock scores: {dist_scores}")
+    end_6 = timer()
+    print(f"Time taken to calculate all Reock scores: {end_6 - start}")
+    #print(f"Reock scores: {dist_scores}")
     return dist_scores
