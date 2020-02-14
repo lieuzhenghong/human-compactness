@@ -1,4 +1,3 @@
-import ast
 import os
 import sys
 import json
@@ -137,7 +136,9 @@ for state_fips in fips_list:
 
         print(f"Opening flips_{t}.json")
         with open(datadir+f'flips_{t}.json') as f:
-            dict_list = ast.literal_eval(f.read())
+            #dict_list = ast.literal_eval(f.read())
+            dict_list = json.load(f)
+            print(dict_list)
 
             # Make new partition by updating dictionary
 
@@ -187,6 +188,6 @@ for state_fips in fips_list:
             if step % save_step_size == save_step_size - 1: # 999 
                 newdir = "./test_dir/"
                 print(f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json')
-                with open(newdir + "data" + str(t-step_size + step) + ".json", "w") as tf1:
+                with open(newdir + "data" + str(t-step_size + step+ + 1) + ".json", "w") as tf1:
                     json.dump(data, tf1)
                     data = []
