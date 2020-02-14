@@ -1,8 +1,5 @@
 import ast
-import csv
 import os
-import pickle
-import random
 import sys
 import json
 from functools import partial
@@ -49,8 +46,8 @@ plan_name = "Enacted"
 
 # fips_list = ['13','25','49','51','55']
 #fips_list = ['13']
-#fips_list = ['22']
-fips_list = ['24']
+fips_list = ['22']
+#fips_list = ['24']
 
 
 for state_fips in fips_list:
@@ -144,6 +141,7 @@ for state_fips in fips_list:
 
     for t in ts:
 
+        print(f"Opening flips_{t}.json")
         with open(datadir+f'flips_{t}.json') as f:
             dict_list = ast.literal_eval(f.read())
 
@@ -151,14 +149,18 @@ for state_fips in fips_list:
 
         for step in range(step_size):
 
+            print(f"Step: {step}. Step Size: {step_size}")
+
             start = timer()
 
             changes_this_step = (dict_list[step].items())
             print(f'Changes this step: {len(changes_this_step)}')
 
+            print("Updating new assignment...")
             new_assignment.update(
                 {int(item[0]): int(item[1]) for item in changes_this_step})
 
+            print("Building new GeographicPartition...")
             new_partition = GeographicPartition(
                 graph,
                 assignment=new_assignment,
@@ -173,24 +175,15 @@ for state_fips in fips_list:
                 }
             )
 
-            print(f'Step number: {step}')
-            # print("Calculating spatial diversity...")
-            # print(new_partition['spatial_diversity'])
-            # print("Calculating human compactness...")
-            # print(new_partition['human_compactness'])
-            # print("Calculating Polsby-Popper compactness...")
-            # print(new_partition['polsby_compactness'])
 
-            # INSERT YOUR FUNCTIONS EVALUATED ON new_partition HERE
-
-            reock_compactness = new_partition['reock_compactness']
+            print("Appending new data...")
 
             data.append(
                 {
                     'spatial_diversity': new_partition['spatial_diversity'],
                     'human_compactness': new_partition['human_compactness'],
                     'polsby_compactness': new_partition['polsby_compactness'],
-                    'reock_compactness': reock_compactness,
+                    'reock_compactness' = new_partition['reock_compactness']
                 })
 
             end = timer()
@@ -198,14 +191,10 @@ for state_fips in fips_list:
             print(f"Time taken for step {step}: {end-start}")
 
             if step % save_step_size == 0:
+                newdir = "./test_dir/"
                 print(f'Saving results as {newdir + "data" + str(t-step_size + step)}.json')
                 with open(newdir + "data" + str(t-step_size + step) + ".json", "w") as tf1:
                     json.dump(data, tf1)
-                    # We need to throw away the old data
-                    # otherwise we'll run out of memory
-                    # data.append([])
-                    #writer = csv.writer(tf1, lineterminator="\n")
-                    # writer.writerows(data)
                     data = []
 
         step_changesdata = []
