@@ -43,8 +43,9 @@ plan_name = "Enacted"
 
 # fips_list = ['13','25','49','51','55']
 # fips_list = ['13'] # Georgia
-fips_list = ['22'] # Louisiana
+ fips_list = ['22'] # Louisiana
 # fips_list = ['24'] # Maryland
+# fips_list = ['55'] # Wisconsin
 
 
 for state_fips in fips_list:

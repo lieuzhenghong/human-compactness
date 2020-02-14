@@ -97,21 +97,42 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
         # Then, given a specific assignment of tracts to districts, we can do a GroupBy assignment and
         # concatenate the external points.
 
-        for j in nodes: # For each Census Tract in a district
+        blank_nodes = 0
 
+        for j in nodes: # For each Census Tract in a district
             if j not in boundary_nodes:
                 continue
 
             # Find the geometry of that Census Tract
             group_geom_j = district_group.loc[district_group['id'] == j].geometry
 
-            if 'multi' in str(type(group_geom_j)):
-                raise ValueError("I've commented this code out because i don't expect to deal with MultiPolygons")
-                '''
-                for z in range(len(group_geom[j])):
-                    x, y = group_geom[j][z].exterior.coords.xy
+            if group_geom_j is None:
+                print(j)
+                raise ValueError(f"tract id {j} not found")
+
+            assert(len(group_geom_j.geom_type == 1))
+
+            # group_geom_j is a MultiPolygon
+            if group_geom_j.geom_type.iloc[0] == 'MultiPolygon':
+                print(group_geom_j)
+                print(len(group_geom_j))
+
+                print(group_geom_j.geoms)
+
+                for polygon in group_geom_j:
+                    print(polygon)
+                    print(polygon.exterior)
+                    x, y = polygon.exterior.iloc[0].coords.xy
                     x_points = x_points + list(x)
                     y_points = y_points + list(y)
+
+                '''
+                if 'multi' in str(type(group_geom_j)):
+                    raise ValueError("I've commented this code out because i don't expect to deal with MultiPolygons")
+                    for z in range(len(group_geom[j])):
+                        x, y = group_geom[j][z].exterior.coords.xy
+                        x_points = x_points + list(x)
+                        y_points = y_points + list(y)
                 '''
 
             else:
@@ -121,11 +142,19 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
                 #print(f"Time taken to find exterior point of Census Tract {j}: {end_j - start_j}")
 
                 if exterior_points is None: # Tract not in GEOID to ID mapping
+                    blank_nodes += 1
+                    print(group_geom_j)
+                    print(str(type(group_geom_j)))
+                    print(group_geom_j.geom_type)
+                    raise ValueError("Hmm")
                     continue
 
                 x, y = exterior_points.coords.xy # OK
                 x_points = x_points + list(x)
                 y_points = y_points + list(y)
+
+
+        print(f"Number of tracts not in GEOID to ID mapping: {blank_nodes}")
 
         end_3 = timer()
         print(f"Time taken to find all external points: {end_3 - start_1}")
@@ -151,9 +180,10 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
 
         area_circle = math.pi*(radius_bound_circle**2)
         reock_score = area_district/area_circle
+        assert(reock_score < 1)
         dist_scores[i] = reock_score
 
     end_6 = timer()
     print(f"Time taken to calculate all Reock scores: {end_6 - start}")
-    #print(f"Reock scores: {dist_scores}")
+    print(f"Reock scores: {dist_scores}")
     return dist_scores
