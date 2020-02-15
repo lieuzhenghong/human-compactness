@@ -80,8 +80,9 @@ def reock_2(processed_tract_df, partition):
     print("Grouping by assignment...")
     grouped_df = processed_tract_df.groupby("assignment")
 
+    # concatenate all exterior points
     all_exterior_points = grouped_df['exterior_points'].apply(list)
-    # all_exterior_points is a DSeries
+    # all_exterior_points is a Pandas Series
 
     dist_scores = {}
 
@@ -89,13 +90,16 @@ def reock_2(processed_tract_df, partition):
 
     for i in range(len(partition)):
         points2 = all_exterior_points.iloc[i]
+        # flatten points2 list of lists (of exterior points)
         points = [item for sublist in points2 for item in sublist]
+
         hull = ConvexHull(points)
-        vertices = hull.vertices
-        area_district = partition['area'][i]
-        new_points = [points[i] for i in vertices]
+        new_points = [points[i] for i in hull.vertices]
         radius_bound_circle = make_circle(new_points)[2]
+
+        area_district = partition['area'][i]
         area_circle = math.pi*(radius_bound_circle**2)
+
         reock_score = area_district/area_circle
         assert(reock_score < 1)
         dist_scores[i] = reock_score
