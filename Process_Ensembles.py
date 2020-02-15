@@ -118,7 +118,8 @@ for state_fips in fips_list:
             "human_compactness": partial(hc_utils.calculate_human_compactness,
                                          DURATION_DICT, tract_dict, DMX),
             "polsby_compactness": polsby_popper,
-            "reock_compactness": partial(reock.reock, state_shp, geoid_to_id_mapping),
+            # "reock_compactness": partial(reock.reock, state_shp, geoid_to_id_mapping),
+            "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
         }
     )
 
@@ -148,6 +149,9 @@ for state_fips in fips_list:
 
             start = timer()
 
+            state_shp = reock.preprocess_dataframe(
+                state_shp, geoid_to_id_mapping)
+
             changes_this_step = (dict_list[step].items())
             print(f'Changes this step: {len(changes_this_step)}')
 
@@ -166,7 +170,8 @@ for state_fips in fips_list:
                     "human_compactness": partial(hc_utils.calculate_human_compactness,
                                                  DURATION_DICT, tract_dict, DMX),
                     "polsby_compactness": polsby_popper,
-                    "reock_compactness": partial(reock.reock, state_shp, geoid_to_id_mapping),
+                    # "reock_compactness": partial(reock.reock, state_shp, geoid_to_id_mapping),
+                    "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
                 }
             )
 
@@ -184,7 +189,8 @@ for state_fips in fips_list:
 
             print(f"Time taken for step {step}: {end-start}")
 
-            if step % save_step_size == save_step_size - 1:  # 999
+            # if step % save_step_size == save_step_size - 1:  # 999
+            if step % save_step_size == 9:  # 999
                 newdir = "./test_dir/"
                 print(
                     f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json')
