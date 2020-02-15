@@ -122,8 +122,8 @@ for state_fips in fips_list:
             "human_compactness": partial(hc_utils.calculate_human_compactness,
                                          DURATION_DICT, tract_dict, DMX),
             "polsby_compactness": polsby_popper,
-            # "reock_compactness": partial(reock.reock, state_shp, geoid_to_id_mapping),
-            "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
+            "reock_compactness": partial(reock.reock, state_shp),
+            # "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
         }
     )
 
@@ -133,9 +133,9 @@ for state_fips in fips_list:
     # load json one at a time
     print("Loading JSON files...")
 
-    max_steps = 100000
+    max_steps = 10000
     step_size = 10000
-    save_step_size = 1000
+    save_step_size = 100
 
     ts = [x * step_size for x in range(1, int(max_steps / step_size) + 1)]
 
@@ -171,8 +171,8 @@ for state_fips in fips_list:
                     "human_compactness": partial(hc_utils.calculate_human_compactness,
                                                  DURATION_DICT, tract_dict, DMX),
                     "polsby_compactness": polsby_popper,
-                    # "reock_compactness": partial(reock.reock, state_shp, geoid_to_id_mapping),
-                    "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
+                    "reock_compactness": partial(reock.reock, state_shp),
+                    # "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
                 }
             )
 
