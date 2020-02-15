@@ -70,10 +70,11 @@ for state_fips in fips_list:
 
     # datadir = f"./Tract_Ensembles/{state_fips}/"
     datadir = f"./Tract_Ensembles/2000/{state_fips}/"
-    newdir = f"./Tract_Ensembles/2000/{state_fips}/rerun/"
+    #newdir = f"./Tract_Ensembles/2000/{state_fips}/rerun/"
+    newdir = f"./20_intermediate_data/{state_fips}/"
 
-    os.makedirs(os.path.dirname(newdir + "init.txt"), exist_ok=True)
-    with open(newdir + "init.txt", "w") as f:
+    os.makedirs(os.path.dirname(newdir + "init"), exist_ok=True)
+    with open(newdir + "init", "w") as f:
         f.write("Created Folder")
 
     graph = Graph.from_json(datadir + 'starting_plan.json')
