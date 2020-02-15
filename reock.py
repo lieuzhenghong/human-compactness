@@ -109,7 +109,7 @@ def reock(processed_tract_df, partition):
         area_circle = math.pi*(radius_bound_circle**2)
 
         reock_score = area_district/area_circle
-        print(f"Reock Score: {reock_score}, Convex Hull Score: {ch_score}")
+        #print(f"Reock Score: {reock_score}, Convex Hull Score: {ch_score}")
 
         assert(ch_score > reock_score)
         assert(ch_score < 1)

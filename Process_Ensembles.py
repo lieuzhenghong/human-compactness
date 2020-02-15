@@ -35,7 +35,10 @@ state_names = {"02": "Alaska", "01": "Alabama", "05": "Arkansas", "04": "Arizona
                "55": "Wisconsin", "54": "West_Virginia", "56": "Wyoming"}
 
 # TODO fill this in
-num_districts = {"01": 7, "13": 14, "22": 6, "24": 8, "55": 8}
+num_districts = {"01": 7, "04": 8, '08': 7,
+                 "13": 14, "16": 2, '19': 5,
+                 "22": 6, "24": 8, '33': 2,
+                 '49': 3, "55": 8}
 
 num_elections = 1
 
@@ -43,9 +46,11 @@ plan_name = "Enacted"
 
 # fips_list = ['13','25','49','51','55']
 # fips_list = ['13'] # Georgia
-fips_list = ['22']  # Louisiana
+# fips_list = ['22']  # Louisiana
 # fips_list = ['24'] # Maryland
 # fips_list = ['55'] # Wisconsin
+# fips_list = ['04', '08', '16', '19', '33', '49']
+fips_list = ['13', '22', '24', '55']
 
 
 for state_fips in fips_list:
@@ -202,7 +207,7 @@ for state_fips in fips_list:
 
             end = timer()
 
-            print(data[-1])
+            # print(data[-1])
 
             print(f"Time taken for step {step}: {end-start}")
 
