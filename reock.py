@@ -72,43 +72,29 @@ def reock_2(processed_tract_df, partition):
     Takes a tract shapefile dataframe with external points and IDs applied and calculates
     Reock score of a given Partition assignment
     '''
-
     start_reock_2 = timer()
 
     processed_tract_df['assignment'] = processed_tract_df.apply(
         _assign_district_to_row, axis=1, args=[partition])
 
     print("Grouping by assignment...")
-    start_groupby = timer()
     grouped_df = processed_tract_df.groupby("assignment")
-    end_groupby = timer()
-    print(f"Time taken to groupby: {end_groupby - start_groupby}")
 
-    start_flatten = timer()
     all_exterior_points = grouped_df['exterior_points'].apply(list)
-    # all_exterior_points is a DataSeries
-    end_flatten = timer()
+    # all_exterior_points is a DSeries
 
     dist_scores = {}
 
     start_reock_calc = timer()
 
     for i in range(len(partition)):
-        start_flatten = timer()
         points2 = all_exterior_points.iloc[i]
         points = [item for sublist in points2 for item in sublist]
-        end_flatten = timer()
-        print(
-            f"Time taken to flatten points: {end_flatten - start_flatten}")
-
         hull = ConvexHull(points)
         vertices = hull.vertices
         area_district = partition['area'][i]
-        start_3 = timer()
         new_points = [points[i] for i in vertices]
         radius_bound_circle = make_circle(new_points)[2]
-        end_5 = timer()
-        print(f"Time taken to build new_points: {end_5 - start_3}")
         area_circle = math.pi*(radius_bound_circle**2)
         reock_score = area_district/area_circle
         assert(reock_score < 1)
@@ -127,9 +113,10 @@ def reock_2(processed_tract_df, partition):
 def compare_reock(state_shapefile, geoid_to_id_mapping, partition):
     reock_values = reock(state_shapefile, geoid_to_id_mapping, partition)
 
-    reock_2_values = reock_2(state_shapefile, partition)
+    #reock_2_values = reock_2(state_shapefile, partition)
+    # return reock_2_values
 
-    assert(reock_values == reock_2_values)
+    #assert(reock_values == reock_2_values)
     return reock_values
 
 
@@ -215,8 +202,8 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
         dist_scores[i] = reock_score
 
     end_reock = timer()
-    print(f"Time taken to calculate Reock scores: {end_reock - start_reock}")
     print(f"Reock scores: {dist_scores}")
+    print(f"Time taken to calculate Reock scores: {end_reock - start_reock}")
 
     # TODO check if Reock scores are the same
     return dist_scores
