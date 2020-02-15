@@ -72,7 +72,7 @@ def reock_2(processed_tract_df, partition):
     Takes a tract shapefile dataframe with external points and IDs applied and calculates
     Reock score of a given Partition assignment
     '''
-    start_reock_2 = timer()
+    #start_reock_2 = timer()
 
     processed_tract_df['assignment'] = processed_tract_df.apply(
         _assign_district_to_row, axis=1, args=[partition])
@@ -108,20 +108,18 @@ def reock_2(processed_tract_df, partition):
     print(
         f"Time taken in the district loop: {end_reock_calc - start_reock_calc}")
 
-    end_reock_2 = timer()
-    print(f"Time taken to calculate Reock2: {end_reock_2 - start_reock_2}")
+    #end_reock_2 = timer()
 
     return dist_scores
 
 
 def compare_reock(state_shapefile, geoid_to_id_mapping, partition):
-    reock_values = reock(state_shapefile, geoid_to_id_mapping, partition)
-
-    #reock_2_values = reock_2(state_shapefile, partition)
-    # return reock_2_values
+    #reock_values = reock(state_shapefile, geoid_to_id_mapping, partition)
+    reock_2_values = reock_2(state_shapefile, partition)
 
     #assert(reock_values == reock_2_values)
-    return reock_values
+    # return reock_values
+    return reock_2_values
 
 
 def reock(state_shapefile, geoid_to_id_mapping, partition):

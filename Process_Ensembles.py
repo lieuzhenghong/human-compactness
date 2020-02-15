@@ -88,6 +88,10 @@ for state_fips in fips_list:
     tract_dict = tract_generation.generate_tracts_with_vrps(
         state_fips, state_name, num_districts[state_fips])
 
+    # Preprocess the state tract shapefile to include external points
+    state_shp = reock.preprocess_dataframe(
+        state_shp, geoid_to_id_mapping)
+
     # just for reference
     num_Nones = 0
     for node in graph.nodes():
@@ -149,9 +153,6 @@ for state_fips in fips_list:
 
             start = timer()
 
-            state_shp = reock.preprocess_dataframe(
-                state_shp, geoid_to_id_mapping)
-
             changes_this_step = (dict_list[step].items())
             print(f'Changes this step: {len(changes_this_step)}')
 
@@ -177,21 +178,32 @@ for state_fips in fips_list:
 
             print("Appending new data...")
 
+            start_hc = timer()
+            human_compactness = new_partition['human_compactness']
+            end_hc = timer()
+            print(
+                f"Time taken to calculate human compactness: {end_hc - start_hc}")
+
+            start_reock = timer()
+            reock_compactness = new_partition['reock_compactness']
+            end_reock = timer()
+            print(
+                f"Time taken to calculate reock compactness: {end_reock - start_reock}")
+
             data.append(
                 {
                     'spatial_diversity': new_partition['spatial_diversity'],
                     'polsby_compactness': new_partition['polsby_compactness'],
-                    # 'human_compactness': new_partition['human_compactness'],
-                    'reock_compactness': new_partition['reock_compactness']
+                    'human_compactness': human_compactness,
+                    'reock_compactness': reock_compactness,
                 })
 
             end = timer()
 
             print(f"Time taken for step {step}: {end-start}")
 
-            # if step % save_step_size == save_step_size - 1:  # 999
-            if step % save_step_size == 9:  # 999
-                newdir = "./test_dir/"
+            if step % save_step_size == save_step_size - 1:  # 999
+                #newdir = "./test_dir/"
                 print(
                     f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json')
                 with open(newdir + "data" + str(t-step_size + step + + 1) + ".json", "w") as tf1:
