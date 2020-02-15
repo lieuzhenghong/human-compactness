@@ -103,7 +103,15 @@ def calculate_human_compactness(duration_dict, tract_dict, dmx, partition):
         tractid: {tractid: distance, ...},
         ...
     }
-    Tract dict:
+    tract_dict:
+    {
+        tract_id: {
+            'geoid': GEOID,
+            'pop': Int,
+            'pfs': List[Float],
+            'vrps': List[PointIDs]
+        }
+    }
 
     DMX:
 
