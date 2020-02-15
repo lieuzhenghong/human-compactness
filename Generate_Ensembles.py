@@ -17,9 +17,10 @@ from gerrychain import Graph
 ###########
 
 #state_fips = '08'
-state_fips = '25'
+state_fips = '49'
 #num_districts = 7
-num_districts = 10
+num_districts = 3
+
 
 '''
 Currently Running:
@@ -49,6 +50,7 @@ from gerrychain import Graph, Partition, Election
 from gerrychain.updaters import Tally, cut_edges
 
 graph = Graph.from_json(f'./Data_2000/Dual_Graphs/Tract2000_{state_fips}.json')
+
 """ #FOR MD
 for node in graph.nodes():
     if graph.nodes[node]["TRACTA"] == "811000":
@@ -68,7 +70,7 @@ for node in graph.nodes():
     if graph.nodes[node]["TRACTA"] == "990700":
         ind_b = node
         print(ind_b)
-"""
+
 #FOR MA
 for node in graph.nodes():
     if graph.nodes[node]["TRACTA"] == "200400":
@@ -90,7 +92,7 @@ for node in graph.nodes():
         print(ind_b)    
 graph.add_edge(ind_a,ind_b)
 graph[ind_a][ind_b]["shared_perim"] = 0
-
+"""
 
 print(nx.is_connected(graph))
 print([len(x) for x in nx.connected_components(graph)])
