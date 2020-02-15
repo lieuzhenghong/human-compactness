@@ -43,7 +43,7 @@ plan_name = "Enacted"
 
 # fips_list = ['13','25','49','51','55']
 # fips_list = ['13'] # Georgia
- fips_list = ['22'] # Louisiana
+fips_list = ['22']  # Louisiana
 # fips_list = ['24'] # Maryland
 # fips_list = ['55'] # Wisconsin
 
@@ -82,7 +82,8 @@ for state_fips in fips_list:
     # tract_dict = spatial_diversity.build_spatial_diversity_dict(
     #    *spatial_diversity.get_all_tract_geoids())
 
-    tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(state_fips)
+    tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(
+        state_fips)
 
     tract_dict = tract_generation.generate_tracts_with_vrps(
         state_fips, state_name, num_districts[state_fips])
@@ -169,14 +170,13 @@ for state_fips in fips_list:
                 }
             )
 
-
             print("Appending new data...")
 
             data.append(
                 {
                     'spatial_diversity': new_partition['spatial_diversity'],
                     'polsby_compactness': new_partition['polsby_compactness'],
-                    #'human_compactness': new_partition['human_compactness'],
+                    # 'human_compactness': new_partition['human_compactness'],
                     'reock_compactness': new_partition['reock_compactness']
                 })
 
@@ -184,9 +184,10 @@ for state_fips in fips_list:
 
             print(f"Time taken for step {step}: {end-start}")
 
-            if step % save_step_size == save_step_size - 1: # 999 
+            if step % save_step_size == save_step_size - 1:  # 999
                 newdir = "./test_dir/"
-                print(f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json')
-                with open(newdir + "data" + str(t-step_size + step+ + 1) + ".json", "w") as tf1:
+                print(
+                    f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json')
+                with open(newdir + "data" + str(t-step_size + step + + 1) + ".json", "w") as tf1:
                     json.dump(data, tf1)
                     data = []
