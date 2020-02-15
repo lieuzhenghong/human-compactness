@@ -11,6 +11,7 @@ Modified on Sat Feb 15 2020
 
 import geopandas as gpd
 import shapely
+from shapely.geometry import MultiPoint
 from scipy.spatial import ConvexHull
 from smallestenclosingcircle import *
 from timeit import default_timer as timer
@@ -41,7 +42,8 @@ def _generate_external_points(row, geoid_to_id_mapping):
             exterior_points += list(polygon.exterior.coords)
     else:
         assert(row['geometry'].geom_type == 'Polygon')
-        exterior_points += list(row['geometry'].exterior.coords)
+        polygon = row['geometry']
+        exterior_points += list(polygon.exterior.coords)
 
     return exterior_points
 
@@ -71,8 +73,12 @@ def reock(processed_tract_df, partition):
     '''
     Takes a tract shapefile dataframe with external points and IDs applied and calculates
     Reock score of a given Partition assignment
+
+    you also get Convex Hull ratio for free
+
+    Returns: a tuple of (List[Float], List[Float]), first Reock, then Convex Hull
     '''
-    #start_reock_2 = timer()
+    # start_reock_2 = timer()
 
     processed_tract_df['assignment'] = processed_tract_df.apply(
         _assign_district_to_row, axis=1, args=[partition])
@@ -84,10 +90,10 @@ def reock(processed_tract_df, partition):
     all_exterior_points = grouped_df['exterior_points'].apply(list)
     # all_exterior_points is a Pandas Series
 
-    dist_scores = {}
+    reock_scores = {}
+    ch_scores = {}
 
-    #start_reock_calc = timer()
-
+    # start_reock_calc = timer()
     for i in range(len(partition)):
         points2 = all_exterior_points.iloc[i]
         # flatten points2 list of lists (of exterior points)
@@ -95,30 +101,38 @@ def reock(processed_tract_df, partition):
 
         hull = ConvexHull(points)
         new_points = [points[i] for i in hull.vertices]
-        radius_bound_circle = make_circle(new_points)[2]
+        ch_area = MultiPoint(new_points).convex_hull.area
 
+        radius_bound_circle = make_circle(new_points)[2]
         area_district = partition['area'][i]
+        ch_score = area_district / ch_area
         area_circle = math.pi*(radius_bound_circle**2)
 
         reock_score = area_district/area_circle
-        assert(reock_score < 1)
-        dist_scores[i] = reock_score
+        print(f"Reock Score: {reock_score}, Convex Hull Score: {ch_score}")
 
-    #end_reock_calc = timer()
+        assert(ch_score > reock_score)
+        assert(ch_score < 1)
+        assert(reock_score < 1)
+
+        reock_scores[i] = reock_score
+        ch_scores[i] = ch_score
+
+    # end_reock_calc = timer()
     # print(
     #    f"Time taken in the district loop: {end_reock_calc - start_reock_calc}")
 
-    #end_reock_2 = timer()
+    # end_reock_2 = timer()
 
-    return dist_scores
+    return reock_scores, ch_scores
 
 
 '''
 def compare_reock(state_shapefile, geoid_to_id_mapping, partition):
-    #reock_values = reock(state_shapefile, geoid_to_id_mapping, partition)
+    # reock_values = reock(state_shapefile, geoid_to_id_mapping, partition)
     reock_2_values = reock_2(state_shapefile, partition)
 
-    #assert(reock_values == reock_2_values)
+    # assert(reock_values == reock_2_values)
     # return reock_values
     return reock_2_values
 

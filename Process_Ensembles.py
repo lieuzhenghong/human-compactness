@@ -186,7 +186,7 @@ for state_fips in fips_list:
                 f"Time taken to calculate human compactness: {end_hc - start_hc}")
 
             start_reock = timer()
-            reock_compactness = new_partition['reock_compactness']
+            reock_compactness, ch_compactness = new_partition['reock_compactness']
             end_reock = timer()
             print(
                 f"Time taken to calculate reock compactness: {end_reock - start_reock}")
@@ -197,9 +197,12 @@ for state_fips in fips_list:
                     'polsby_compactness': new_partition['polsby_compactness'],
                     'human_compactness': human_compactness,
                     'reock_compactness': reock_compactness,
+                    'convex_hull_compactness': ch_compactness,
                 })
 
             end = timer()
+
+            print(data[-1])
 
             print(f"Time taken for step {step}: {end-start}")
 
