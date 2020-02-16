@@ -23,7 +23,8 @@ def read_results_from_file(FILE_PATH):
 
 
 def build_dataframe_from_list(data_list, start_from):
-    data_dict = {'plan': [], 'district': [], 'sd': [], 'hc': [], 'pp': [], 'reock': []}
+    data_dict = {'plan': [], 'district': [],
+                 'sd': [], 'hc': [], 'pp': [], 'reock': []}
 
     for plan_id, step in enumerate(data_list):
         for (district_id, district) in enumerate(step['human_compactness']):
@@ -34,7 +35,7 @@ def build_dataframe_from_list(data_list, start_from):
             data_dict['hc'].append(step['human_compactness'][str(district_id)])
             data_dict['pp'].append(
                 step['polsby_compactness'][str(district_id)])
-            
+
             if 'reock_compactness' in step:
                 data_dict['reock'].append(
                     step['reock_compactness'][str(district_id)])
@@ -178,6 +179,7 @@ def plot_plan(step_number, assignment_list, ctdf, ax=None):
     else:
         ctdf.plot(column='district_assignment', cmap='tab20', ax=ax)
 
+
 def plot_vrps_on_census_tracts(census_tracts, STATE_CODE):
     # First convert to epsg 2163
     GEOG_WD = "/home/lieu/dev/geographically_sensitive_dislocation/00_source_data/"
@@ -193,7 +195,7 @@ def plot_vrps_on_census_tracts(census_tracts, STATE_CODE):
 
     print("Downsampling points...")
     vrps = sample_rvps.sample_rvps(CDB, int(STATE_CODE), DEM_RVPS,
-                                                 REP_RVPS, SAMPLE_SIZE)
+                                   REP_RVPS, SAMPLE_SIZE)
 
     census_tracts = census_tracts.to_crs({'init': 'epsg:2163'})
 
@@ -209,11 +211,11 @@ def plot_vrps_on_census_tracts(census_tracts, STATE_CODE):
 def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
     '''
     Returns df, ctdf and assignment_list.
-    
+
     df:                 DataFrame of districts
     ctdf:               DataFrame of Census Tracts
     assignment_list:    List of district assignments (dictionary mapping districts to IDs)
-    
+
     '''
 
     PATH = f'./Tract_Ensembles/2000/{STATE_CODE}'
@@ -222,7 +224,7 @@ def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
 
     print("Reading points...")
     df = pd.concat([build_dataframe_from_list(read_results_from_file(f[0]), f[1] - 1000)
-                   for f in files])
+                    for f in files])
 
     print("Reading shapefile...")
     ctdf = read_shapefile(STATE_CODE, SHAPEFILE_PATH)
@@ -237,13 +239,15 @@ def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
         print(f"Trying to read CSV file for {STATE_CODE}_df.csv...")
         df = pd.read_csv(f'./30_results/{STATE_CODE}_df.csv')
     except:
-        print(f"Could not find ./30_results/{STATE_CODE}_df.csv, generating one now...")
+        print(
+            f"Could not find ./30_results/{STATE_CODE}_df.csv, generating one now...")
         print("Filling all areas for all districts...")
         fill_all_district_areas(assignment_list, ctdf, df)
         print(f"Saving to {STATE_CODE}_df.csv...")
         df.to_csv(f'./30_results/{STATE_CODE}_df.csv')
 
     return df, ctdf, assignment_list
+
 
 if __name__ == "__main__":
 
@@ -259,7 +263,8 @@ if __name__ == "__main__":
     for STATE_CODE in num_districts:
         NUM_DISTRICTS = num_districts[STATE_CODE]
         print(STATE_CODE, NUM_DISTRICTS)
-        df, ctdf, assignment_list = build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH)
+        df, ctdf, assignment_list = build_and_save_df_to_csv(
+            STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH)
         print(df)
         plot_vrps_on_census_tracts(ctdf, STATE_CODE)
 
@@ -272,6 +277,7 @@ if __name__ == "__main__":
 
         grouped_df = (df.groupby('plan').sum())
         grouped_df = grouped_df.div(NUM_DISTRICTS)
+        grouped_df = grouped_df.reset_index()
         print(grouped_df)
 
         # grouped_df[['sd', 'hc', 'pp']].plot.kde()
@@ -287,6 +293,8 @@ if __name__ == "__main__":
         min_pp = grouped_df['pp'].idxmin()
         max_sd = grouped_df['sd'].idxmax()
         min_sd = grouped_df['sd'].idxmin()
+
+        assert(grouped_df.iloc[max_hc]['hc'] == grouped_df['hc'].max())
 
         plot_plan(max_hc, assignment_list, ctdf, ax=axes[0, 0])
         plot_plan(min_hc, assignment_list, ctdf, ax=axes[0, 1])
