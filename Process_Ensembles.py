@@ -52,16 +52,17 @@ plan_name = "Enacted"
 # fips_list = ['04', '08', '16', '19', '33', '49']
 # fips_list = ['13', '22', '24', '55']
 fips_list = ['16']
+sample_richness = 2000
 
 
 for state_fips in fips_list:
     state_name = state_names[state_fips].lower()
     #DD_PATH = f'./{state_fips}_{state_name}_tract_dds.json'
     #DM_PATH = f'./{state_fips}_{state_name}_knn_sum_dd.dmx'
-    DD_PATH = f'./{state_fips}_{state_name}_tract_dds_2000.json'
-    DM_PATH = f'./{state_fips}_{state_name}_knn_sum_dd_2000.dmx'
-    #DD_PATH = f'./{state_fips}_{state_name}_tract_dds_4000.json'
-    #DM_PATH = f'./{state_fips}_{state_name}_knn_sum_dd_4000.dmx'
+    #DD_PATH = f'./{state_fips}_{state_name}_tract_dds_2000.json'
+    #DM_PATH = f'./{state_fips}_{state_name}_knn_sum_dd_2000.dmx'
+    DD_PATH = f'./{state_fips}_{state_name}_tract_dds_4000.json'
+    DM_PATH = f'./{state_fips}_{state_name}_knn_sum_dd_4000.dmx'
     DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
     SHAPEFILE_PATH = f'./Data_2000/Shapefiles/Tract2000_{state_fips}.shp'
 
@@ -82,8 +83,8 @@ for state_fips in fips_list:
     datadir = f"./Tract_Ensembles/2000/{state_fips}/"
     #newdir = f"./Tract_Ensembles/2000/{state_fips}/rerun/"
     #newdir = f"./20_intermediate_data/{state_fips}/"
-    newdir = f"./20_intermediate_data/{state_fips}/2000"
-    newdir = f"./20_intermediate_data/{state_fips}/4000"
+    #newdir = f"./20_intermediate_data/{state_fips}/2000/"
+    newdir = f"./20_intermediate_data/{state_fips}/4000/"
 
     os.makedirs(os.path.dirname(newdir + "init"), exist_ok=True)
     with open(newdir + "init", "w") as f:
@@ -99,7 +100,7 @@ for state_fips in fips_list:
         state_fips)
 
     tract_dict = tract_generation.generate_tracts_with_vrps(
-        state_fips, state_name, num_districts[state_fips])
+        state_fips, state_name, num_districts[state_fips], sample_richness)
 
     # Preprocess the state tract shapefile to include external points
     state_shp = reock.preprocess_dataframe(
