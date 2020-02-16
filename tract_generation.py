@@ -23,7 +23,7 @@ def get_vrps_within_tracts():
     pass
 
 
-def read_and_process_vrp_shapefile(STATE_CODE, STATE_NAME, NUM_DISTRICTS):
+def _read_and_process_vrp_shapefile(STATE_CODE, STATE_NAME, NUM_DISTRICTS, SAMPLE_RICHNESS):
     '''
         Returns points_downsampled
     '''
@@ -35,11 +35,13 @@ def read_and_process_vrp_shapefile(STATE_CODE, STATE_NAME, NUM_DISTRICTS):
 
     DEM_RVPS = f'{GEOG_WD}00_representative_voter_points/points_D_{STATE_CODE}_2_10000_run1.shp'
     REP_RVPS = f'{GEOG_WD}00_representative_voter_points/points_R_{STATE_CODE}_2_10000_run1.shp'
-    SAMPLE_SIZE = 1000 * int(NUM_DISTRICTS)
+    SAMPLE_RICHNESS = SAMPLE_RICHNESS
+    SAMPLE_SIZE = SAMPLE_RICHNESS * int(NUM_DISTRICTS)
 
     print(DEM_RVPS)
 
-    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}.dmx'
+    #DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}.dmx'
+    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}_{SAMPLE_SIZE}.dmx'
 
     # after we get the points, downsample
 
@@ -65,7 +67,7 @@ def form_point_to_tract_mapping(voter, mapping, geoid_to_id_mapping):
     mapping[voter.name] = geoid_to_id_mapping[voter['GEOID']]
 
 
-def generate_tracts_with_vrps(state_code, state_name, num_districts):
+def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_richness):
     '''
     Returns a tract_dict with the following schema:
 
@@ -94,8 +96,11 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
 
     # Read in Nick's VRP shapefile and downsample
 
-    points_downsampled = read_and_process_vrp_shapefile(
-        state_code, state_name, num_districts)
+    sample_size = int(sample_richness) * int(num_districts)
+
+    points_downsampled = _read_and_process_vrp_shapefile(
+        state_code, state_name, int(num_districts), int(sample_richness))
+
     print(points_downsampled)
     # print(list(points_downsampled))
     # print(points_downsampled[:10])
@@ -129,7 +134,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
                         args=[point_to_tract_mapping, geoid_to_id_mapping])
 
     print(f'Length of point_to_tract_mapping: {len(point_to_tract_mapping)}')
-    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{state_name}_{state_code}.dmx'
+    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{state_name}_{state_code}_{sample_size}.dmx'
 
     # Append the point ids to each census tract (where point ID is matrix row)
     pttm = point_to_tract_mapping
@@ -137,7 +142,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
     # We already have the tract distances, but if we didn't, we should regenerate it
     #input("Everything OK? Press Enter if Yes, quit here if no.")
 
-    tract_dds_filename = f'./{state_code}_{state_name}_tract_dds.json'
+    tract_dds_filename = f'./{state_code}_{state_name}_tract_dds_{sample_size}.json'
     if not os.path.isfile(tract_dds_filename):
         print(
             f"Building pairwise tract distances JSON from point matrix and saving as {tract_dds_filename}...")
@@ -148,11 +153,11 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
         print("Pairwise tract distance JSON already exists, skipping...")
 
     # Build sum of driving distances
-    knn_dmx_filename = f'./{state_code}_{state_name}_knn_sum_dd.dmx'
+    knn_dmx_filename = f'./{state_code}_{state_name}_knn_sum_dd_{sample_size}.dmx'
     if not os.path.isfile(knn_dmx_filename):
         print("Building sum of K-nearest neighbour driving distance (up to 3000)...")
         hc_utils.build_knn_sum_duration_matrix(
-            3000, DM_PATH, knn_dmx_filename)
+            min(3000, sample_size), DM_PATH, knn_dmx_filename)
         print(f"Saved file as {knn_dmx_filename}.")
     else:
         print("K-nearest driving distance matrix already exists, skipping...")
@@ -171,4 +176,6 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts):
 
 
 if __name__ == "__main__":
-    generate_tracts_with_vrps(sys.argv[1], sys.argv[2], sys.argv[3])
+    # (state_code, state_name, num_districts, sample_richness):
+    generate_tracts_with_vrps(
+        sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
