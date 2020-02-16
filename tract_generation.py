@@ -40,8 +40,8 @@ def _read_and_process_vrp_shapefile(STATE_CODE, STATE_NAME, NUM_DISTRICTS, SAMPL
 
     print(DEM_RVPS)
 
-    #DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}.dmx'
-    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}_{SAMPLE_SIZE}.dmx'
+    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}.dmx'
+    #DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}_{SAMPLE_SIZE}.dmx'
 
     # after we get the points, downsample
 
@@ -134,7 +134,8 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
                         args=[point_to_tract_mapping, geoid_to_id_mapping])
 
     print(f'Length of point_to_tract_mapping: {len(point_to_tract_mapping)}')
-    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{state_name}_{state_code}_{sample_size}.dmx'
+    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{state_name}_{state_code}.dmx'
+    #DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{state_name}_{state_code}_{sample_size}.dmx'
 
     # Append the point ids to each census tract (where point ID is matrix row)
     pttm = point_to_tract_mapping
