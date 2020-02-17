@@ -5,6 +5,7 @@ import json
 import matplotlib.pyplot as plt
 import sys
 import seaborn as sns
+#from plotnine import *
 
 
 sys.path.append('/home/lieu/dev/geographically_sensitive_dislocation/10_code')
@@ -24,7 +25,7 @@ def read_results_from_file(FILE_PATH):
 
 def build_dataframe_from_list(data_list, start_from):
     data_dict = {'plan': [], 'district': [],
-                 'sd': [], 'hc': [], 'pp': [], 'reock': []}
+                 'sd': [], 'hc': [], 'pp': [], 'reock': [], 'ch': []}
 
     for plan_id, step in enumerate(data_list):
         for (district_id, district) in enumerate(step['human_compactness']):
@@ -41,6 +42,12 @@ def build_dataframe_from_list(data_list, start_from):
                     step['reock_compactness'][str(district_id)])
             else:
                 data_dict['reock'].append(None)
+
+            if 'convex_hull_compactness' in step:
+                data_dict['ch'].append(
+                    step['convex_hull_compactness'][str(district_id)])
+            else:
+                data_dict['ch'].append(None)
 
     df = pd.DataFrame.from_dict(data_dict)
     # print(df)
@@ -219,11 +226,16 @@ def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
     '''
 
     PATH = f'./Tract_Ensembles/2000/{STATE_CODE}'
-    files = [(f'{PATH}/rerun/data{i}.json', i)
-             for i in range(1000, 10000, 1000)]
+    # files = [(f'{PATH}/rerun/data{i}.json', i)
+    #         for i in range(1000, 10000, 1000)]
+
+    s = [x * 100 for x in range(1, 101)]
+
+    files = [
+        (f'./20_intermediate_data/{STATE_CODE}/data{x}.json', x) for x in s]
 
     print("Reading points...")
-    df = pd.concat([build_dataframe_from_list(read_results_from_file(f[0]), f[1] - 1000)
+    df = pd.concat([build_dataframe_from_list(read_results_from_file(f[0]), f[1] - 100)
                     for f in files])
 
     print("Reading shapefile...")
@@ -266,6 +278,7 @@ if __name__ == "__main__":
         df, ctdf, assignment_list = build_and_save_df_to_csv(
             STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH)
         print(df)
+        print(ctdf)
         plot_vrps_on_census_tracts(ctdf, STATE_CODE)
 
         # Plot hc and sd by area
@@ -323,7 +336,8 @@ if __name__ == "__main__":
         '''
 
         grouped_df['hc_pp_delta'] = grouped_df['hc'] - grouped_df['pp']
-        print(grouped_df[['hc_pp_delta', 'pp', 'hc', 'sd']].corr())
+        print(grouped_df[['hc_pp_delta', 'pp',
+                          'hc', 'sd', 'reock', 'ch']].corr())
 
         sns_plot = sns.lmplot(x="hc", y="sd", data=grouped_df)
         sns_plot.savefig(f'./30_results/{STATE_CODE}_hc_sd_scatter.png')

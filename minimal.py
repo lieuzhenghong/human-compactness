@@ -14,6 +14,10 @@ def convex_hull_compare():
             f"Scipy Convex Hull Area: {hull.area}, Shapely Convex Hull Area: {ch_area}")
         # Scipy Convex Hull Area: 457761.9061526276, Shapely Convex Hull Area: 13192154623.86528
 
+        print(
+            f"Scipy Convex Hull Area: {hull.volume}, Shapely Convex Hull Area: {ch_area}")
+        #Scipy Convex Hull Area: 13192154623.865295, Shapely Convex Hull Area: 13192154623.86528
+
 
 if __name__ == "__main__":
     convex_hull_compare()

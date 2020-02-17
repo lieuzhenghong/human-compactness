@@ -44,16 +44,17 @@ num_elections = 1
 
 plan_name = "Enacted"
 
-# fips_list = ['13','25','49','51','55']
+# I'll be doing the following districts:
+
 # fips_list = ['13'] # Georgia
 # fips_list = ['22']  # Louisiana
 # fips_list = ['24'] # Maryland
-fips_list = ['55']  # Wisconsin
+# fips_list = ['55']  # Wisconsin
 # fips_list = ['04', '08', '16', '19', '33', '49']
 # fips_list = ['13', '22', '24', '55']
 # fips_list = ['16']
-sample_richness = 1000
-
+fips_list = ['19', '33', '49']
+sample_richness = 1000  # Number of VRPs to sample per district
 
 for state_fips in fips_list:
     state_name = state_names[state_fips].lower()
@@ -220,7 +221,6 @@ for state_fips in fips_list:
             print(f"Time taken for step {step}: {end-start}")
 
             if step % save_step_size == save_step_size - 1:  # 999
-                #newdir = "./test_dir/"
                 print(
                     f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json')
                 with open(newdir + "data" + str(t-step_size + step + + 1) + ".json", "w") as tf1:
