@@ -238,6 +238,9 @@ def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
     df = pd.concat([build_dataframe_from_list(read_results_from_file(f[0]), f[1] - 100)
                     for f in files])
 
+    print(df)
+    assert(False)
+
     print("Reading shapefile...")
     ctdf = read_shapefile(STATE_CODE, SHAPEFILE_PATH)
     ctdf = build_initial_district_assignment(STATE_CODE, PATH, ctdf)
@@ -269,15 +272,15 @@ def _plot_corr_matrix(df):
     mask = np.triu(np.ones_like(corr, dtype=np.bool))
 
     # Set up the matplotlib figure
-    f, ax = plt.subplots(figsize=(11, 9))
+    f, ax = plt.subplots(figsize=(22, 18))
 
     # Generate a custom diverging colormap
     #cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
     # Draw the heatmap with the mask and correct aspect ratio
-    sns_plot = sns.heatmap(corr, mask=mask, vmax=.3, center=0,
-                           square=True, linewidths=.5, cbar_kws={"shrink": .5})
-    sns_plot.show()
+    sns.heatmap(corr, mask=mask, vmax=.3, center=0,
+                square=True, linewidths=.5, cbar_kws={"shrink": .5})
+    f.savefig(f'./30_results/{STATE_CODE}_corr_matrix.png')
 
 
 if __name__ == "__main__":
@@ -286,8 +289,8 @@ if __name__ == "__main__":
     #NUM_DISTRICTS = int(sys.argv[2])
 
     # TODO make num_districts a separate file
-    num_districts = {"13": 14, "22": 6, "24": 8, "55": 8}
-    #num_districts = {"16": 2, "19": 4, "33": 2, "49": 3}
+    num_districts = {"13": 14, "16": 2, "22": 6,
+                     "24": 8, "33": 2, "49": 3, "55": 8}
 
     SHAPEFILE_PATH = f'./Data_2000/Shapefiles'
 
@@ -300,6 +303,8 @@ if __name__ == "__main__":
             STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH)
         print(df)
         print(ctdf)
+
+        assert(False)
         plot_vrps_on_census_tracts(ctdf, STATE_CODE)
 
         # Plot hc and sd by area
@@ -318,8 +323,6 @@ if __name__ == "__main__":
         # print(grouped_df[['sd', 'hc', 'pp']].corr())
 
         _plot_corr_matrix(grouped_df)
-
-        assert(False)
 
         # Plot max and min HC
         fig, axes = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=True)

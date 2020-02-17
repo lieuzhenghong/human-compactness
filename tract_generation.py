@@ -97,6 +97,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
     # Read in Nick's VRP shapefile and downsample
 
     sample_size = int(sample_richness) * int(num_districts)
+    print(sample_size)
 
     points_downsampled = _read_and_process_vrp_shapefile(
         state_code, state_name, int(num_districts), int(sample_richness))
