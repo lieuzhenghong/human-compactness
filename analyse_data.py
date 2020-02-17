@@ -232,7 +232,7 @@ def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
     s = [x * 100 for x in range(1, 101)]
 
     files = [
-        (f'./20_intermediate_data/{STATE_CODE}/data{x}.json', x) for x in s]
+        (f'./20_intermediate_files/{STATE_CODE}/data{x}.json', x) for x in s]
 
     print("Reading points...")
     df = pd.concat([build_dataframe_from_list(read_results_from_file(f[0]), f[1] - 100)

@@ -143,7 +143,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
     # We already have the tract distances, but if we didn't, we should regenerate it
     #input("Everything OK? Press Enter if Yes, quit here if no.")
 
-    tract_dds_filename = f'./{state_code}_{state_name}_tract_dds.json'
+    tract_dds_filename = f'./20_intermediate_files/{state_code}_{state_name}_tract_dds.json'
     if not os.path.isfile(tract_dds_filename):
         print(
             f"Building pairwise tract distances JSON from point matrix and saving as {tract_dds_filename}...")
@@ -154,7 +154,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
         print("Pairwise tract distance JSON already exists, skipping...")
 
     # Build sum of driving distances
-    knn_dmx_filename = f'./{state_code}_{state_name}_knn_sum_dd.dmx'
+    knn_dmx_filename = f'./20_intermediate_files/{state_code}_{state_name}_knn_sum_dd.dmx'
     if not os.path.isfile(knn_dmx_filename):
         print("Building sum of K-nearest neighbour driving distance (up to 3000)...")
         hc_utils.build_knn_sum_duration_matrix(

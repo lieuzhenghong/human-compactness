@@ -58,12 +58,8 @@ sample_richness = 1000  # Number of VRPs to sample per district
 
 for state_fips in fips_list:
     state_name = state_names[state_fips].lower()
-    DD_PATH = f'./{state_fips}_{state_name}_tract_dds.json'
-    DM_PATH = f'./{state_fips}_{state_name}_knn_sum_dd.dmx'
-    #DD_PATH = f'./{state_fips}_{state_name}_tract_dds_2000.json'
-    #DM_PATH = f'./{state_fips}_{state_name}_knn_sum_dd_2000.dmx'
-    #DD_PATH = f'./{state_fips}_{state_name}_tract_dds_4000.json'
-    #DM_PATH = f'./{state_fips}_{state_name}_knn_sum_dd_4000.dmx'
+    DD_PATH = f'./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json'
+    DM_PATH = f'./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx'
     DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
     SHAPEFILE_PATH = f'./Data_2000/Shapefiles/Tract2000_{state_fips}.shp'
 
@@ -80,12 +76,8 @@ for state_fips in fips_list:
 
     data = []
 
-    # datadir = f"./Tract_Ensembles/{state_fips}/"
     datadir = f"./Tract_Ensembles/2000/{state_fips}/"
-    newdir = f"./20_intermediate_data/{state_fips}/"
-    #newdir = f"./Tract_Ensembles/2000/{state_fips}/rerun/"
-    #newdir = f"./20_intermediate_data/{state_fips}/2000/"
-    #newdir = f"./20_intermediate_data/{state_fips}/4000/"
+    newdir = f"./20_intermediate_files/{state_fips}/"
 
     os.makedirs(os.path.dirname(newdir + "init"), exist_ok=True)
     with open(newdir + "init", "w") as f:
