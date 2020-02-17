@@ -5,7 +5,7 @@ import json
 import matplotlib.pyplot as plt
 import sys
 import seaborn as sns
-#from plotnine import *
+from plotnine import *
 
 
 sys.path.append('/home/lieu/dev/geographically_sensitive_dislocation/10_code')
@@ -261,16 +261,37 @@ def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
     return df, ctdf, assignment_list
 
 
+def _plot_corr_matrix(df):
+    corr = df[['sd', 'hc', 'pp', 'reock', 'ch']].corr()
+    print(corr)
+
+    # Generate a mask for the upper triangle
+    mask = np.triu(np.ones_like(corr, dtype=np.bool))
+
+    # Set up the matplotlib figure
+    f, ax = plt.subplots(figsize=(11, 9))
+
+    # Generate a custom diverging colormap
+    #cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    sns_plot = sns.heatmap(corr, mask=mask, vmax=.3, center=0,
+                           square=True, linewidths=.5, cbar_kws={"shrink": .5})
+    sns_plot.show()
+
+
 if __name__ == "__main__":
 
     #STATE_CODE = sys.argv[1]
     #NUM_DISTRICTS = int(sys.argv[2])
 
-    #num_districts = {"24": 8}
+    # TODO make num_districts a separate file
     num_districts = {"13": 14, "22": 6, "24": 8, "55": 8}
+    #num_districts = {"16": 2, "19": 4, "33": 2, "49": 3}
+
     SHAPEFILE_PATH = f'./Data_2000/Shapefiles'
 
-    sns.set(color_codes=True)
+    sns.set(style="white", color_codes=True)
 
     for STATE_CODE in num_districts:
         NUM_DISTRICTS = num_districts[STATE_CODE]
@@ -295,6 +316,10 @@ if __name__ == "__main__":
 
         # grouped_df[['sd', 'hc', 'pp']].plot.kde()
         # print(grouped_df[['sd', 'hc', 'pp']].corr())
+
+        _plot_corr_matrix(grouped_df)
+
+        assert(False)
 
         # Plot max and min HC
         fig, axes = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=True)
