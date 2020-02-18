@@ -181,7 +181,7 @@ def plot_plan(step_number, assignment_list, ctdf, ax=None):
     ctdf['district_assignment'] = s.fillna(
         ctdf['district_assignment']).astype(int)
 
-    if axes is None:
+    if ax is None:
         ctdf.plot(column='district_assignment', cmap='tab20')
     else:
         ctdf.plot(column='district_assignment', cmap='tab20', ax=ax)
@@ -266,26 +266,35 @@ def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
 
 
 def _plot_corr_matrix(df):
+    sns.set_style("white")
     corr = df[['sd', 'hc', 'pp', 'reock', 'ch']].corr()
-    print(corr)
 
-    # Generate a mask for the upper triangle
+    df['area_binned'] = pd.cut(df['log_area'], bins=[0, 21, 23, 99],
+                               labels=['small', 'medium', 'large'])
+    print(df)
+
+    g = sns.pairplot(df[['sd', 'hc', 'pp', 'reock', 'ch', 'area_binned']],
+                     hue='area_binned', palette='Set2')
+    g.savefig(f'./30_results/{STATE_CODE}_pairwise_plot.png')
 
     # Set up the matplotlib figure
-    f, ax = plt.subplots(figsize=(22, 22))
+    fig, ax = plt.subplots(figsize=(22, 30))
+    sns.heatmap(corr, cmap="Reds", linewidths=.5,
+                square=True, annot=True, ax=ax)
+    fig.savefig(f'./30_results/{STATE_CODE}_corr_matrix.png')
 
-    # Generate a custom diverging colormap
-    # cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
-    # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(corr, cmap="Reds", linewidths=.5, square=True)
-    f.savefig(f'./30_results/{STATE_CODE}_corr_matrix.png')
+def _plot_corr_matrix_grouped(df):
+    sns.set_style("white")
+    g = sns.pairplot(df[['sd', 'hc', 'pp', 'reock', 'ch']],
+                     palette='Set2')
+    g.savefig(f'./30_results/{STATE_CODE}_pairwise_plot_grouped.png')
 
 
 def _plot_top_plans(grouped_df):
     '''Gets the top plans by quantile and then does a difference-in-mean-test'''
 
-    theme_set(theme_classic(base_family="Helvetica"))
+    theme_set(theme_classic())
 
     cutoffs = [0.9, 0.95, 0.98]
 
@@ -313,15 +322,13 @@ def _plot_top_plans(grouped_df):
         # First reshape the data
 
         means_boxplot = (ggplot(grouped_top_df, aes(x='from', y='sd', fill='from')) +
-                         geom_boxplot() +
-                         theme_classic(base_family="Avenir")
+                         geom_boxplot()
                          )
         means_boxplot.save(
             f"./30_results/{STATE_CODE}_means_boxplot_{cutoff}.png")
 
         means_violin = (ggplot(grouped_top_df, aes(x='from', y='sd', fill='from')) +
-                        geom_violin(draw_quantiles=0.5) +
-                        theme_classic(base_family="Avenir")
+                        geom_violin(draw_quantiles=0.5)
                         )
         means_violin.save(
             f"./30_results/{STATE_CODE}_means_violin {cutoff}.png")
@@ -339,6 +346,41 @@ def _plot_top_plans(grouped_df):
             f"./30_results/{STATE_CODE}_top_ch_sd_corrplot {cutoff}.png")
 
     # Do a difference-in-means test
+
+
+def _plot_best_and_worst_plans(assignment_list, grouped_df, ctdf):
+    # Plot max and min HC
+    fig, axes = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=True)
+    fig.set_size_inches(20, 30)
+
+    cols = ["'Good' plans", "'Bad' plans"]
+    rows = ["Human compactness", "Polsby-Popper", "Spatial Diversity"]
+
+    for ax, col in zip(axes[0], cols):
+        ax.set_title(col)
+
+    for ax, row in zip(axes[:, 0], rows):
+        ax.set_ylabel(row)
+
+    max_hc = grouped_df['hc'].idxmax()
+    min_hc = grouped_df['hc'].idxmin()
+    max_pp = grouped_df['pp'].idxmax()
+    min_pp = grouped_df['pp'].idxmin()
+    max_sd = grouped_df['sd'].idxmax()
+    min_sd = grouped_df['sd'].idxmin()
+
+    assert(grouped_df.iloc[max_hc]['hc'] == grouped_df['hc'].max())
+
+    plot_plan(max_hc, assignment_list, ctdf, ax=axes[0, 0])
+    plot_plan(min_hc, assignment_list, ctdf, ax=axes[0, 1])
+    plot_plan(max_pp, assignment_list, ctdf, ax=axes[1, 0])
+    plot_plan(min_pp, assignment_list, ctdf, ax=axes[1, 1])
+    # Swap the position of min and max SD
+    plot_plan(min_sd, assignment_list, ctdf, ax=axes[2, 0])
+    plot_plan(max_sd, assignment_list, ctdf, ax=axes[2, 1])
+
+    fig.tight_layout()
+    fig.savefig(f'./30_results/{STATE_CODE}_min_max_subplots.png', dpi=100)
 
 
 if __name__ == "__main__":
@@ -365,7 +407,6 @@ if __name__ == "__main__":
         plot_vrps_on_census_tracts(ctdf, STATE_CODE)
 
         # Plot hc and sd by area
-
         df.plot.scatter(x="hc", y="sd", c='log_area', cmap='Reds')
         fig = plt.gcf()
         fig.set_size_inches(30, 20)
@@ -379,59 +420,12 @@ if __name__ == "__main__":
         # grouped_df[['sd', 'hc', 'pp']].plot.kde()
         # print(grouped_df[['sd', 'hc', 'pp']].corr())
 
+        _plot_corr_matrix(df)
+        _plot_corr_matrix_grouped(grouped_df)
         _plot_top_plans(grouped_df)
-        _plot_corr_matrix(grouped_df)
+        _plot_best_and_worst_plans(assignment_list, grouped_df, ctdf)
 
-        # Plot max and min HC
-        fig, axes = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=True)
-        fig.set_size_inches(20, 30)
-
-        cols = ["'Good' plans", "'Bad' plans"]
-        rows = ["Human compactness", "Polsby-Popper", "Spatial Diversity"]
-
-        for ax, col in zip(axes[0], cols):
-            ax.set_title(col)
-
-        for ax, row in zip(axes[:, 0], rows):
-            ax.set_ylabel(row)
-
-        max_hc = grouped_df['hc'].idxmax()
-        min_hc = grouped_df['hc'].idxmin()
-        max_pp = grouped_df['pp'].idxmax()
-        min_pp = grouped_df['pp'].idxmin()
-        max_sd = grouped_df['sd'].idxmax()
-        min_sd = grouped_df['sd'].idxmin()
-
-        assert(grouped_df.iloc[max_hc]['hc'] == grouped_df['hc'].max())
-
-        plot_plan(max_hc, assignment_list, ctdf, ax=axes[0, 0])
-        plot_plan(min_hc, assignment_list, ctdf, ax=axes[0, 1])
-        plot_plan(max_pp, assignment_list, ctdf, ax=axes[1, 0])
-        plot_plan(min_pp, assignment_list, ctdf, ax=axes[1, 1])
-        # Swap the position of min and max SD
-        plot_plan(min_sd, assignment_list, ctdf, ax=axes[2, 0])
-        plot_plan(max_sd, assignment_list, ctdf, ax=axes[2, 1])
-
-        fig.tight_layout()
-        fig.savefig(f'./30_results/{STATE_CODE}_min_max_subplots.png', dpi=100)
-
-        '''
-        grouped_df.plot.scatter(x='pp', y='sd')
-        fig = plt.gcf()
-        fig.set_size_inches(30, 20)
-        fig.savefig(f'./30_results/{STATE_CODE}_pp_sd_scatter.png', dpi=100)
-
-        grouped_df.plot.scatter(x='hc', y='sd')
-        fig = plt.gcf()
-        fig.set_size_inches(30, 20)
-        fig.savefig(f'./30_results/{STATE_CODE}_hc_sd_scatter.png', dpi=100)
-
-        grouped_df.plot.scatter(x='hc', y='pp')
-        fig = plt.gcf()
-        fig.set_size_inches(30, 20)
-        fig.savefig(f'./30_results/{STATE_CODE}_hc_pp_scatter.png', dpi=100)
-        '''
-
+        # Largely obsolete, don't really need this anymore
         grouped_df['hc_pp_delta'] = grouped_df['hc'] - grouped_df['pp']
         print(grouped_df[['hc_pp_delta', 'pp',
                           'hc', 'sd', 'reock', 'ch']].corr())
@@ -449,59 +443,3 @@ if __name__ == "__main__":
         sns_plot.savefig(f'./30_results/{STATE_CODE}_delta_sdscatter.png')
 
         plt.close("all")
-
-    '''
-    # df.plot.scatter(x='pp', y='sd')
-    # df.plot.scatter(x='hc', y='sd')
-    # df.plot.scatter(x='hc', y='pp')
-    # sns.lmplot(x="log_area", y="sd", data=df[df['log_area'].gt(21)])
-    # sns.lmplot(x="log_area", y="hc", data=df)
-    # df.plot.scatter(x="hc", y="sd", c='log_area', cmap='Reds')
-
-    # ctdf.plot(column='district_assignment', cmap='tab20')
-
-    grouped_df = (df.groupby('plan').sum())
-    grouped_df = grouped_df.div(NUM_DISTRICTS)
-    print(grouped_df)
-
-    # grouped_df[['sd', 'hc', 'pp']].plot.kde()
-    print(grouped_df[['sd', 'hc', 'pp']].corr())
-
-    print(grouped_df[grouped_df['sd'] == grouped_df['sd'].max()])
-    print(grouped_df[grouped_df['sd'] == grouped_df['sd'].min()])
-
-    print(grouped_df[grouped_df['pp'] == grouped_df['pp'].max()])
-    print(grouped_df[grouped_df['pp'] == grouped_df['pp'].min()])
-
-    print(grouped_df[grouped_df['hc'] == grouped_df['hc'].max()])
-    print(grouped_df[grouped_df['hc'] == grouped_df['hc'].min()])
-
-    fig, axes = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=True)
-    max_hc = grouped_df['hc'].idxmax()
-    min_hc = grouped_df['hc'].idxmin()
-    max_pp = grouped_df['pp'].idxmax()
-    min_pp = grouped_df['pp'].idxmin()
-    max_sd = grouped_df['sd'].idxmax()
-    min_sd = grouped_df['sd'].idxmin()
-
-    plot_plan(max_hc, assignment_list, ctdf, ax=axes[0, 0])
-    plot_plan(min_hc, assignment_list, ctdf, ax=axes[0, 1])
-    plot_plan(max_pp, assignment_list, ctdf, ax=axes[1, 0])
-    plot_plan(min_pp, assignment_list, ctdf, ax=axes[1, 1])
-    plot_plan(max_sd, assignment_list, ctdf, ax=axes[2, 0])
-    plot_plan(min_sd, assignment_list, ctdf, ax=axes[2, 1])
-
-    # grouped_df.plot.scatter(x='hc', y='pp', c='sd', cmap='Oranges')
-    # grouped_df.plot.scatter(x='hc', y='sd')  # weak negative correlation, -0.07
-    # grouped_df.plot.scatter(x='pp', y='sd')  # weak negative correlation, -0.09
-
-    # Now let's try and do some more sophisticated analysis
-
-    grouped_df['hc_pp_delta'] = grouped_df['hc'] - grouped_df['pp']
-    print(grouped_df[['hc_pp_delta', 'pp', 'hc', 'sd']].corr())
-
-    # sns.lmplot(x="hc", y="sd", data=grouped_df)
-    # sns.lmplot(x="hc_pp_delta", y="sd", data=grouped_df)
-
-    plt.show()
-    '''
