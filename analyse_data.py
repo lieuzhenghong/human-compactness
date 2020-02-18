@@ -208,10 +208,12 @@ def plot_vrps_on_census_tracts(census_tracts, STATE_CODE):
 
     vrps = vrps.to_crs({'init': 'epsg:2163'})
 
-    ax0 = census_tracts.plot(column='district_assignment', cmap='tab20')
-    vrps.plot(ax=ax0)
+    ax0 = census_tracts.plot(
+        column='district_assignment', alpha=0.6, cmap='tab20')
+    # Plot the points on the tracts
+    vrps.plot(ax=ax0, color="grey")
     fig = plt.gcf()
-    fig.set_size_inches(30, 20)
+    fig.set_size_inches(20, 30)
     fig.savefig(f'./30_results/{STATE_CODE}_points_on_tracts.png', dpi=100)
 
 
@@ -273,17 +275,76 @@ def _plot_corr_matrix(df):
     f, ax = plt.subplots(figsize=(22, 22))
 
     # Generate a custom diverging colormap
-    #cmap = sns.diverging_palette(220, 10, as_cmap=True)
+    # cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
     # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(corr, center=0, square=True, linewidths=.5)
+    sns.heatmap(corr, cmap="Reds", linewidths=.5, square=True)
     f.savefig(f'./30_results/{STATE_CODE}_corr_matrix.png')
+
+
+def _plot_top_plans(grouped_df):
+    '''Gets the top plans by quantile and then does a difference-in-mean-test'''
+
+    theme_set(theme_classic(base_family="Helvetica"))
+
+    cutoffs = [0.9, 0.95, 0.98]
+
+    for cutoff in cutoffs:
+        grouped_df.loc[grouped_df['hc'] >
+                       grouped_df['hc'].quantile(cutoff), 'from'] = 'hc'
+        top_hc_plans = grouped_df[grouped_df['hc']
+                                  > grouped_df['hc'].quantile(cutoff)].copy()
+        grouped_df.loc[grouped_df['pp'] >
+                       grouped_df['pp'].quantile(.9), 'from'] = 'pp'
+        top_pp_plans = grouped_df[grouped_df['pp']
+                                  > grouped_df['pp'].quantile(cutoff)].copy()
+        grouped_df.loc[grouped_df['ch'] >
+                       grouped_df['ch'].quantile(.9), 'from'] = 'ch'
+        top_ch_plans = grouped_df[grouped_df['ch']
+                                  > grouped_df['ch'].quantile(cutoff)].copy()
+        grouped_df.loc[grouped_df['reock'] >
+                       grouped_df['reock'].quantile(.9), 'from'] = 'reock'
+        top_reock_plans = grouped_df[grouped_df['reock']
+                                     > grouped_df['reock'].quantile(cutoff)].copy()
+        grouped_top_df = pd.concat(
+            [top_hc_plans, top_pp_plans, top_ch_plans, top_reock_plans])
+        print(grouped_top_df)
+        # Get these top plans and make them a geom_boxplot()
+        # First reshape the data
+
+        means_boxplot = (ggplot(grouped_top_df, aes(x='from', y='sd', fill='from')) +
+                         geom_boxplot() +
+                         theme_classic(base_family="Avenir")
+                         )
+        means_boxplot.save(
+            f"./30_results/{STATE_CODE}_means_boxplot_{cutoff}.png")
+
+        means_violin = (ggplot(grouped_top_df, aes(x='from', y='sd', fill='from')) +
+                        geom_violin(draw_quantiles=0.5) +
+                        theme_classic(base_family="Avenir")
+                        )
+        means_violin.save(
+            f"./30_results/{STATE_CODE}_means_violin {cutoff}.png")
+
+        # Plot some correlations in the same figure?
+        hc_corrplot = (ggplot(top_hc_plans, aes(x='hc', y='sd')) +
+                       geom_point(color='cornflowerblue', alpha=0.5, size=0.5)
+                       )
+        hc_corrplot.save(
+            f"./30_results/{STATE_CODE}_top_hc_sd_corrplot {cutoff}.png")
+
+        ch_corrplot = (ggplot(top_ch_plans, aes(x='ch', y='sd')) +
+                       geom_point(color='cornflowerblue', alpha=0.5, size=0.5))
+        ch_corrplot.save(
+            f"./30_results/{STATE_CODE}_top_ch_sd_corrplot {cutoff}.png")
+
+    # Do a difference-in-means test
 
 
 if __name__ == "__main__":
 
-    #STATE_CODE = sys.argv[1]
-    #NUM_DISTRICTS = int(sys.argv[2])
+    # STATE_CODE = sys.argv[1]
+    # NUM_DISTRICTS = int(sys.argv[2])
 
     # TODO make num_districts a separate file
     num_districts = {"13": 13, "16": 2, "22": 7,
@@ -318,11 +379,21 @@ if __name__ == "__main__":
         # grouped_df[['sd', 'hc', 'pp']].plot.kde()
         # print(grouped_df[['sd', 'hc', 'pp']].corr())
 
+        _plot_top_plans(grouped_df)
         _plot_corr_matrix(grouped_df)
 
         # Plot max and min HC
         fig, axes = plt.subplots(nrows=3, ncols=2, sharex=True, sharey=True)
-        fig.set_size_inches(30, 20)
+        fig.set_size_inches(20, 30)
+
+        cols = ["'Good' plans", "'Bad' plans"]
+        rows = ["Human compactness", "Polsby-Popper", "Spatial Diversity"]
+
+        for ax, col in zip(axes[0], cols):
+            ax.set_title(col)
+
+        for ax, row in zip(axes[:, 0], rows):
+            ax.set_ylabel(row)
 
         max_hc = grouped_df['hc'].idxmax()
         min_hc = grouped_df['hc'].idxmin()
@@ -337,9 +408,11 @@ if __name__ == "__main__":
         plot_plan(min_hc, assignment_list, ctdf, ax=axes[0, 1])
         plot_plan(max_pp, assignment_list, ctdf, ax=axes[1, 0])
         plot_plan(min_pp, assignment_list, ctdf, ax=axes[1, 1])
-        plot_plan(max_sd, assignment_list, ctdf, ax=axes[2, 0])
-        plot_plan(min_sd, assignment_list, ctdf, ax=axes[2, 1])
+        # Swap the position of min and max SD
+        plot_plan(min_sd, assignment_list, ctdf, ax=axes[2, 0])
+        plot_plan(max_sd, assignment_list, ctdf, ax=axes[2, 1])
 
+        fig.tight_layout()
         fig.savefig(f'./30_results/{STATE_CODE}_min_max_subplots.png', dpi=100)
 
         '''
@@ -374,6 +447,8 @@ if __name__ == "__main__":
 
         sns_plot = sns.lmplot(x="hc_pp_delta", y="sd", data=grouped_df)
         sns_plot.savefig(f'./30_results/{STATE_CODE}_delta_sdscatter.png')
+
+        plt.close("all")
 
     '''
     # df.plot.scatter(x='pp', y='sd')
@@ -425,8 +500,8 @@ if __name__ == "__main__":
     grouped_df['hc_pp_delta'] = grouped_df['hc'] - grouped_df['pp']
     print(grouped_df[['hc_pp_delta', 'pp', 'hc', 'sd']].corr())
 
-    #sns.lmplot(x="hc", y="sd", data=grouped_df)
-    #sns.lmplot(x="hc_pp_delta", y="sd", data=grouped_df)
+    # sns.lmplot(x="hc", y="sd", data=grouped_df)
+    # sns.lmplot(x="hc_pp_delta", y="sd", data=grouped_df)
 
     plt.show()
     '''
