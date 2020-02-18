@@ -214,7 +214,7 @@ def plot_vrps_on_census_tracts(census_tracts, STATE_CODE):
     vrps.plot(ax=ax0, color="grey")
     fig = plt.gcf()
     fig.set_size_inches(20, 30)
-    fig.savefig(f'./30_results/{STATE_CODE}_points_on_tracts.png', dpi=100)
+    fig.savefig(f'{SAVE_PATH}/{STATE_CODE}_points_on_tracts.png', dpi=100)
 
 
 def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
@@ -253,14 +253,14 @@ def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
 
     try:
         print(f"Trying to read CSV file for {STATE_CODE}_df.csv...")
-        df = pd.read_csv(f'./30_results/{STATE_CODE}_df.csv')
+        df = pd.read_csv(f'{LOAD_PATH}/{STATE_CODE}_df.csv')
     except:
         print(
-            f"Could not find ./30_results/{STATE_CODE}_df.csv, generating one now...")
+            f"Could not find {LOAD_PATH}/{STATE_CODE}_df.csv, generating one now...")
         print("Filling all areas for all districts...")
         fill_all_district_areas(assignment_list, ctdf, df)
         print(f"Saving to {STATE_CODE}_df.csv...")
-        df.to_csv(f'./30_results/{STATE_CODE}_df.csv')
+        df.to_csv(f'{SAVE_PATH}/{STATE_CODE}_df.csv')
 
     return df, ctdf, assignment_list
 
@@ -268,6 +268,7 @@ def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
 def _plot_corr_matrix(df):
     sns.set_style("white")
     corr = df[['sd', 'hc', 'pp', 'reock', 'ch']].corr()
+    corr.to_csv(f'{SAVE_PATH}/{STATE_CODE}_corr.csv')
 
     df['area_binned'] = pd.cut(df['log_area'], bins=[0, 21, 23, 99],
                                labels=['small', 'medium', 'large'])
@@ -275,20 +276,31 @@ def _plot_corr_matrix(df):
 
     g = sns.pairplot(df[['sd', 'hc', 'pp', 'reock', 'ch', 'area_binned']],
                      hue='area_binned', palette='Set2')
-    g.savefig(f'./30_results/{STATE_CODE}_pairwise_plot.png')
+    g.savefig(f'{SAVE_PATH}/{STATE_CODE}_pairwise_plot.png')
 
     # Set up the matplotlib figure
-    fig, ax = plt.subplots(figsize=(22, 30))
+    fig, ax = plt.subplots(figsize=(10, 10))
     sns.heatmap(corr, cmap="Reds", linewidths=.5,
                 square=True, annot=True, ax=ax)
-    fig.savefig(f'./30_results/{STATE_CODE}_corr_matrix.png')
+    fig.savefig(f'{SAVE_PATH}/{STATE_CODE}_corr_matrix.png')
 
 
 def _plot_corr_matrix_grouped(df):
     sns.set_style("white")
+
+    corr = df[['sd', 'hc', 'pp', 'reock', 'ch']].corr()
+
+    corr.to_csv(f'{SAVE_PATH}/{STATE_CODE}_corr_grouped.csv')
+
     g = sns.pairplot(df[['sd', 'hc', 'pp', 'reock', 'ch']],
                      palette='Set2')
-    g.savefig(f'./30_results/{STATE_CODE}_pairwise_plot_grouped.png')
+    g.savefig(f'{SAVE_PATH}/{STATE_CODE}_pairwise_plot_grouped.png')
+
+    # Set up the matplotlib figure
+    fig, ax = plt.subplots(figsize=(10, 10))
+    sns.heatmap(corr, cmap="Reds", linewidths=.5,
+                square=True, annot=True, ax=ax)
+    fig.savefig(f'{SAVE_PATH}/{STATE_CODE}_corr_matrix_grouped.png')
 
 
 def _plot_top_plans(grouped_df):
@@ -325,25 +337,25 @@ def _plot_top_plans(grouped_df):
                          geom_boxplot()
                          )
         means_boxplot.save(
-            f"./30_results/{STATE_CODE}_means_boxplot_{cutoff}.png")
+            f"{SAVE_PATH}/{STATE_CODE}_means_boxplot_{cutoff}.png")
 
         means_violin = (ggplot(grouped_top_df, aes(x='from', y='sd', fill='from')) +
                         geom_violin(draw_quantiles=0.5)
                         )
         means_violin.save(
-            f"./30_results/{STATE_CODE}_means_violin {cutoff}.png")
+            f"{SAVE_PATH}/{STATE_CODE}_means_violin {cutoff}.png")
 
         # Plot some correlations in the same figure?
         hc_corrplot = (ggplot(top_hc_plans, aes(x='hc', y='sd')) +
                        geom_point(color='cornflowerblue', alpha=0.5, size=0.5)
                        )
         hc_corrplot.save(
-            f"./30_results/{STATE_CODE}_top_hc_sd_corrplot {cutoff}.png")
+            f"{SAVE_PATH}/{STATE_CODE}_top_hc_sd_corrplot {cutoff}.png")
 
         ch_corrplot = (ggplot(top_ch_plans, aes(x='ch', y='sd')) +
                        geom_point(color='cornflowerblue', alpha=0.5, size=0.5))
         ch_corrplot.save(
-            f"./30_results/{STATE_CODE}_top_ch_sd_corrplot {cutoff}.png")
+            f"{SAVE_PATH}/{STATE_CODE}_top_ch_sd_corrplot {cutoff}.png")
 
     # Do a difference-in-means test
 
@@ -380,13 +392,19 @@ def _plot_best_and_worst_plans(assignment_list, grouped_df, ctdf):
     plot_plan(max_sd, assignment_list, ctdf, ax=axes[2, 1])
 
     fig.tight_layout()
-    fig.savefig(f'./30_results/{STATE_CODE}_min_max_subplots.png', dpi=100)
+    fig.savefig(f'{SAVE_PATH}/{STATE_CODE}_min_max_subplots.png', dpi=100)
+
+
+def _squarerootify(df):
+    df[['sd', 'hc', 'pp', 'reock', 'ch']] = df[[
+        'sd', 'hc', 'pp', 'reock', 'ch']]**0.5
+    return df
 
 
 if __name__ == "__main__":
 
-    # STATE_CODE = sys.argv[1]
-    # NUM_DISTRICTS = int(sys.argv[2])
+    LOAD_PATH = './30_results'
+    SAVE_PATHS = ['./30_results', './31_results_rc']
 
     # TODO make num_districts a separate file
     num_districts = {"13": 13, "16": 2, "22": 7,
@@ -401,45 +419,46 @@ if __name__ == "__main__":
         print(STATE_CODE, NUM_DISTRICTS)
         df, ctdf, assignment_list = build_and_save_df_to_csv(
             STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH)
-        print(df)
-        print(ctdf)
+        for SAVE_PATH in SAVE_PATHS:
+            if (SAVE_PATH == './31_results_rc'):
+                df = _squarerootify(df)
 
-        plot_vrps_on_census_tracts(ctdf, STATE_CODE)
+            plot_vrps_on_census_tracts(ctdf, STATE_CODE)
 
-        # Plot hc and sd by area
-        df.plot.scatter(x="hc", y="sd", c='log_area', cmap='Reds')
-        fig = plt.gcf()
-        fig.set_size_inches(30, 20)
-        fig.savefig(f'./30_results/{STATE_CODE}_hc_sd_log_area.png', dpi=100)
+            # Plot hc and sd by area
+            df.plot.scatter(x="hc", y="sd", c='log_area', cmap='Reds')
+            fig = plt.gcf()
+            fig.set_size_inches(30, 20)
+            fig.savefig(
+                f'{SAVE_PATH}/{STATE_CODE}_hc_sd_log_area.png', dpi=100)
 
-        grouped_df = (df.groupby('plan').sum())
-        grouped_df = grouped_df.div(NUM_DISTRICTS)
-        grouped_df = grouped_df.reset_index()
-        print(grouped_df)
+            grouped_df = (df.groupby('plan').sum())
+            grouped_df = grouped_df.div(NUM_DISTRICTS)
+            grouped_df = grouped_df.reset_index()
 
-        # grouped_df[['sd', 'hc', 'pp']].plot.kde()
-        # print(grouped_df[['sd', 'hc', 'pp']].corr())
+            # grouped_df[['sd', 'hc', 'pp']].plot.kde()
+            # print(grouped_df[['sd', 'hc', 'pp']].corr())
 
-        _plot_corr_matrix(df)
-        _plot_corr_matrix_grouped(grouped_df)
-        _plot_top_plans(grouped_df)
-        _plot_best_and_worst_plans(assignment_list, grouped_df, ctdf)
+            _plot_corr_matrix(df)
+            _plot_corr_matrix_grouped(grouped_df)
+            _plot_top_plans(grouped_df)
+            _plot_best_and_worst_plans(assignment_list, grouped_df, ctdf)
 
-        # Largely obsolete, don't really need this anymore
-        grouped_df['hc_pp_delta'] = grouped_df['hc'] - grouped_df['pp']
-        print(grouped_df[['hc_pp_delta', 'pp',
-                          'hc', 'sd', 'reock', 'ch']].corr())
+            # Largely obsolete, don't really need this anymore
+            grouped_df['hc_pp_delta'] = grouped_df['hc'] - grouped_df['pp']
+            print(grouped_df[['hc_pp_delta', 'pp',
+                              'hc', 'sd', 'reock', 'ch']].corr())
 
-        sns_plot = sns.lmplot(x="hc", y="sd", data=grouped_df)
-        sns_plot.savefig(f'./30_results/{STATE_CODE}_hc_sd_scatter.png')
+            sns_plot = sns.lmplot(x="hc", y="sd", data=grouped_df)
+            sns_plot.savefig(f'{SAVE_PATH}/{STATE_CODE}_hc_sd_scatter.png')
 
-        sns_plot = sns.lmplot(x="pp", y="sd", data=grouped_df)
-        sns_plot.savefig(f'./30_results/{STATE_CODE}_pp_sd_scatter.png')
+            sns_plot = sns.lmplot(x="pp", y="sd", data=grouped_df)
+            sns_plot.savefig(f'{SAVE_PATH}/{STATE_CODE}_pp_sd_scatter.png')
 
-        sns_plot = sns.lmplot(x="hc", y="pp", data=grouped_df)
-        sns_plot.savefig(f'./30_results/{STATE_CODE}_hc_pp_scatter.png')
+            sns_plot = sns.lmplot(x="hc", y="pp", data=grouped_df)
+            sns_plot.savefig(f'{SAVE_PATH}/{STATE_CODE}_hc_pp_scatter.png')
 
-        sns_plot = sns.lmplot(x="hc_pp_delta", y="sd", data=grouped_df)
-        sns_plot.savefig(f'./30_results/{STATE_CODE}_delta_sdscatter.png')
+            sns_plot = sns.lmplot(x="hc_pp_delta", y="sd", data=grouped_df)
+            sns_plot.savefig(f'{SAVE_PATH}/{STATE_CODE}_delta_sdscatter.png')
 
-        plt.close("all")
+            plt.close("all")
