@@ -239,7 +239,6 @@ def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
                     for f in files])
 
     print(df)
-    assert(False)
 
     print("Reading shapefile...")
     ctdf = read_shapefile(STATE_CODE, SHAPEFILE_PATH)
@@ -269,17 +268,15 @@ def _plot_corr_matrix(df):
     print(corr)
 
     # Generate a mask for the upper triangle
-    mask = np.triu(np.ones_like(corr, dtype=np.bool))
 
     # Set up the matplotlib figure
-    f, ax = plt.subplots(figsize=(22, 18))
+    f, ax = plt.subplots(figsize=(22, 22))
 
     # Generate a custom diverging colormap
     #cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
     # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(corr, mask=mask, vmax=.3, center=0,
-                square=True, linewidths=.5, cbar_kws={"shrink": .5})
+    sns.heatmap(corr, center=0, square=True, linewidths=.5)
     f.savefig(f'./30_results/{STATE_CODE}_corr_matrix.png')
 
 
@@ -289,7 +286,7 @@ if __name__ == "__main__":
     #NUM_DISTRICTS = int(sys.argv[2])
 
     # TODO make num_districts a separate file
-    num_districts = {"13": 14, "16": 2, "22": 6,
+    num_districts = {"13": 13, "16": 2, "22": 7,
                      "24": 8, "33": 2, "49": 3, "55": 8}
 
     SHAPEFILE_PATH = f'./Data_2000/Shapefiles'
@@ -304,7 +301,6 @@ if __name__ == "__main__":
         print(df)
         print(ctdf)
 
-        assert(False)
         plot_vrps_on_census_tracts(ctdf, STATE_CODE)
 
         # Plot hc and sd by area
