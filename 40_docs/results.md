@@ -11,6 +11,37 @@ some measures of compactness more consistent with homogeneity than others?"
 
 ## Strategy
 
+1. Spatial diversity is bad, homogeneity good
+2. States legally mandate compactness
+3. Might commonly-used compactness measures exacerbate spatial diversity (bad),
+	 actually give us more homogeneous districts (good), or do nothing at all?
+	 The answer to this question is an empirical one. Further, if different
+	 compactness measures track spatial diversity differently, that may give us a
+	 prima facie reason to select one over the other (apart from their ability to
+	 measure gerrymandering).
+4. I answer these empirical questions through MCMC methods + a novel method of
+	 compactness developed with Rodden and Eubank. (human compactness as a
+	 robustness measure --- using driving distances rather than geometric
+	 compactness measures should give different findings if the relationship
+	 between compactness and spatial diversity is specific to geometric
+	 compactness measures)
+5. I find that compactness measures and spatial diversity measures are largely
+	 orthogonal. These are mixed results. It's encouraging that compactness is
+	 not making the problem worse, but sad that more compact districts can't have
+	 better democratic outcomes.
+	 - I also find, reassuringly, that various compactness measures track each
+		 other well, including human compactness and geographic compactness
+		 measures
+	 - There is some weak evidence to suggest that human compactness outperforms
+		 geographic compactness in certain special cases.
+6. Further work can build upon my same methodology to investigate the
+	 relationship between compactness metrics and the seat-vote curve (King
+	 2020), Moon and Deford 2019
+7. My contribution: methodological and empirical (no more theoretical bit about
+	 why compactness matters --- where to fit in?)
+8. I present a theoretical model showing under what circumstances different
+	 compactness measures can increase/decrease spatial diversity
+
 Present two (three?) different views of compactness metric.
 
 - One is that compactness metrics could track spatial diversity. Given that we
