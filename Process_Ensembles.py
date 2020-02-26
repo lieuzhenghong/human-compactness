@@ -36,6 +36,7 @@ state_names = {"02": "Alaska", "01": "Alabama", "05": "Arkansas", "04": "Arizona
 
 # TODO fill this in
 num_districts = {"01": 7, "04": 8, '08': 7,
+                 "09": 5,
                  "13": 13, "16": 2, '19': 4,
                  "22": 7, "24": 8, '33': 2,
                  "23": 2, "44": 2,
@@ -54,8 +55,9 @@ plan_name = "Enacted"
 # fips_list = ['04', '08', '16', '19', '33', '49']
 # fips_list = ['13', '22', '24', '55']
 # fips_list = ['16']
-#fips_list = ['19', '33', '49']
-fips_list = ['23', '44']
+# fips_list = ['19', '33', '49']
+# fips_list = ['23', '44'] # Maine and Rhode Island
+fips_list = ['09']
 sample_richness = 1000  # Number of VRPs to sample per district
 
 for state_fips in fips_list:
