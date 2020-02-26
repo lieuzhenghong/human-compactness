@@ -217,7 +217,7 @@ def plot_vrps_on_census_tracts(census_tracts, STATE_CODE):
     fig.savefig(f'{SAVE_PATH}/{STATE_CODE}_points_on_tracts.png', dpi=100)
 
 
-def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH):
+def build_and_save_df_to_csv(STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH, SAVE_PATH):
     '''
     Returns df, ctdf and assignment_list.
 
@@ -407,8 +407,13 @@ if __name__ == "__main__":
     SAVE_PATHS = ['./30_results', './31_results_rc']
 
     # TODO make num_districts a separate file
+
+    '''
     num_districts = {"13": 13, "16": 2, "22": 7,
+                     "23": 2, "44": 2,
                      "24": 8, "33": 2, "49": 3, "55": 8}
+    '''
+    num_districts = {'23':2, '44':2}
 
     SHAPEFILE_PATH = f'./Data_2000/Shapefiles'
 
@@ -418,7 +423,7 @@ if __name__ == "__main__":
         NUM_DISTRICTS = num_districts[STATE_CODE]
         print(STATE_CODE, NUM_DISTRICTS)
         df, ctdf, assignment_list = build_and_save_df_to_csv(
-            STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH)
+            STATE_CODE, NUM_DISTRICTS, SHAPEFILE_PATH, './30_results')
         for SAVE_PATH in SAVE_PATHS:
             if (SAVE_PATH == './31_results_rc'):
                 df = _squarerootify(df)
