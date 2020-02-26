@@ -46,7 +46,9 @@ def _read_and_process_vrp_shapefile(STATE_CODE, STATE_NAME, NUM_DISTRICTS, SAMPL
     # after we get the points, downsample
 
     print("Downsampling points...")
-    points_downsampled = sample_rvps.sample_rvps(CDB, int(STATE_CODE), DEM_RVPS,
+    #points_downsampled = sample_rvps.sample_rvps(CDB, int(STATE_CODE), DEM_RVPS,
+    #                                             REP_RVPS, SAMPLE_SIZE)
+    points_downsampled = sample_rvps.sample_rvps(CDB, STATE_CODE, DEM_RVPS,
                                                  REP_RVPS, SAMPLE_SIZE)
 
     # Convert to WGS84
