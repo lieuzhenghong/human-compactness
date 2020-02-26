@@ -17,9 +17,9 @@ from gerrychain import Graph
 ###########
 
 #state_fips = '08'
-state_fips = '49'
+state_fips = '44'
 #num_districts = 7
-num_districts = 3
+num_districts = 2
 
 
 '''
@@ -50,6 +50,97 @@ from gerrychain import Graph, Partition, Election
 from gerrychain.updaters import Tally, cut_edges
 
 graph = Graph.from_json(f'./Data_2000/Dual_Graphs/Tract2000_{state_fips}.json')
+
+
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "041500":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "051101":
+        ind_b = node
+        print(ind_b)
+
+graph.add_edge(ind_a,ind_b)
+graph[ind_a][ind_b]["shared_perim"] = 0    
+
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "041602":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "040101":
+        ind_b = node
+        print(ind_b)
+
+graph.add_edge(ind_a,ind_b)
+graph[ind_a][ind_b]["shared_perim"] = 0    
+
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "050402":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "041300":
+        ind_b = node
+        print(ind_b)
+
+graph.add_edge(ind_a,ind_b)
+graph[ind_a][ind_b]["shared_perim"] = 0    
+
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "041100":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "041300":
+        ind_b = node
+        print(ind_b)
+
+graph.add_edge(ind_a,ind_b)
+graph[ind_a][ind_b]["shared_perim"] = 0  
+
+""" # for ME
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "970100":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "966600":
+        ind_b = node
+        print(ind_b)
+
+graph.add_edge(ind_a,ind_b)
+graph[ind_a][ind_b]["shared_perim"] = 0    
+
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "966500":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "966600":
+        ind_b = node
+        print(ind_b)
+
+graph.add_edge(ind_a,ind_b)
+graph[ind_a][ind_b]["shared_perim"] = 0  
+
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "976100":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "970900":
+        ind_b = node
+        print(ind_b)
+
+graph.add_edge(ind_a,ind_b)
+graph[ind_a][ind_b]["shared_perim"] = 0    
+
+for node in graph.nodes():
+    if graph.nodes[node]["TRACTA"] == "976000":
+        ind_a = node
+        print(ind_a)
+    if graph.nodes[node]["TRACTA"] == "975900":
+        ind_b = node
+        print(ind_b)
+
+graph.add_edge(ind_a,ind_b)
+graph[ind_a][ind_b]["shared_perim"] = 0   
+"""
 
 """ #FOR MD
 for node in graph.nodes():
