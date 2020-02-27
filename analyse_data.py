@@ -201,7 +201,7 @@ def plot_vrps_on_census_tracts(census_tracts, STATE_CODE):
     # after we get the points, downsample
 
     print("Downsampling points...")
-    vrps = sample_rvps.sample_rvps(CDB, int(STATE_CODE), DEM_RVPS,
+    vrps = sample_rvps.sample_rvps(CDB, STATE_CODE, DEM_RVPS,
                                    REP_RVPS, SAMPLE_SIZE)
 
     census_tracts = census_tracts.to_crs({'init': 'epsg:2163'})
@@ -413,7 +413,8 @@ if __name__ == "__main__":
                      "23": 2, "44": 2,
                      "24": 8, "33": 2, "49": 3, "55": 8}
     '''
-    num_districts = {'23':2, '44':2}
+    #num_districts = {'23':2, '44':2}
+    num_districts = {'09': 5}
 
     SHAPEFILE_PATH = f'./Data_2000/Shapefiles'
 
