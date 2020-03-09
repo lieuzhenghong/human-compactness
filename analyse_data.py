@@ -333,17 +333,33 @@ def _plot_top_plans(grouped_df):
         # Get these top plans and make them a geom_boxplot()
         # First reshape the data
 
+        dd = grouped_df.copy()
+        dd.loc[:, 'from'] = 'all'
+        grouped_top_df_with_mean = pd.concat([grouped_top_df, dd])
+
         means_boxplot = (ggplot(grouped_top_df, aes(x='from', y='sd', fill='from')) +
-                         geom_boxplot()
+                         geom_boxplot() +
+                         geom_hline(
+                             aes(yintercept=grouped_df[['sd']].mean(), linetype=['mean']))
                          )
         means_boxplot.save(
             f"{SAVE_PATH}/{STATE_CODE}_means_boxplot_{cutoff}.png")
 
         means_violin = (ggplot(grouped_top_df, aes(x='from', y='sd', fill='from')) +
-                        geom_violin(draw_quantiles=0.5)
+                        geom_violin(draw_quantiles=0.5) +
+                        geom_hline(
+                            aes(yintercept=grouped_df[['sd']].mean(), linetype=['mean']))
                         )
         means_violin.save(
             f"{SAVE_PATH}/{STATE_CODE}_means_violin {cutoff}.png")
+
+        means_boxplot = (ggplot(grouped_top_df_with_mean, aes(x='from', y='sd', fill='from')) +
+                         geom_violin(draw_quantiles=0.5) +
+                         geom_hline(
+                             aes(yintercept=grouped_df[['sd']].mean(), linetype=['mean']))
+                         )
+        means_boxplot.save(
+            f"{SAVE_PATH}/{STATE_CODE}_means_violin_with_mean_{cutoff}.png")
 
         # Plot some correlations in the same figure?
         hc_corrplot = (ggplot(top_hc_plans, aes(x='hc', y='sd')) +
@@ -356,8 +372,6 @@ def _plot_top_plans(grouped_df):
                        geom_point(color='cornflowerblue', alpha=0.5, size=0.5))
         ch_corrplot.save(
             f"{SAVE_PATH}/{STATE_CODE}_top_ch_sd_corrplot {cutoff}.png")
-
-    # Do a difference-in-means test
 
 
 def _plot_best_and_worst_plans(assignment_list, grouped_df, ctdf):
@@ -408,13 +422,11 @@ if __name__ == "__main__":
 
     # TODO make num_districts a separate file
 
-    '''
-    num_districts = {"13": 13, "16": 2, "22": 7,
+    num_districts = {"09": 5, "13": 13, "16": 2, "22": 7,
                      "23": 2, "44": 2,
                      "24": 8, "33": 2, "49": 3, "55": 8}
-    '''
-    #num_districts = {'23':2, '44':2}
-    num_districts = {'09': 5}
+    # num_districts = {'23':2, '44':2}
+    # num_districts = {'09': 5}
 
     SHAPEFILE_PATH = f'./Data_2000/Shapefiles'
 
@@ -455,6 +467,8 @@ if __name__ == "__main__":
             print(grouped_df[['hc_pp_delta', 'pp',
                               'hc', 'sd', 'reock', 'ch']].corr())
 
+            sns.set_style("white")
+            plt.figure(figsize=(15, 15))
             sns_plot = sns.lmplot(x="hc", y="sd", data=grouped_df)
             sns_plot.savefig(f'{SAVE_PATH}/{STATE_CODE}_hc_sd_scatter.png')
 
