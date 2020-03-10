@@ -1,4 +1,4 @@
-\begin{thebibliography}{16}
+\begin{thebibliography}{18}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -40,6 +40,13 @@ Daryl DeFord, Moon Duchin, and Justin Solomon.
 Daryl DeFord, Moon Duchin, and Justin Solomon.
 \newblock Recombination: A family of markov chains for redistricting,
   2019{\natexlab{b}}.
+
+\bibitem[Delacre et~al.(2017)Delacre, Lakens, and Leys]{delacre2017}
+Marie Delacre, Daniel Lakens, and Christophe Leys.
+\newblock Why psychologists should by default use welch’s t-test instead of
+  student’s t-test.
+\newblock \emph{International Review of Social Psychology}, 30\penalty0 (1),
+  2017.
 
 \bibitem[Dube and Clark(2016)]{dc2016}
 Matthew~P Dube and Jesse~T Clark.
@@ -95,5 +102,12 @@ Zachary Schutzman.
 Nicholas~O Stephanopoulos.
 \newblock Spatial diversity.
 \newblock \emph{Harvard Law Review}, pages 1903--2010, 2012.
+
+\bibitem[Wolf(2015)]{wolf2015}
+Steven Wolf.
+\newblock Compactness is a terrible standard for redistricting and determining
+  if maps were gerrymandered, 2015.
+\newblock URL
+  \url{https://www.dailykos.com/stories/2015/5/12/1384062/-Compactness-is-a-terrible-standard-for-redistricting-and-determining-if-maps-were-gerrymandered}.
 
 \end{thebibliography}

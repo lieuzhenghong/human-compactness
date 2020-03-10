@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.11.20)  6 MAR 2020 20:23
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.11.20)  10 MAR 2020 20:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -805,43 +805,63 @@ Package grffile Info: Option `extendedchars' is set to `false'.
 Package grffile Info: Option `space' is set to `true'.
 Package grffile Info: \Gin@ii of package `graphicx' fixed on input line 494.
 )
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2016/04/27 v1.618033 publication quality tables
+\heavyrulewidth=\dimen119
+\lightrulewidth=\dimen120
+\cmidrulewidth=\dimen121
+\belowrulesep=\dimen122
+\belowbottomsep=\dimen123
+\aboverulesep=\dimen124
+\abovetopsep=\dimen125
+\cmidrulesep=\dimen126
+\cmidrulekern=\dimen127
+\defaultaddspace=\dimen128
+\@cmidla=\count111
+\@cmidlb=\count112
+\@aboverulesep=\dimen129
+\@belowrulesep=\dimen130
+\@thisruleclass=\count113
+\@lastruleclass=\count114
+\@thisrulewidth=\dimen131
+)
 (/usr/share/texlive/texmf-dist/tex/latex/natbib/natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip48
 \bibsep=\skip49
 LaTeX Info: Redefining \cite on input line 694.
-\c@NAT@ctr=\count111
+\c@NAT@ctr=\count115
 )
 (./mcmc_procedure.aux)
 \openout1 = `mcmc_procedure.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 70.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 70.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 71.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 71.
  (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 70.
-LaTeX Font Info:    ... okay on input line 70.
-LaTeX Font Info:    Try loading font information for T1+lmr on input line 70.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Try loading font information for T1+lmr on input line 71.
 (/usr/share/texmf/tex/latex/lm/t1lmr.fd
 File: t1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Info: Redefining \microtypecontext on input line 70.
+LaTeX Info: Redefining \microtypecontext on input line 71.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using protrusion set `basicmath'.
@@ -857,7 +877,7 @@ File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman
 (RS)
 )
 \AtBeginShipoutBox=\box28
-Package hyperref Info: Link coloring OFF on input line 70.
+Package hyperref Info: Link coloring OFF on input line 71.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
@@ -865,11 +885,11 @@ Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count112
+\c@section@level=\count116
 )
-LaTeX Info: Redefining \ref on input line 70.
-LaTeX Info: Redefining \pageref on input line 70.
-LaTeX Info: Redefining \nameref on input line 70.
+LaTeX Info: Redefining \ref on input line 71.
+LaTeX Info: Redefining \pageref on input line 71.
+LaTeX Info: Redefining \nameref on input line 71.
 
 (./mcmc_procedure.out) (./mcmc_procedure.out)
 \@outlinefile=\write3
@@ -878,16 +898,16 @@ LaTeX Info: Redefining \nameref on input line 70.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count113
-\scratchdimen=\dimen119
+\scratchcounter=\count117
+\scratchdimen=\dimen132
 \scratchbox=\box29
-\nofMPsegments=\count114
-\nofMParguments=\count115
+\nofMPsegments=\count118
+\nofMParguments=\count119
 \everyMPshowfont=\toks24
-\MPscratchCnt=\count116
-\MPscratchDim=\dimen120
-\MPnumerator=\count117
-\makeMPintoPDFobject=\count118
+\MPscratchCnt=\count120
+\MPscratchDim=\dimen133
+\MPnumerator=\count121
+\makeMPintoPDFobject=\count122
 \everyMPtoPDFconversion=\toks25
 ) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
@@ -906,46 +926,56 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-<img/sd_rolloff.png, id=32, 597.23125pt x 436.63126pt>
+LaTeX Font Info:    Try loading font information for TS1+lmr on input line 92.
+
+(/usr/share/texmf/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
+)
+<img/sd_rolloff.png, id=88, 597.23125pt x 436.63126pt>
 File: img/sd_rolloff.png Graphic file (type png)
 <use img/sd_rolloff.png>
-Package pdftex.def Info: img/sd_rolloff.png  used on input line 80.
+Package pdftex.def Info: img/sd_rolloff.png  used on input line 122.
 (pdftex.def)             Requested size: 345.00008pt x 252.22694pt.
+<./img/average_spatial-diversity.png, id=90, 634.37pt x 466.74374pt>
+File: ./img/average_spatial-diversity.png Graphic file (type png)
+<use ./img/average_spatial-diversity.png>
+Package pdftex.def Info: ./img/average_spatial-diversity.png  used on input lin
+e 128.
+(pdftex.def)             Requested size: 345.01334pt x 253.84683pt.
+ [1
 
-[1
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2 <./img/sd_rolloff.png>]
+ [3 <./img/average_spatial-diversity.png>] [4]
+LaTeX Font Info:    Try loading font information for OT1+lmr on input line 269.
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./img/sd_rolloff.png>]
-LaTeX Font Info:    Try loading font information for OT1+lmr on input line 140.
-
-
-(/usr/share/texmf/tex/latex/lm/ot1lmr.fd
+ (/usr/share/texmf/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OML+lmm on input line 140.
+LaTeX Font Info:    Try loading font information for OML+lmm on input line 269.
 
 
 (/usr/share/texmf/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 140
+LaTeX Font Info:    Try loading font information for OMS+lmsy on input line 269
 .
 
 (/usr/share/texmf/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-LaTeX Font Info:    Try loading font information for OMX+lmex on input line 140
+LaTeX Font Info:    Try loading font information for OMX+lmex on input line 269
 .
 
 (/usr/share/texmf/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 140.
+(Font)              <10> on input line 269.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 140.
+(Font)              <7> on input line 269.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 140.
-LaTeX Font Info:    Try loading font information for U+msa on input line 140.
+(Font)              <5> on input line 269.
+LaTeX Font Info:    Try loading font information for U+msa on input line 269.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -953,7 +983,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 140.
+LaTeX Font Info:    Try loading font information for U+msb on input line 269.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -961,61 +991,457 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-<img/pp_example.png, id=52, 741.77126pt x 228.855pt>
+<img/pp_example.png, id=126, 741.77126pt x 228.855pt>
 File: img/pp_example.png Graphic file (type png)
 <use img/pp_example.png>
-Package pdftex.def Info: img/pp_example.png  used on input line 144.
+Package pdftex.def Info: img/pp_example.png  used on input line 273.
 (pdftex.def)             Requested size: 344.9993pt x 106.4409pt.
- [2 <./img/pp_example.png>]
+ [5]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 185.
+(Font)              <8> on input line 314.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 185.
- [3] [4] [5] [6]
-LaTeX Font Info:    Try loading font information for T1+lmtt on input line 400.
+(Font)              <6> on input line 314.
+ [6 <./img/pp_example.png>] [7] [8] [9]
+LaTeX Font Info:    Try loading font information for T1+lmtt on input line 535.
 
  (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
-<img/recom_vs_flip.png, id=168, 1014.79124pt x 283.81032pt>
+<img/recom_vs_flip.png, id=244, 1014.79124pt x 283.81032pt>
 File: img/recom_vs_flip.png Graphic file (type png)
 <use img/recom_vs_flip.png>
-Package pdftex.def Info: img/recom_vs_flip.png  used on input line 411.
+Package pdftex.def Info: img/recom_vs_flip.png  used on input line 546.
 (pdftex.def)             Requested size: 344.99348pt x 96.48557pt.
- [7 <./img/recom_vs_flip.png>] (./mcmc_procedure.bbl [8])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 509.
- [9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 509.
+ [10]
+[11 <./img/recom_vs_flip.png>]
+<../30_results/33_min_max_subplots.png, id=280, 1445.4pt x 2168.1pt>
+File: ../30_results/33_min_max_subplots.png Graphic file (type png)
+<use ../30_results/33_min_max_subplots.png>
+Package pdftex.def Info: ../30_results/33_min_max_subplots.png  used on input l
+ine 668.
+(pdftex.def)             Requested size: 344.9843pt x 517.47646pt.
+
+
+LaTeX Warning: Float too large for page by 1.47646pt on input line 671.
+
+<../30_results/33_points_on_tracts.png, id=281, 1445.4pt x 2168.1pt>
+File: ../30_results/33_points_on_tracts.png Graphic file (type png)
+<use ../30_results/33_points_on_tracts.png>
+Package pdftex.def Info: ../30_results/33_points_on_tracts.png  used on input l
+ine 675.
+(pdftex.def)             Requested size: 344.9843pt x 517.47646pt.
+
+LaTeX Warning: Float too large for page by 3.42088pt on input line 678.
+
+[12] [13 <../30_results/33_min_max_subplots.png>] [14 <../30_results/33_points_
+on_tracts.png>]
+<../30_results/16_points_on_tracts.png, id=312, 1445.4pt x 2168.1pt>
+File: ../30_results/16_points_on_tracts.png Graphic file (type png)
+<use ../30_results/16_points_on_tracts.png>
+Package pdftex.def Info: ../30_results/16_points_on_tracts.png  used on input l
+ine 729.
+(pdftex.def)             Requested size: 344.9843pt x 517.47646pt.
+<../30_results/16_min_max_subplots.png, id=313, 1445.4pt x 2168.1pt>
+File: ../30_results/16_min_max_subplots.png Graphic file (type png)
+<use ../30_results/16_min_max_subplots.png>
+Package pdftex.def Info: ../30_results/16_min_max_subplots.png  used on input l
+ine 736.
+(pdftex.def)             Requested size: 344.9843pt x 517.47646pt.
+<../30_results/all_districts_concat_sd.png, id=314, 722.7pt x 722.7pt>
+File: ../30_results/all_districts_concat_sd.png Graphic file (type png)
+<use ../30_results/all_districts_concat_sd.png>
+Package pdftex.def Info: ../30_results/all_districts_concat_sd.png  used on inp
+ut line 751.
+(pdftex.def)             Requested size: 344.99533pt x 344.99533pt.
+<../30_results/all_districts_sd.png, id=315, 722.7pt x 722.7pt>
+File: ../30_results/all_districts_sd.png Graphic file (type png)
+<use ../30_results/all_districts_sd.png>
+Package pdftex.def Info: ../30_results/all_districts_sd.png  used on input line
+ 759.
+(pdftex.def)             Requested size: 344.99533pt x 344.99533pt.
+<../30_results/all_plans_sd.png, id=316, 722.7pt x 722.7pt>
+File: ../30_results/all_plans_sd.png Graphic file (type png)
+<use ../30_results/all_plans_sd.png>
+Package pdftex.def Info: ../30_results/all_plans_sd.png  used on input line 765
+.
+(pdftex.def)             Requested size: 344.99533pt x 344.99533pt.
+ [15] [16 <../30_results/16_points_on_tracts.png>] [17 <../30_results/16_min_ma
+x_subplots.png>] [18 <../30_results/all_districts_concat_sd.png>] [19 <../30_re
+sults/all_districts_sd.png>] [20 <../30_results/all_plans_sd.png>]
+<../30_results/09_pairwise_plot_grouped.png, id=355, 889.6437pt x 887.4756pt>
+File: ../30_results/09_pairwise_plot_grouped.png Graphic file (type png)
+<use ../30_results/09_pairwise_plot_grouped.png>
+Package pdftex.def Info: ../30_results/09_pairwise_plot_grouped.png  used on in
+put line 784.
+(pdftex.def)             Requested size: 345.00487pt x 344.16408pt.
+ [21 <../30_results/09_pairwise_plot_grouped.png>]
+<../30_results/individual_regressions.png, id=369, 1269.7839pt x 1156.32pt>
+File: ../30_results/individual_regressions.png Graphic file (type png)
+<use ../30_results/individual_regressions.png>
+Package pdftex.def Info: ../30_results/individual_regressions.png  used on inpu
+t line 833.
+(pdftex.def)             Requested size: 344.9969pt x 314.16905pt.
+<../30_results/grouped_regressions.png, id=370, 1269.7839pt x 1156.32pt>
+File: ../30_results/grouped_regressions.png Graphic file (type png)
+<use ../30_results/grouped_regressions.png>
+Package pdftex.def Info: ../30_results/grouped_regressions.png  used on input l
+ine 840.
+(pdftex.def)             Requested size: 344.9969pt x 314.16905pt.
+
+Overfull \hbox (16.62186pt too wide) in paragraph at lines 848--884
+ [] 
+ []
+
+
+Overfull \hbox (14.85582pt too wide) in paragraph at lines 848--884
+ [] 
+ []
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+Overfull \hbox (80.24876pt too wide) in paragraph at lines 918--918
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-26.95882013]), pvalue=array
+([4.92355005e-150]))[] 
+ []
+
+
+Overfull \hbox (80.24876pt too wide) in paragraph at lines 918--918
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-23.01140913]), pvalue=array
+([1.00564593e-111]))[] 
+ []
+
+
+Overfull \hbox (80.24876pt too wide) in paragraph at lines 918--918
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-23.65074847]), pvalue=array
+([1.33953995e-117]))[] 
+ []
+
+
+Overfull \hbox (80.24876pt too wide) in paragraph at lines 918--918
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-23.36762755]), pvalue=array
+([5.64959214e-115]))[] 
+ []
+
+[22] [23 <../30_results/individual_regressions.png>] [24 <../30_results/grouped
+_regressions.png>]
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 945--945
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-3.16361084]), pvalue=array(
+[0.00156292]))[] 
+ []
+
+
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 945--945
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-2.53127357]), pvalue=array(
+[0.01138011]))[] 
+ []
+
+[25]
+Overfull \hbox (43.49887pt too wide) in paragraph at lines 945--945
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-2.57101923]), pvalue=array(
+[0.0101543]))[] 
+ []
+
+
+Overfull \hbox (69.7488pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-6.49740127]), pvalue=array(
+[8.53280274e-11]))[] 
+ []
+
+
+Overfull \hbox (38.24889pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([0.86781049]), pvalue=array([
+0.3855318]))[] 
+ []
+
+
+Overfull \hbox (43.49887pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([0.83762575]), pvalue=array([
+0.40227492]))[] 
+ []
+
+
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-1.68248732]), pvalue=array(
+[0.09251047]))[] 
+ []
+
+
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-1.88909516]), pvalue=array(
+[0.05904629]))[] 
+ []
+
+
+Overfull \hbox (43.49887pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-3.3741558]), pvalue=array([
+0.00075958]))[] 
+ []
+
+
+Overfull \hbox (43.49887pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([0.39887338]), pvalue=array([
+0.69005064]))[] 
+ []
+
+
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-3.13625521]), pvalue=array(
+[0.00174518]))[] 
+ []
+
+
+Overfull \hbox (69.7488pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([10.42666125]), pvalue=array(
+[2.16882037e-25]))[] 
+ []
+
+
+Overfull \hbox (59.24883pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([5.86780509]), pvalue=array([
+4.9782383e-09]))[] 
+ []
+
+
+Overfull \hbox (64.49881pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([5.33166925]), pvalue=array([
+1.24215121e-07]))[] 
+ []
+
+
+Overfull \hbox (38.24889pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([0.03089443]), pvalue=array([
+0.9753569]))[] 
+ []
+
+[26]
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-3.55779128]), pvalue=array(
+[0.00037512]))[] 
+ []
+
+
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-3.21856506]), pvalue=array(
+[0.00129316]))[] 
+ []
+
+
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-1.77611238]), pvalue=array(
+[0.07574051]))[] 
+ []
+
+
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-2.95273326]), pvalue=array(
+[0.00315286]))[] 
+ []
+
+
+Overfull \hbox (69.7488pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-13.2240253]), pvalue=array(
+[9.28561364e-40]))[] 
+ []
+
+
+Overfull \hbox (69.7488pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([24.8919901]), pvalue=array([
+3.52063173e-110]))[] 
+ []
+
+
+Overfull \hbox (69.7488pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([11.72570569]), pvalue=array(
+[1.36024936e-31]))[] 
+ []
+
+
+Overfull \hbox (64.49881pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-13.6832433]), pvalue=array(
+[1.9646117e-42]))[] 
+ []
+
+
+Overfull \hbox (80.24876pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-26.07171472]), pvalue=array
+([3.68436833e-134]))[] 
+ []
+
+
+Overfull \hbox (69.7488pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([13.82562159]), pvalue=array(
+[8.51520228e-42]))[] 
+ []
+
+
+Overfull \hbox (64.49881pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([5.01734031]), pvalue=array([
+5.92797527e-07]))[] 
+ []
+
+
+Overfull \hbox (64.49881pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([5.64708581]), pvalue=array([
+1.93856794e-08]))[] 
+ []
+
+
+Overfull \hbox (64.49881pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-7.72406455]), pvalue=array(
+[1.8720555e-14]))[] 
+ []
+
+
+Overfull \hbox (74.99878pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-10.69599062]), pvalue=array
+([7.44090023e-26]))[] 
+ []
+
+
+Overfull \hbox (74.99878pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-11.43688714]), pvalue=array
+([2.07114299e-29]))[] 
+ []
+
+
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-2.44035376]), pvalue=array(
+[0.01480235]))[] 
+ []
+
+
+Overfull \hbox (11.99896pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-77.79139703]), pvalue=array
+([0.]))[] 
+ []
+
+
+Overfull \hbox (64.49881pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([5.66328049]), pvalue=array([
+2.13182847e-08]))[] 
+ []
+
+
+Overfull \hbox (69.7488pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-5.62644692]), pvalue=array(
+[2.32800657e-08]))[] 
+ []
+
+
+Overfull \hbox (69.7488pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([10.76371698]), pvalue=array(
+[4.81248181e-25]))[] 
+ []
+
+
+Overfull \hbox (69.7488pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([18.41406631]), pvalue=array(
+[8.86499654e-75]))[] 
+ []
+
+[27]
+Overfull \hbox (64.49881pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([8.17458673]), pvalue=array([
+3.54250317e-16]))[] 
+ []
+
+
+Overfull \hbox (59.24883pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([6.8129706]), pvalue=array([1
+.05271654e-11]))[] 
+ []
+
+
+Overfull \hbox (64.49881pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([7.40371108]), pvalue=array([
+1.49308888e-13]))[] 
+ []
+
+
+Overfull \hbox (69.7488pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-6.45251298]), pvalue=array(
+[1.16333085e-10]))[] 
+ []
+
+
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-2.37112098]), pvalue=array(
+[0.01776865]))[] 
+ []
+
+
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-0.73082387]), pvalue=array(
+[0.46492516]))[] 
+ []
+
+
+Overfull \hbox (48.74886pt too wide) in paragraph at lines 1054--1054
+[]\T1/lmtt/m/n/10 Ttest_indResult(statistic=array([-2.87931061]), pvalue=array(
+[0.00400501]))[] 
+ []
+
+(./mcmc_procedure.bbl [28] [29]
+Underfull \hbox (badness 6808) in paragraph at lines 107--112
+[]\T1/lmr/m/n/10 (+20) Steven Wolf.  Com-pact-ness is a ter-ri-ble stan-dard fo
+r re-dis-trict-
+ []
+
+
+Underfull \hbox (badness 4467) in paragraph at lines 107--112
+\T1/lmr/m/n/10 (+20) ing and de-ter-min-ing if maps were ger-ry-man-dered, 2015
+.  URL
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 107--112
+[]$\T1/lmr/m/n/10 (+20) https : / / www . dailykos . com / stories / 2015 / 5 /
+ 12 / 1384062/ -[] Compactness -[]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 107--112
+\T1/lmr/m/n/10 (+20) is -[] a -[] terrible -[] standard -[] for -[] redistricti
+ng -[] and -[] determining -[] if -[] maps -[] were -[]
+ []
+
+)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1091.
+ [30]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1091.
  (./mcmc_procedure.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 509.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 509.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1091.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1091.
+
 Package rerunfilecheck Info: File `mcmc_procedure.out' has not changed.
-(rerunfilecheck)             Checksum: EA926209360743E68AF09BEC9718A827;1435.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 509.
+(rerunfilecheck)             Checksum: 630324E2B54C5D65A9ECBFFDAE7F49A8;6407.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1091.
  ) 
 Here is how much of TeX's memory you used:
- 12359 strings out of 494923
- 177211 string characters out of 6180741
- 265857 words of memory out of 5000000
- 15320 multiletter control sequences out of 15000+600000
- 66349 words of font info for 115 fonts, out of 8000000 for 9000
+ 12608 strings out of 494923
+ 183216 string characters out of 6180741
+ 275923 words of memory out of 5000000
+ 15488 multiletter control sequences out of 15000+600000
+ 66881 words of font info for 118 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 32i,8n,38p,336b,436s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 32i,8n,38p,1025b,466s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dv
 ips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share
-/texmf/fonts/enc/dvips/lm/lm-mathit.enc}</usr/share/texmf/fonts/type1/public/lm
-/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texm
-f/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr1
-0.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share/texmf/fonts/
-type1/public/lm/lmr7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr
-/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/pub
-lic/lm/lmri8.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share
-/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fonts/type1/public/lm
-/lmtt8.pfb>
-Output written on mcmc_procedure.pdf (9 pages, 420273 bytes).
+/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm
+-ts1.enc}</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/f
+onts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.
+pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/t
+ype1/public/lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmr7.pfb></usr/
+share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public
+/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmri8.pfb></usr/share/te
+xmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lm
+tt10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt8.pfb>
+Output written on mcmc_procedure.pdf (30 pages, 3893472 bytes).
 PDF statistics:
- 271 PDF objects out of 1000 (max. 8388607)
- 235 compressed objects within 3 object streams
- 68 named destinations out of 1000 (max. 500000)
- 14408 words of extra memory for PDF output out of 17280 (max. 10000000)
+ 504 PDF objects out of 1000 (max. 8388607)
+ 423 compressed objects within 5 object streams
+ 137 named destinations out of 1000 (max. 500000)
+ 14575 words of extra memory for PDF output out of 17280 (max. 10000000)
 

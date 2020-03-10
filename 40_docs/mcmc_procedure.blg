@@ -3,49 +3,51 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: mcmc_procedure.aux
 The style file: plainnat.bst
 Database file #1: references.bib.bib
+Warning--entry type for "wolf2015" isn't style-file defined
+--line 150 of file references.bib.bib
 Warning--empty journal in ddj2019comp
 Warning--empty journal in er2019
 Warning--empty journal in elrwp
 Warning--empty journal in fifieldwp
-You've used 16 entries,
+You've used 18 entries,
             2773 wiz_defined-function locations,
-            680 strings with 7039 characters,
-and the built_in function-call counts, 6760 in all, are:
-= -- 593
-> -- 365
-< -- 11
-+ -- 125
-- -- 108
-* -- 512
-:= -- 1036
-add.period$ -- 47
-call.type$ -- 16
-change.case$ -- 82
-chr.to.int$ -- 15
-cite$ -- 36
-duplicate$ -- 333
-empty$ -- 584
-format.name$ -- 138
-if$ -- 1413
+            692 strings with 7517 characters,
+and the built_in function-call counts, 7479 in all, are:
+= -- 654
+> -- 405
+< -- 12
++ -- 139
+- -- 120
+* -- 565
+:= -- 1149
+add.period$ -- 53
+call.type$ -- 18
+change.case$ -- 92
+chr.to.int$ -- 17
+cite$ -- 40
+duplicate$ -- 368
+empty$ -- 648
+format.name$ -- 152
+if$ -- 1563
 int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 16
-newline$ -- 87
-num.names$ -- 64
-pop$ -- 180
+missing$ -- 17
+newline$ -- 97
+num.names$ -- 72
+pop$ -- 202
 preamble$ -- 1
-purify$ -- 67
+purify$ -- 75
 quote$ -- 0
-skip$ -- 255
+skip$ -- 285
 stack$ -- 0
-substring$ -- 207
-swap$ -- 27
+substring$ -- 211
+swap$ -- 29
 text.length$ -- 1
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 171
+type$ -- 193
 warning$ -- 4
-while$ -- 63
+while$ -- 69
 width$ -- 0
-write$ -- 200
-(There were 4 warnings)
+write$ -- 225
+(There were 5 warnings)

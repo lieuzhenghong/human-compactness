@@ -1,9 +1,11 @@
 from scipy.stats import ttest_ind
 import pandas as pd
 import numpy as np
+from statsmodels.formula.api import ols
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+from plotnine import *
 
 '''
 We want to do two things here:
@@ -73,6 +75,22 @@ def _get_lowest_sd_plans(grouped_df):
                       < grouped_df['sd'].quantile(cutoff)].copy()
 
 
+def _plot_point_plot(gdf):
+    theme_set(theme_classic())
+    reg_plot = (ggplot(gdf, aes(x='hc', y='sd')) +
+                geom_point(aes(color='factor(state)')) +
+                geom_smooth()
+                )
+    reg_plot.save('./30_results/grouped_regressions.png', height=20, width=20)
+
+    reg_plot = (ggplot(gdf, aes(x='hc', y='sd', color='factor(state)')) +
+                geom_point() +
+                geom_smooth()
+                )
+    reg_plot.save('./30_results/individual_regressions.png',
+                  height=20, width=20)
+
+
 dfs = []
 grouped_dfs = []
 top_dfs = []
@@ -86,6 +104,7 @@ for district in num_districts:
     grouped_df = (dfa.groupby('plan').sum())
     grouped_df = grouped_df.div(num_districts[district])
     grouped_df = grouped_df.reset_index()
+    grouped_df['state'] = district
     grouped_dfs.append(grouped_df)
     top_dfs.append(_get_best_and_worst_plans(grouped_df))
     lowest_sds.append(_get_lowest_sd_plans(grouped_df))
@@ -127,20 +146,37 @@ for idx, top_df in enumerate(top_dfs):
     print(idx, states[idx])
     for i in range(4):
         print(measures[i])
-        print(ttest_ind(top_df[i][['sd']], dfs[idx][['sd']]))
+        print(ttest_ind(top_df[i][['sd']], dfs[idx][['sd']], equal_var=False))
         # print(top_df[i][['sd']].describe())
-
-# assert(False)
 
 df = pd.concat(dfs)
 gdf = pd.concat(grouped_dfs)
-l_sd_df = pd.concat(lowest_sds)
-print(df)
-print(df[['sd', 'hc', 'pp', 'reock', 'ch']].corr())
 print(gdf)
+
+# Find a Pearson's correlation to see how closely the metrics track one another
+
 print(gdf[['sd', 'hc', 'pp', 'reock', 'ch']].corr())
 
-# print(top_dfs[0])
+# Run a regression between spatial diversity and compactness with country
+# dummies
+
+# fit = ols('sd ~ hc', data=grouped_df).fit()
+for metric in ['hc', 'pp', 'reock', 'ch']:
+    fit = ols(
+        f'sd ~ {metric} + C(state)', data=gdf).fit()
+    print(fit.summary().as_latex())
+
+# Results: I find that only human compactness has a negative coefficient on
+# spatial diversity.
+#
+# HC: -0.0404, t-value -40.632
+# PP: +0.0251, t-value 29.841
+# Reock: +0.0209, t-value 27.645
+# CH: -0.0016, t-value -1.801
+
+# Plot an overall correlation plot between spatial diversity and compactness
+_plot_point_plot(gdf)
+
 top_plans = []
 
 for i in range(4):
@@ -155,7 +191,6 @@ for top_plan in top_plans:
     print(top_plan[['sd']].describe())
 
 print(gdf[['sd']].describe())
-print(l_sd_df[['sd']].describe())
 
 # Testing that top plans have significantly lower SD than the mean
 
@@ -165,10 +200,10 @@ print(top_plans[2][['sd']].mean())  # human compactness
 print(top_plans[3][['sd']].mean())  # human compactness
 print(df[['sd']].mean())  # human compactness
 
-print(ttest_ind(top_plans[0][['sd']], df[['sd']]))
-print(ttest_ind(top_plans[1][['sd']], df[['sd']]))
-print(ttest_ind(top_plans[2][['sd']], df[['sd']]))
-print(ttest_ind(top_plans[3][['sd']], df[['sd']]))
+print(ttest_ind(top_plans[0][['sd']], df[['sd']], equal_var=False))
+print(ttest_ind(top_plans[1][['sd']], df[['sd']], equal_var=False))
+print(ttest_ind(top_plans[2][['sd']], df[['sd']], equal_var=False))
+print(ttest_ind(top_plans[3][['sd']], df[['sd']], equal_var=False))
 
 # Little difference in spatial diversity means: all geometric measures 0.64,
 # human compactness does a little better at 0.0635
@@ -176,26 +211,22 @@ print(ttest_ind(top_plans[3][['sd']], df[['sd']]))
 # Yes --- but the difference in magnitude is tiny.
 # Mean is 0.64 with 0.08 std, but we only observe a tiny difference: 0.635 vs 0.64
 
-# Checking that human compactness top plans have significantly lower SD than top plans according to other compactness metrics
-print(top_plans[0][['sd']].mean())  # human compactness
-print(top_plans[1][['sd']].mean())  # human compactness
-print(top_plans[2][['sd']].mean())  # human compactness
-print(top_plans[3][['sd']].mean())  # human compactness
-print(ttest_ind(top_plans[0][['sd']], top_plans[1][['sd']]))
-print(ttest_ind(top_plans[0][['sd']], top_plans[2][['sd']]))
-print(ttest_ind(top_plans[0][['sd']], top_plans[3][['sd']]))
+# Checking that human compactness top plans have significantly lower SD than
+# top plans according to other compactness metrics
 
-# Next check whether it's the case that human compactness does poorly on cities
+print(
+    f"Mean SD of top plans under Human Compactness: {top_plans[0][['sd']].mean()}")
+print(
+    f"Mean SD of top plans under Polsby-Popper: {top_plans[1][['sd']].mean()}")
+print(f"Mean SD of top plans under Reock: {top_plans[2][['sd']].mean()}")
+print(f"Mean SD of top plans under Convex Hull: {top_plans[3][['sd']].mean()}")
 
-# df['area_binned'] = pd.cut(df['log_area'], bins=[0, 21, 23, 99],
-#                            labels=['small', 'medium', 'large'])
+# Performing t-test of human-compactness against PP, Reock and CH
 
-'''
-# We have the cities.
-df_c = df[df['log_area'] < 21].copy()
-df_nc = df[df['log_area'] > 21].copy()
+print(ttest_ind(top_plans[0][['sd']], top_plans[1][['sd']], equal_var=False))
+print(ttest_ind(top_plans[0][['sd']], top_plans[2][['sd']], equal_var=False))
+print(ttest_ind(top_plans[0][['sd']], top_plans[3][['sd']], equal_var=False))
 
-print(df_c[['sd', 'hc', 'pp', 'reock', 'ch']].corr())
-print(df_nc)
-print(df_nc[['sd', 'hc', 'pp', 'reock', 'ch']].corr())
-'''
+# Performing t-test of PP against Reock and CH
+print(ttest_ind(top_plans[1][['sd']], top_plans[2][['sd']], equal_var=False))
+print(ttest_ind(top_plans[1][['sd']], top_plans[3][['sd']], equal_var=False))
