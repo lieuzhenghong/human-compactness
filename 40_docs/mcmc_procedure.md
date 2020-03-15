@@ -337,18 +337,24 @@ district. This is because most routing engines allow you only to specify a
 route between two (or more) points. They do not further allow you to specify
 regions through which the route cannot pass.
 
-Given I build upon the literature by developing a new metric which I call human
-compactness. This metric incorporates driving durations at the very outset,
-and builds in optimisations to run quickly.
+Given the difficulties of adapting existing point-based distance metrics to
+use driving durations, I develop a new measure called *human compactness*.
+This metric incorporates driving durations at the very outset, and builds in
+optimisations to run quickly.
 
-The metric measures the ratio of driving durations between one's
-nearest neighbours and one's fellow districtors. The higher this ratio is,
-the more compact the district.
+The human compactness metric measures the ratio of driving durations between
+one's nearest neighbours and one's fellow districtors. This ratio ranges from
+0 to 1. The higher this ratio is, the more compact the district.
+
+![](img/human_compactness.png)
+
+$$\frac{2 + 2.5}{4+6}$$
 
 **TODO put a figure here about human compactness**
 
 Intuitively, it encourages drawing districts that put one's next-door
 neighbours together in the same district. 
+
 
 First, I use driving durations rather than Euclidean (as-the-crow-flies)
 distances between voters. As mentioned, many previous scholars have suggested
@@ -369,30 +375,26 @@ improves upon the algorithmic complexity of \citeauthor{fh2011}'s algorithm
 from an NP-hard problem to one with a $O(n^2)$ polynomial runtime. This is an
 exponential decrease in algorithmic complexity, which means the disparity
 between my metric and \citeauthor{fh2011}'s increases as the input size
-grows. 
-
-
-I also use programming
-techniques like precomputation and memoisation to decrease the time taken to
-compute the metric greatly. My implementation is competitive with
-geometry-based compactness measures like Reock: on my machine, both metrics
-took roughly the same amount of time (~0.20s per step). Further details on
-the metric can be found in Appendix A.
+grows. I also use programming techniques like precomputation and memoisation
+to decrease the time taken to compute the metric greatly. My implementation
+is competitive with geometry-based compactness measures like Reock: on my
+machine, both metrics took roughly the same amount of time (~0.20s per step).
+Further details on these algorithmic optimisations can be found in Appendix A.
 
 Given these considerations, I settle on an ensemble of four different
 compactness measures: Polsby-Popper, Reock, Convex Hull, and Human
 Compactness. I exclude the Schwartzberg metric as the Schwartzberg and
-Polsby-Popper measure are mathematically equivalent. Finally, I include my
-point-wise distance metric. This ensures the robustness and validity of my
-results.
+Polsby-Popper measure are largely mathematically equivalent. Finally, I
+include my point-wise distance metric. This maximises the robustness and
+validity of my results.
 
 ### Generating plans with automated districting algorithms
 
 In order to find out whether compactness measures track spatial diversity, we
-have to generate many counterfactual plausible plans that span the entirety of
-possible districting plans and measure the correlation between compactness and
-spatial diversity. This requires using a computer to draw a large number of
-plans according to some minimal criteria.
+have to generate many counterfactual plausible plans that span the entirety
+of possible districting plans and measure the correlation between compactness
+and spatial diversity. This requires using a computer to draw a large number
+of plans according to some criteria.
 
 The idea of drawing a large number of districting plans with a computer has a
 long and storied history, starting in the 60s and 70s. The approach has almost
@@ -410,7 +412,7 @@ population is formed. Similarly, \citeauthor{cr2013} begin by initialising all
 precincts as an individual, separate district, then randomly agglomerating
 neighbouring precincts until the desired number of districts is reached.
 
-While this "standard simulation algorithm" enjoys a certain degree of success,
+While this standard iterative algorithm enjoys a certain degree of success,
 it has one crippling weakness. The way in which this class of algorithms
 operates necessarily explores only a tiny subset of all possible districting
 plans. Subsequent work pointed out this flaw: \citeauthor{mm2018} wrote that

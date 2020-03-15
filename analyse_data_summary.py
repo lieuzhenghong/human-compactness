@@ -43,8 +43,10 @@ state_names = {"02": "Alaska", "01": "Alabama", "05": "Arkansas", "04": "Arizona
 def _get_best_and_worst_plans(grouped_df):
     # cutoffs = [0.01]
     # cutoffs = [0.90]
-    cutoffs = [0.95]
-    # cutoffs = [0.98]
+    # cutoffs = [0.95]
+    cutoffs = [0.98]
+    # cutoffs = [0.90]
+    # cutoffs = [0.75]
     for cutoff in cutoffs:
         grouped_df.loc[grouped_df['hc'] >
                        grouped_df['hc'].quantile(cutoff), 'from'] = 'hc'
@@ -114,6 +116,7 @@ for district in num_districts:
 # First check if any particular compactness measure tracks spatial diversity
 # better than the rest
 
+'''
 print("Plotting all district plans' SDs...")
 fig, ax = plt.subplots(figsize=(10, 10))
 for grouped_df in grouped_dfs:
@@ -140,14 +143,55 @@ fig, ax = plt.subplots(figsize=(10, 10))
 g = sns.kdeplot(df.loc[:, 'sd'], shade=True, ax=ax, legend=True)
 ax.set(xlim=(0.4, 1.2))
 fig.savefig(f'all_districts_concat_sd.png')
+'''
 
+# Look at the top DFs and find the difference in means
+
+state_percentiles = []
 for idx, top_df in enumerate(top_dfs):
     measures = ['hc', 'pp', 'reock', 'ch']
     print(idx, states[idx])
+    des = (grouped_dfs[idx][['sd']])
+    print(des.describe())
+    state_percentiles.append([])
+    from scipy import stats
     for i in range(4):
         print(measures[i])
-        print(ttest_ind(top_df[i][['sd']], dfs[idx][['sd']], equal_var=False))
+        top_mean = top_df[i][['sd']].mean().values[0]
+        diff_mean = (top_df[i][['sd']].mean() -
+                     grouped_dfs[idx][['sd']].mean())
+
+        state_percentiles[-1].append(stats.percentileofscore(des, top_mean))
+        '''
+        print(f'Difference in means: {diff_mean}')
+        print(
+            f"Difference in means between {measures[i]} and all: {diff_mean}")
+
+        print(f"Total variance: {des.max() - des.min()}")
+        print(
+            f"Percentage of variance: {100* diff_mean / (des.max() - des.min()) }")
+        '''
+
+        values = [(diff_mean),
+                  (des.max()-des.min()),
+                  (100*diff_mean / (des.max()-des.min()))
+                  ]
+        # print(values)
+        x = (ttest_ind(top_df[i][['sd']],
+                       grouped_dfs[idx][['sd']], equal_var=False))
+        # print(x)
         # print(top_df[i][['sd']].describe())
+
+state_percentiles = pd.DataFrame(state_percentiles)
+state_percentiles = state_percentiles.rename(
+    columns={0: 'hc', 1: 'pp', 2: 'reock', 3: 'ch'},
+)
+
+print(state_percentiles.to_latex())
+print(state_percentiles)
+print(state_percentiles.mean())
+
+assert(False)
 
 df = pd.concat(dfs)
 gdf = pd.concat(grouped_dfs)
@@ -163,7 +207,7 @@ print(gdf[['sd', 'hc', 'pp', 'reock', 'ch']].corr())
 # fit = ols('sd ~ hc', data=grouped_df).fit()
 for metric in ['hc', 'pp', 'reock', 'ch']:
     fit = ols(
-        f'sd ~ {metric} + C(state)', data=gdf).fit()
+        f'sd ~ {metric} + C(state) -1', data=gdf).fit()
     print(fit.summary().as_latex())
 
 # Results: I find that only human compactness has a negative coefficient on
@@ -174,6 +218,7 @@ for metric in ['hc', 'pp', 'reock', 'ch']:
 # Reock: +0.0209, t-value 27.645
 # CH: -0.0016, t-value -1.801
 
+
 # Plot an overall correlation plot between spatial diversity and compactness
 _plot_point_plot(gdf)
 
@@ -181,6 +226,14 @@ top_plans = []
 
 for i in range(4):
     top_plans.append(pd.concat([d[i] for d in top_dfs]))
+
+# Run the same OLS regression for the top 10% of plans on each metric
+
+for idx, metric in enumerate(['hc', 'pp', 'reock', 'ch']):
+    fit = ols(
+        f'sd ~ {metric} + C(state) - 1', data=top_plans[idx]).fit()
+    print(fit.summary())
+    print(fit.summary().as_latex())
 
 # These are top plans for HC, PP, CH, Reock
 # print(top_plans)
@@ -192,18 +245,24 @@ for top_plan in top_plans:
 
 print(gdf[['sd']].describe())
 
+# Plot KDE plot of spatial diversity of all grouped plots
+
+fig, ax = plt.subplots(figsize=(10, 10))
+g = sns.kdeplot(gdf.loc[:, 'sd'], shade=True, ax=ax)
+fig.savefig(f'./30_results/kde_all_dfs')
+
 # Testing that top plans have significantly lower SD than the mean
 
 print(top_plans[0][['sd']].mean())  # human compactness
 print(top_plans[1][['sd']].mean())  # human compactness
 print(top_plans[2][['sd']].mean())  # human compactness
 print(top_plans[3][['sd']].mean())  # human compactness
-print(df[['sd']].mean())  # human compactness
+print(gdf[['sd']].mean())  # human compactness
 
-print(ttest_ind(top_plans[0][['sd']], df[['sd']], equal_var=False))
-print(ttest_ind(top_plans[1][['sd']], df[['sd']], equal_var=False))
-print(ttest_ind(top_plans[2][['sd']], df[['sd']], equal_var=False))
-print(ttest_ind(top_plans[3][['sd']], df[['sd']], equal_var=False))
+print(ttest_ind(top_plans[0][['sd']], gdf[['sd']], equal_var=False))
+print(ttest_ind(top_plans[1][['sd']], gdf[['sd']], equal_var=False))
+print(ttest_ind(top_plans[2][['sd']], gdf[['sd']], equal_var=False))
+print(ttest_ind(top_plans[3][['sd']], gdf[['sd']], equal_var=False))
 
 # Little difference in spatial diversity means: all geometric measures 0.64,
 # human compactness does a little better at 0.0635

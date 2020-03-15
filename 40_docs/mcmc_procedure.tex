@@ -427,19 +427,13 @@ points within the district''. And \cite{fh2011} measures ``the distance
 between voters within the same district relative to the minimum distance
 achievable''.
 
-\textbf{TODO explain my metric a bit more before talking about the
-improvements Maybe change tack --- criticise the existing literature
-approach/ talk about shortcomings, then introduce my metric.}
-
 Despite the relative merits of point-wise distance metrics, there are
 two areas of improvement---one theoretical, the other empirical.
-
 Firstly, all point-wise distance metrics suggested in the literature use
 Euclidean distances. But many have rightly suggested that we should
-consider travel times/driving durations instead.
-
-For instance while \cite{fh2011} used Euclidean distance in their
-metric, they point out its shortcomings:
+consider travel times/driving durations instead. For instance, while
+\cite{fh2011} used Euclidean distance in their metric, they point out
+its shortcomings:
 
 \begin{quote}
 Suppose there is a city on a hill. On the West side is {[}a{]} mild,
@@ -478,9 +472,9 @@ restrictions that make using travel times difficult, if not impossible.
 For instance, the metric that \citet{fh2011} propose requires solving an
 \emph{NP-complete} problem. A term used in computer science, an
 NP-complete problem scales exponentially with the size of the input.
-This makes it prohibitive While they have an approximation that runs
-much quicker, they provide no bounds on the correctness of this
-approximation.
+This makes it prohibitively expensive on larger states. And while they
+have an approximation that runs much quicker, they provide no bounds on
+the correctness of this approximation.
 
 Similarly, \citeauthor{olson2010} has a metric that minimises the
 average distance from each voter to the center of their district. He
@@ -489,28 +483,31 @@ measure, but it would take too long\ldots{} The large amount of map data
 and extra computer time to calculate all those travel times would slow
 the process down horribly. It would then require a room filling
 supercomputer to get an answer in a reasonable amount of time.''
-\citep{olson2010}
+\citep{olson2010}. And finally, \citeauthor{cm2010}'s measure cannot
+feasibly be improved with driving durations due to the difficulty of
+finding point-to-point travel distances without passing through another
+district. This is because most routing engines allow you only to specify
+a route between two (or more) points. They do not further allow you to
+specify regions through which the route cannot pass.
 
-Similarly, \citeauthor{cm2010}'s measure cannot feasibly be improved
-with driving durations due to the difficulty of finding point-to-point
-travel distances without passing through another district. This is
-because most routing engines allow you only to specify a route between
-two (or more) points. They do not further allow you to specify regions
-through which the route cannot pass.
+Given the difficulties of adapting existing point-based distance metrics
+to use driving durations, I develop a new measure called \emph{human
+compactness}. This metric incorporates driving durations at the very
+outset, and builds in optimisations to run quickly.
 
-I build upon the literature by developing a new metric which I call
-human compactness. This metric incorporates driving durations at the
-very outset, and builds in optimisations to run quickly.
+The human compactness metric measures the ratio of driving durations
+between one's nearest neighbours and one's fellow districtors. This
+ratio ranges from 0 to 1. The higher this ratio is, the more compact the
+district.
 
-The metric measures the ratio of driving durations between one's nearest
-neighbours and one's fellow districtors. The higher this ratio is, the
-more compact the district.
+\includegraphics{img/human_compactness.png}
+
+\[ \frac{2 + 2.5}{4+6}\]
 
 \textbf{TODO put a figure here about human compactness}
 
 Intuitively, it encourages drawing districts that put one's next-door
-neighbours together in the same district. This metric makes two key
-improvements over existing measures that have been proposed.
+neighbours together in the same district.
 
 First, I use driving durations rather than Euclidean (as-the-crow-flies)
 distances between voters. As mentioned, many previous scholars have
@@ -532,21 +529,20 @@ metric improves upon the algorithmic complexity of \citeauthor{fh2011}'s
 algorithm from an NP-hard problem to one with a \(O(n^2)\) polynomial
 runtime. This is an exponential decrease in algorithmic complexity,
 which means the disparity between my metric and \citeauthor{fh2011}'s
-increases as the input size grows.
-
-I also use programming techniques like precomputation and memoisation to
-decrease the time taken to compute the metric greatly. My implementation
-is competitive with geometry-based compactness measures like Reock: on
-my machine, both metrics took roughly the same amount of time
-(\textasciitilde{}0.20s per step). Further details on the metric can be
-found in Appendix A.
+increases as the input size grows. I also use programming techniques
+like precomputation and memoisation to decrease the time taken to
+compute the metric greatly. My implementation is competitive with
+geometry-based compactness measures like Reock: on my machine, both
+metrics took roughly the same amount of time (\textasciitilde{}0.20s per
+step). Further details on these algorithmic optimisations can be found
+in Appendix A.
 
 Given these considerations, I settle on an ensemble of four different
 compactness measures: Polsby-Popper, Reock, Convex Hull, and Human
 Compactness. I exclude the Schwartzberg metric as the Schwartzberg and
-Polsby-Popper measure are mathematically equivalent. Finally, I include
-my point-wise distance metric. This ensures the robustness and validity
-of my results.
+Polsby-Popper measure are largely mathematically equivalent. Finally, I
+include my point-wise distance metric. This maximises the robustness and
+validity of my results.
 
 \hypertarget{generating-plans-with-automated-districting-algorithms}{%
 \subsubsection{Generating plans with automated districting
@@ -557,7 +553,7 @@ diversity, we have to generate many counterfactual plausible plans that
 span the entirety of possible districting plans and measure the
 correlation between compactness and spatial diversity. This requires
 using a computer to draw a large number of plans according to some
-minimal criteria.
+criteria.
 
 The idea of drawing a large number of districting plans with a computer
 has a long and storied history, starting in the 60s and 70s. The
@@ -578,7 +574,7 @@ initialising all precincts as an individual, separate district, then
 randomly agglomerating neighbouring precincts until the desired number
 of districts is reached.
 
-While this ``standard simulation algorithm'' enjoys a certain degree of
+While this standard iterative algorithm enjoys a certain degree of
 success, it has one crippling weakness. The way in which this class of
 algorithms operates necessarily explores only a tiny subset of all
 possible districting plans. Subsequent work pointed out this flaw:
