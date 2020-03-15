@@ -7,7 +7,9 @@ header-includes:
 ## Introduction
 
 Good job today. To reiterate, basically I think your research question should
-be something like: "Research shows that districts that consist of more
+be something like: 
+
+"Research shows that districts that consist of more
 homogeneous groups of voters achieve better representation on several
 dimensions. Meanwhile, many statutes require that districts be "compact", a
 term with many interpretations. It is not clear, however, that more compact
@@ -34,7 +36,7 @@ spatial diversity
 
 ![Effect of spatial diversity on electoral rolloff](img/sd_rolloff.png)
 
-![Effect of electoral responsiveness on spatial diversity](./img/average_spatial-diversity.png)
+![Effect of electoral responsiveness on spatial diversity \label{sd_responsiveness}](./img/average_spatial-diversity.png)
 
 > spatial diversity remained a statistically significant predictor of
 roll-off rate. With these variables held constant at their means, a House
@@ -99,7 +101,6 @@ then, may push without hesitation for spatially homogeneous districts
 to be drawn, since it is these districts that seem most likely (in the ag-
 gregate) to reflect the public’s evolving preferences. 265
 
-
 \cite{steph2012}
 
 ### How compactness might affect spatial diversity
@@ -110,9 +111,29 @@ gregate) to reflect the public’s evolving preferences. 265
 - people have used MCMC approach to look at how districts are more or less competitive
 ( daryl's work)
 
-## Overview of research strategy
+One factor ignored in this analysis, which is
+critical to theprocess of drawing districts, isrespecting
+communities-of-interest.Even defining and locating geographically such
+communities is avery difficult problem, let alone the determination of whether
+ornot to preserve that group in a single district. We therefore pro-pose our
+analysis as a framework for discussion about trade-offs inredistricting rather
+than as a policy recommendation.
 
-Two key research questions:
+In this work, we have demonstrated with a
+simple model thatdemanding districts be drawn to be as compact as possible
+anddemanding that they satisfy a notion of partisan symmetry areincompatible,
+but to different degrees depending on the particularfeatures of the geographic
+region in question. Since existing propos-als and methodologies for automated
+and algorithmic redistrictinginvolve finding an approximate solution to an
+optimization problem,it is important to understand how changing the objective
+functionof these procedures can affect the outcome. As more
+jurisdictionsconsider redistricting reforms, they should be cautious about
+abdi-cating the line drawing process to algorithms which encode valuesdifferent
+from those of the voters who use the districts to elect theirrepresentatives.
+
+## Methods
+
+Key research questions:
 
 1. Do more compact districts have better, equal, or worse spatial diversity
 	 scores?
@@ -123,28 +144,45 @@ Two key research questions:
 The research procedure:
 
 1. Generate a large and representative subset of plausible districting plans
-2. 
+2. Evaluate compactness and spatial diversity scores on those plans
+3. 
+
+**TODO** write about the two most important bits in my methods: choosing a
+*compactness measure and choosing a MCMC algorithm to generate the large and
+*representative subset.
 
 ### Overview of compactness measures
 
 To empirically evaluate a trade-off between compactness and homogeneity, we
-must first define the metrics by which we evaluate a proposed districting plan
-over each of these dimensions. Here, I introduce many different compactness
-measures. I give a brief overview of the different types of measures, explain
-the pros and cons of each, present a compactness measure that I develop, and
-support my decision to use an ensemble of measures to increase robustness.
+must first define the metrics by which we evaluate a proposed districting
+plan over each of these dimensions. Here, I introduce many different
+compactness measures. I give a brief overview of the different types of
+measures and explain the pros and cons of each. I present a compactness
+measure that I develop and explain my decision to use an ensemble of four
+compactness measures to increase the robustness of my results. [^-1]
+
+[^-1]: I use the phrases "compactness metric" and "compactness measure"
+interchangably.
+
+Over a hundred compactness measures have been proposed in the literature.
+Here, I focus on two main families: *geometric* compactness metrics and
+*point-wise distance* metrics.
 
 #### Geometric compactness metrics
 
-Shape-based versus dispersion-based
+Geometric compactness metrics are by far the largest class of compactness
+measures. They look at some geometric properties of proposed districts. These
+properties are most often shapes, area or perimeter---although more esoteric
+measures do exist. Here, I explain the three most popular compactness
+measures, although other popular compactness measures e.g. Schwartzberg are
+qualitatively similar.
 
-The most 
+##### Polsby-Popper
 
-#### Polsby-Popper
-
-The Polsby-Popper measure, introduced by Polsby and Popper in 1991, is a ratio
-of the area of the district to the area of a circle whose circumference is
-equal to the perimeter of the district.
+The Polsby-Popper measure is by far the most popular measure used in the
+literature. It is the ratio of the area of the district to the area of a
+circle whose circumference is equal to the perimeter of the district
+\citep{pp1991}. A perfect circle has a Polsby-Popper score of 1.
 
 $$4\pi \times \frac{A}{P^2}$$
 
@@ -152,19 +190,26 @@ $$4\pi \times \frac{A}{P^2}$$
 circle with a ragged boundary, an an example district from a Pennsylvania plan.
 Taken from \cite{s2020}.](img/pp_example.png)
 
-#### Reock
+##### Reock
 
 The Reock score is a measure of the ratio of the district to the area of the
-minimum bounding circle that encloses the district's geometry.
+minimum bounding circle that encloses the district's geometry \citep{reock1961}.
 
 $$\frac{Area}{AreaOfMinimumBoundingCircle}$$
 
-#### Convex Hull
+![A visualisation of the Reock metric. Taken from https://fisherzachary.github.io/public/r-output.html](img/reock.png)
 
-The Convex Hull metric is a ratio of the area of the district to the area
-of the minimum convex polygon that can enclose the district's geometry.
+##### Convex Hull
+
+The Convex Hull metric is a ratio of the area of the district to the area of
+the minimum convex polygon that can enclose the district's geometry. A
+circle, square, or any other convex polygon has the maximum Convex Hull score
+of 1.
 
 $$\frac{Area}{AreaOfMinimumConvexPolygon}$$
+
+![A visualisation of the Convex Hull metric. Taken from https://fisherzachary.github.io/public/r-output.html](img/ch.png)
+
 
 #### Choosing a compactness metric
 
@@ -175,23 +220,26 @@ $$\frac{Area}{AreaOfMinimumConvexPolygon}$$
 	has "a substantial impact on compactness scores, with the Polsby-Popper score
 	especially affected."
 
-Which compactness measure should we choose? All three compactness measures are
-well-cited in the literature and enjoy widespread use. They have been cited in
-U.S. Supreme Court cases, *amici* briefs, and redistricting commissions
-\citep{moncrief2011}. Despite their widespread acceptance, however, the
-problems with compactness measures are many, and well-covered in the
-literature. No compactness measure is perfect: as an example, the most popular
-compactness measure in the literature---Polsby-Popper---is sensitive to small
-perturbations in data resolution (the coastline problem). [^0] It is therefore
-important to use an *ensemble* of compactness measures to make sure that one's
-data and conclusions are robust.
+Which compactness measure should we choose? All three compactness measures
+are well-cited in the literature and enjoy widespread use. They have been
+cited in U.S. Supreme Court cases, *amici* briefs, and redistricting
+commissions \citep{moncrief2011}. 
 
-But even this is not enough. Because most compactness measures are purely
-geometric, they are all vulnerable to a specific family of geographic
-perturbations. Indeed, \cite{bswp} show that minimally tweaking the geometric
-features of states is enough for the four most popular compactness measures
-(Polsby-Popper, Convex Hull, Reock, Schwartzberg) to give very different
-conclusions on nominally identical data.
+Despite their widespread acceptance,
+however, the problems with compactness measures are many, and well-covered in
+the literature. As an example, the most popular compactness measure in the
+literature---Polsby-Popper---is sensitive to small perturbations in data
+resolution (the coastline problem).[^0] The same is true for other geometric
+compactness measures: no single metric is perfect. It is therefore important
+to use an *ensemble* of compactness measures to make sure that one's data and
+conclusions are robust.
+
+But even this is not enough. Because all three of these compactness measures
+are purely geometric, they are all vulnerable to a specific family of
+geographic perturbations. Indeed, \cite{bswp} show that minimally tweaking
+the geometric features of states is enough for the four most popular
+compactness measures (Polsby-Popper, Convex Hull, Reock, Schwartzberg) to
+give very different conclusions on nominally identical data.
 
 Thus, it is important to include a non-geometric compactness measure in the
 ensemble to guard against the possibility that the results are driven by a
@@ -199,15 +247,18 @@ specific quirk in geography. Many such measures have been proposed. For
 instance, \cite{dc2016} bring in a discipline of mathematics---graph
 theory---to formulate a new metric of compactness.
 
-However, one particular class of metrics I term *point-wise distance metrics*
-stands out for its ease of understanding (critical if it is to be persuasive to
-Supreme Court judges), theoretical attractiveness, and academic consensus. This
-class of compactness metrics tries to measure the distance between two voters
-in a district, and assigns higher scores the lower that distance is.
+#### Point-wise distance compactness measures
 
-This class of metrics enjoy strong theoretical grounding. Paramount to the idea
-of single-member districts is that there is some value in voters who live in
-the same area being put into the same district. \cite{er2019}:
+However, one particular class of metrics I term *point-wise distance*
+compactness stands out for its ease of understanding (critical if it is to be
+persuasive to Supreme Court judges), theoretical attractiveness, and academic
+consensus. Roughly speaking, this class of compactness metrics tries to
+measure the distance between voters in a district, and assigns higher scores
+the lower that distance is.
+
+This class of metrics enjoys strong theoretical grounding. Paramount to the
+idea of single-member districts is that there is some value in voters who
+live in the same area being put into the same district. \cite{er2019}:
 
 > "Voters in the same area are likely to share political interests; voters in the
 same area are better able to communicate and coordinate with one another;
@@ -216,35 +267,26 @@ voters in the same area are especially likely to belong to the same social
 communities --- all suggest the importance of voters being located in districts
 with their geographic peers."
 
-In contrast, districts that carve voters out of their natural communities and
-pool them with unrelated, distant voters are bad ones. Therefore, we should
-be sensitive not just to geometric shape, but rather whether or not voters
-live close to one another. Point-wise distance metrics are more readily
-understandable to laymen and possess a normative bent that more abstract
-mathematical compactness measures lack. It has therefore been an active area
-of development in the literature. \cite{cm2010} present a measure of
-"bizarreness", which is the "expected relative difficulty in traveling
-between two points within the district". And \cite{fh2011} measures "the
-distance between voters within the same district relative to the minimum
-distance achievable".
+In contrast, districts that put people with unrelated, faraway others carve
+voters out of their natural communities and are thus to be avoided. We care
+about whether co-districtors live in the same area and belong to the same
+communities of interest, not just the compactness of their electoral
+district. And point-wise distance metrics deliver exactly that.
 
-I build upon the literature by developing a new metric which I call human
-compactness. The metric measures the ratio of driving durations between one's
-nearest neighbours and one's fellow districtors. The higher this ratio is,
-the more compact the district. Intuitively, it encourages drawing districts
-that put one's next-door neighbours together in the same district. This
-metric makes two key improvements over existing measures that have been
-proposed.
+Therefore, point-wise distance metrics are more intuitive to laymen and
+possess a normative bent that more abstract mathematical compactness measures
+lack. It has therefore been an active area of development in the literature.
+\cite{cm2010} present a measure of "bizarreness", which is the "expected
+relative difficulty in traveling between two points within the district". And
+\cite{fh2011} measures "the distance between voters within the same district
+relative to the minimum distance achievable".
 
-**TODO explain my metric a bit more before talking about the improvements Maybe
-change tack --- criticise the existing literature approach/ talk about
-shortcomings, then introduce my metric.**
-
-First, I use driving durations rather than Euclidean
-(as-the-crow-flies) distances between voters. This keeps the metric robust to
-quirks in political geography like mountains and lakes, and better represents
-the notion of natural communities. In fact, while \cite{fh2011} used
-Euclidean distance in his metric, he points out its shortcomings:
+Despite the relative merits of point-wise distance metrics, there are two
+areas of improvement---one theoretical, the other empirical. Firstly, all
+point-wise distance metrics suggested in the literature use Euclidean
+distances. But many have rightly suggested that we should consider travel
+times/driving durations instead. For instance, while \cite{fh2011} used
+Euclidean distance in their metric, they point out its shortcomings:
 
 > Suppose there is a city on a hill. On the West side is [a] mild, long incline
 toward the rest of the city, which is in a plane. On the East side is a steep
@@ -257,48 +299,85 @@ etc. Thus, for all practical purposes, one probably wants to include the
 hilltop in a Western district rather than an Eastern one. More general
 notions of distance can handle this.
 
-In this case, driving durations would better reflect this quirk in political
-geography. The "impassable" region on the East would have a short Euclidean
-distance, and any districting plan that put the hilltop with the Eastern
-district would be unfairly penalised by these point-wise distance metrics. On
-the other hand, the impassable region would have a long driving duration,
-accurately reflecting the political geography. After acknowledging the
-shortcomings of Euclidean distance, \citeauthor{fh2011} specifically suggest
-using driving durations to improve their metric: "one can extend much of [our
-analysis] by using driving distance or what legal scholars refer to as
-'communities of interest'".
+The "impassable" region on the East would have a short Euclidean distance,
+and any districting plan that put the hilltop with the Eastern district would
+be unfairly penalised by these point-wise distance metrics. On the other
+hand, the impassable region would have a long driving duration, accurately
+reflecting the political geography. In this and many other cases like it
+(e.g. large bodies of water), driving durations better reflect a state's
+unique political geographies.
+
+After acknowledging the shortcomings of Euclidean distance,
+\citeauthor{fh2011} specifically suggest using driving durations to improve
+their metric: "one can extend much of [our analysis] by using driving
+distance or what legal scholars refer to as 'communities of interest'".
 
 There are thus strong theoretical grounds for using driving durations in
-point-wise distance metrics. Driving durations also enjoys empirical
-support---the use of driving durations seems strictly superior in many cases
-involving human-scale distances. Working with Nicholas Eubank and Jonathan
-Rodden, I update their gerrymandering-detection metric to use driving
-durations instead \citep{er2019}. We find a consistently different picture of
-the social context of American suburban voters, raising the possibility of
-false positives under the Euclidean distance measure \citep*{elrwp}.
+point-wise distance metrics. Why then have scholars not adopted it, seeing as
+they agree on its superiority? This brings me to my empirical criticism: the
+point-wise distance metrics scholars have proposed are either far too
+computationally complex to compute at scale, or have restrictions that make
+using travel times difficult, if not impossible. For instance, the metric
+that \citet{fh2011} propose requires solving an *NP-complete* problem. A term
+used in computer science, an NP-complete problem scales exponentially with
+the size of the input. This makes it prohibitively expensive on larger
+states. And while they have an approximation that runs much quicker, they
+provide no bounds on the correctness of this approximation.
+
+Similarly, \citeauthor{olson2010} has a metric that minimises the average
+distance from each voter to the center of their district. He says of travel
+times "that it might be the right kind of thing to measure, but it would take
+too long... The large amount of map data and extra computer time to calculate
+all those travel times would slow the process down horribly. It would then
+require a room filling supercomputer to get an answer in a reasonable amount
+of time." \citep{olson2010}. And finally, \citeauthor{cm2010}'s measure
+cannot feasibly be improved with driving durations due to the difficulty of
+finding point-to-point travel distances without passing through another
+district. This is because most routing engines allow you only to specify a
+route between two (or more) points. They do not further allow you to specify
+regions through which the route cannot pass.
+
+Given I build upon the literature by developing a new metric which I call human
+compactness. This metric incorporates driving durations at the very outset,
+and builds in optimisations to run quickly.
+
+The metric measures the ratio of driving durations between one's
+nearest neighbours and one's fellow districtors. The higher this ratio is,
+the more compact the district.
+
+**TODO put a figure here about human compactness**
+
+Intuitively, it encourages drawing districts that put one's next-door
+neighbours together in the same district. 
+
+First, I use driving durations rather than Euclidean (as-the-crow-flies)
+distances between voters. As mentioned, many previous scholars have suggested
+exactly this, giving it strong theoretical support. It keeps the metric
+robust to quirks in political geography like mountains and lakes, and better
+represents the notion of natural communities. The use of driving durations
+also enjoys empirical support---the use of driving durations seems strictly
+superior in many cases involving human-scale distances. Working with Nicholas
+Eubank and Jonathan Rodden, I update their gerrymandering-detection metric to
+use driving durations instead \citep{er2019}. We find a consistently
+different picture of the social context of American suburban voters, raising
+the possibility of false positives under the Euclidean distance measure
+\citep*{elrwp}. Given that there are strong theoretical and empirical reasons
+to adopt driving durations, this is a large improvement.
 
 The second improvement I make is algorithmic and computational. My metric
 improves upon the algorithmic complexity of \citeauthor{fh2011}'s algorithm
 from an NP-hard problem to one with a $O(n^2)$ polynomial runtime. This is an
 exponential decrease in algorithmic complexity, which means the disparity
 between my metric and \citeauthor{fh2011}'s increases as the input size
-grows. Similarly, \citeauthor{cm2010}'s measure cannot feasibly be improved
-with driving durations due to the algorithmic complexity of finding
-point-to-point travel distances without passing through another district
-[^7]. Given that there are strong theoretical and empirical reasons to adopt
-driving durations, this is a large improvement. I also use programming
+grows. 
+
+
+I also use programming
 techniques like precomputation and memoisation to decrease the time taken to
 compute the metric greatly. My implementation is competitive with
 geometry-based compactness measures like Reock: on my machine, both metrics
 took roughly the same amount of time (~0.20s per step). Further details on
 the metric can be found in Appendix A.
-
-[^7]: The metric uses the probability that the shortest path between any two
-points in the district is exactly the shortest path between any two points in
-the state. This requires finding the shortest path between all points in the
-district subgraph, which has O(n^3) complexity in the best case, but in
-practice has a larger complexity because we are querying a routing engine for
-travel times.
 
 Given these considerations, I settle on an ensemble of four different
 compactness measures: Polsby-Popper, Reock, Convex Hull, and Human
@@ -307,7 +386,7 @@ Polsby-Popper measure are mathematically equivalent. Finally, I include my
 point-wise distance metric. This ensures the robustness and validity of my
 results.
 
-### Overview of automated districting algorithms
+### Generating plans with automated districting algorithms
 
 In order to find out whether compactness measures track spatial diversity, we
 have to generate many counterfactual plausible plans that span the entirety of
@@ -358,6 +437,8 @@ distribution of plans. [^2]
 	flood fill procedures rather than random chance, to assign the precincts to
 	be agglomerated. See \cite{lf2019} for a technical overview.
 
+#### Markov Chain algorithms
+
 Thankfully, scholars have developed an improvement over the standard algorithm
 with stronger theoretical guarantees. This second class of algorithms reframe
 the districting problem as a *graph partition* problem (borrowing insights from
@@ -380,23 +461,134 @@ districting plans.
 
 [^3]: See \cite{ddj2019recom} for a technical overview.
 
-Due to the many advantages of the MCMC approach, I use it in all my analyses. I
-use an superior proposal distribution called Recombination (Recom) by
+
+Due to the many advantages of the MCMC approach, I use it in all my analyses.
+However, there are many ways to conduct an MCMC analysis. The key question is
+how one should sample from the near-infinite pool of possible plans.
+State-of-the-art literature in this space use one of three main approaches,
+all of which have their pros and cons.
+
+The first is to get a sense for the properties of extremely compact plans
+under each compactness measure by using a local optimization technique,
+starting at a whole bunch of different initial seeds using the single node
+`Flip` proposal. This approach gives us the most compact plans, and is often
+used to find the "maximal" or "best" districting plans. However, it will---by
+design---only explore a very tiny subset of all plausible districting plans.
+Also, because the `Flip` proposal is very state-dependent, the initial state
+can affect the results greatly. 
+
+The second is a middle-of-the-road approach, using a global proposal
+distribution and a Metropolis-Hasting acceptance function to sample from a
+distribution over plans that is proportional to $e^(-\beta \times
+Compactness)$. This will give us a distribution of plans that is biased
+towards compact ones, but also contains some noncompact plans. One can get
+different distributions of plans depending on the specific acceptance (score)
+function. For instance \cite{dd2019va} prioritises plans that have fewer
+locality splits and/or sustain a Black majority-minority district, and
+\cite{h2018} use a complicated score function that takes into account county
+splitting, population deviation, compactness and minority representation.
+Using this approach, I would define four different score functions
+corresponding to the different compactness measures, and compare the
+resulting distributions that result from each measure.
+
+Finally, one can sample from a distribution that doesn't incorporate any
+compactness score at all and extract the plans that achieve a good score
+under each metric. This approach is used in \cite{ddj2019comp}, where they
+generate a large neutral ensemble of districting plans and then subsequently
+filter the plans according to increasingly strict vote-band constraints. The
+advantage of this approach is that it casts the widest net: all plausible
+districts (subject to the equal population bound) are explored. The
+disadvantage is that the odds of sampling an 'optimal' district are
+incredibly low, which makes it suboptimal for algorithms that aim to build
+the "best" plan.
+
+#### Choosing the best MCMC approach
+
+I use the third approach in my analysis. 
+
+Local optimisation approaches like the `Flip` proposal have one key problem.
+The "mixing time" of the Markov Chain under the `Flip` proposal---that is,
+the number of steps it takes for the Markov Chain to be "close enough" to the
+stationary distribution---is very large. What that means is that the `Flip`
+proposal tends to generate very uncompact, snakelike districts in the
+beginning, as can be seen in Figure \ref{recom_vs_flip}. It will take
+millions of steps for plans under the `Flip` proposal to reach a satisfactory
+districting plan. As such, I prefer the Recombination (Recom) distribution by
 \citeauthor{ddj2019recom}, which uses a spanning tree method to bipartition
 pairs of adjacent districts at each step \citep{ddj2019comp}. This proposal
-distribution improves upon the `Flip` proposal in \citeauthor{fifieldwp} in two
-significant ways: it generates plans in much fewer steps [^4], and it generates
-plans that are much more realistic. The `Flip` proposal tends to generate very
-uncompact, snakelike districts, as can be seen in the figure.
+distribution improves upon
 
-![The `Recom` proposal generates more realistic plans in much fewer steps.
-Taken from \cite{ddj2019recom}.](img/recom_vs_flip.png)
+![\label{recom_vs_flip} The `Recom` proposal generates more realistic plans
+in much fewer steps. Taken from \cite{ddj2019recom}.](img/recom_vs_flip.png)
 
-[^4]: the "mixing time" of the Markov Chain---that is, the number of steps it
-	takes for the Markov Chain to be "close enough" to the stationary
-	distribution---is order of magnitudes smaller in `Recom` compared to `Flip`.
+Mixing time aside, the extreme compactness of the first approach is in fact
+something that I want to avoid. I aim to find out if mandating compactness in
+state constitutions can inadvertently adversely affect democratic
+representation. But restricting one's analysis to extremely compact plans
+deals a huge blow to the external validity of any such finding. Redistrictors
+care about a lot of other considerations apart from compactness, and
+therefore most definitely do not optimise solely over compactness. State
+constitutions demand that plans be "reasonably compact", not "maximally
+compact": it's vanishingly unlikely that those extremely compact plans would
+resemble the types of plans that would be drawn in real life. As such, *even*
+if I found that optimally compact plans had greater spatial diversity, this
+would have very little bearing on redistricting policy. It's far more
+instructive to see whether the relationship holds in the plans that
+legislators could be expected to draw.
 
-## Data generation
+Given that legislators care a lot about many different considerations, might
+it be better to try and include these considerations into the score function?
+This is what the second approach does. While this approach holds strong
+theoretical merit, I find that this approach introduces too many degrees of
+freedom. The choice of what factors to include in the score function is
+contentious: \citeauthor{h2018} use population deviation, Polsby-Popper
+score, county boundaries and minority deviation. But they could just as
+easily have included factors such as number of cut edges (proposed in
+\cite{dc2016}), for instance. Even if there is a strong justification for
+including exactly those factors, there is still significant researcher
+freedom to operationalise the scores. For instance, \citeauthor{h2018} and
+\citeauthor{dd2019va} both include a population deviation score, but
+operationalise the metric differently. Furthermore, any score function has to
+be assigned specific weights--- but this assignment is somewhat arbitrary and
+open to argument. For instance, \citeauthor{h2018} "chose a VRA score
+function which awards lower scores to districting plans which had one
+district close to 44.48% African-Americans and a second district close to
+36.20% African-Americans", on the basis that the 2016 districting plan which
+was accepted by the Court had districts with those proportions. But this is
+incredibly arbitrary. Obviously, just because a particular district was
+accepted by the Court with those proportions of African-Americans doesn't
+imply that those exact proportions of African-Americans are optimal.
+
+To be clear, these problems are not insurmountable. If there is a strong
+theoretical basis for one particular operationalisation over another, then
+the criticism of researcher fiat largely loses its bite. Furthermore, the
+results obtained are robust to a variety of perturbations. \cite{h2018}
+change the weights and threshold values as a robustness check and find
+qualitatively similar results. Nonetheless, different results can occur. And
+if two different operationalisations or factor weights yield qualitatively
+different results, how would we adjudicate between them? For these reasons, I
+choose not to use the second approach.
+
+The last approach is one that makes the fewest assumptions. It generates a
+neutral ensemble and does not favour one plan over another (except for some
+minimal compactness and population deviation requirements). This approach
+gives us the largest space of plausible plans, which has a key advantage: it
+allows the results to be applicable even for districting algorithms that do
+not use an MCMC approach. This includes not only the regular low-tech way of
+drawing districts, but also other automated districting algorithms like
+\cite{mm2018} and \cite{lf2019}.
+
+Therefore, I elect to use the last, "neutral walk" approach. I use a global
+`Recom` proposal to generate the states, but accept every proposal subject to
+minimal population deviation requirements. This gives me a neutral ensemble
+of 10,000 plans for every state.
+
+## Method
+
+1. Generate a neutral ensemble of 10,000 districting plans for every state
+2. Calculate spatial diversity and compactness scores for each districting plan
+3. Perform data analysis (OLS regressions, difference-in-means test)
+
 
 1. Generate 100,000 districting plans
 
@@ -409,6 +601,8 @@ obtain the ReCom Markov chain procedure from one of the co-authors of the
 \cite{ddj2019recom} paper, and generate 10,000 districting plans for 10 states
 (Connecticut, Georgia, Idaho, Louisiana, Maine, Maryland, New Hampshire, Rhode
 Island, Utah, and Wisconsin) for a total of 100,000 plans.
+
+**TODO talk about why I chose those states**
 
 2. Calculate spatial diversity and compactness scores for each of the 100,000
 	 districting plans
@@ -448,12 +642,21 @@ My key results are as follows:
 1. Political geography largely pins down the spatial diversity of each
 individual district.
 	- Small urban districts have high SD, large rural ones have low SD.
-2. Different compactness measures are correlated with one another.
-3. OLS regressions and difference-in-means tests suggest that only the human
-compactness measure is negatively correlated with spatial diversity: geometric/dispersion based measures have either no or a positive (bad) effect on spatial diversity.
-4. A difference-in-means test suggests that the most compact districting
+	- This is largely a function of the state that district belongs to.
+2. What "good" plans look like can be quite different (qualitatively)
+depending on the choice of compactness measure.
+3. Different compactness measures are correlated with one another.
+	- The geometric compactness measures agree most with one another, the
+	human compactness measure not as much.
+4. OLS regressions and difference-in-means tests suggest that only the human
+compactness measure is negatively correlated with spatial diversity:
+geometric/dispersion based measures have either no or a positive (bad) effect
+on spatial diversity.
+5. A difference-in-means test suggests that the most compact districting
 plans are indeed less spatially diverse than average.
-5. A difference-in-means test suggests that the most compact plans under
+	- Not sure how to reconcile this with result (3) --- will discuss this
+	with you later today.
+6. A difference-in-means test suggests that the most compact plans under
 human compactness are less spatially diverse than the most compact plans
 under geometric/dispersion based measures.
 
@@ -461,17 +664,25 @@ Overall, the evidence suggests that optimising over compactness will give you
 less spatially diverse districts, and human compactness will do the best job
 of it.
 
-### Descriptive analysis
+### Initial analysis
+
+Firstly, what do the generated districts (and plans) look like, 
+
+
+What is the distribution of spatial diversity in each state?
+
+
 
 After having obtained all the plans and their corresponding scores, I plot
 the plans with the best and worst spatial diversity and compactness scores to
 get an understanding for the types of plans that each metric encourages. This
 will give us valuable intuition for understanding the subsequent results.
 
-For ease of exposition we consider states with only two districts, but the
-analysis extends to states with any number of districts. I also use
-Polsby-Popper to represent the other two dispersion-based compactness
-metrics as my explanations are similarly applicable to those metrics.
+For ease of exposition I show states with only two districts, but the
+analysis extends to states with any number of districts. (Plots of the other
+eight states are available in the Supplementary Information). I also use
+Polsby-Popper to represent the other two dispersion-based compactness metrics
+as my explanations are similarly applicable to those metrics.
 
 ![Best and worst districting plans of New Hampshire under different
 metrics \label{nh_minmax}](../30_results/33_min_max_subplots.png)
@@ -521,8 +732,15 @@ square" \citep{wolf2015}). In this example, human compactness and spatial
 diversity agree neatly on what the best districting plans should look like.
 
 While human compactness generally tracks spatial diversity better than other
-compactness metrics (I provide evidence for this later), it does
-not always do so.
+compactness metrics (I provide evidence for this later), it does not always
+do so. Figure \ref{idaho_density} gives the population of Idaho. We can see
+that a large proportion of the population is concentrated in a U-shaped
+"belt" spanning the southern half of the state. A good plan under spatial
+diversity will attempt to put this relatively urban "belt" in the same
+district, and this is indeed what we observe in Figure \ref{idaho_minmax}.
+But due to its great distance and jagged perimeter, such a plan is penalised
+under both human compactness and dispersion-based measures, both of which
+prefer a relatively compact square-shaped district.
 
 ![Population density plot of Idaho. Each point represents ~700 people.
 \label{idaho_density}](../30_results/16_points_on_tracts.png)
@@ -530,22 +748,85 @@ not always do so.
 ![Best and worst districting plans of Idaho under different metrics
 \label{idaho_minmax}](../30_results/16_min_max_subplots.png)
 
+As we can see, compactness measures need not always agree with spatial
+diversity....
 
 ### Political geography largely pins down the spatial diversity of each individual district
 
+
+Here, I present some observations. Firstly, small urban districts have high
+spatial diversity, while large rural ones have low spatial diversity. Sec
 While spatial diversity varies enormously between districts, this is to a
-large extent dependent on the state's political geography.
+large extent dependent on the state's political geography. If
+
+This suggests that while  districting 
+we should not expect it to largely affect ...
 
 
-![Spatial diversity of all districts](../30_results/all_districts_concat_sd.png)
 
-However, plotting individual states reveals great homogeneity.
+This easily extends to the level of the state. Of course, a state's political
+geography
 
-![Spatial diversity of districts binned by state](../30_results/all_districts_sd.png)
 
-![Overall spatial diversity of districting plans by state](../30_results/all_plans_sd.png)
+Figure
+\ref{sd_all_districts} is a kernel density estimation (KDE) plot of the
+distribution of spatial diversity in all districts. As in
+\citeauthor{steph2012}'s results, the distribution appears log-normal, with a
+noticeable tail on the right that contains a number of especially
+heterogeneous districts.
 
-### Compactness measures largely agree with one another, although an ensemble is still required due to possibility of outliers (actually occurs)
+![Spatial diversity of all districts \label{sd_all_districts}](../30_results/all_districts_concat_sd.png)
+
+A tempting conclusion to draw from the data is that these districts are
+equally distributed over the different states. In reality, though, the
+districts of a state can only take on a small range of values no matter how a
+districting plan is drawn. Figure \ref{sd_districts_binned} demonstrates. The
+peaks imply a multimodal distribution where individual districts are
+clustered around certain values and not others. This is most starkly
+displayed in the states with only two districts. Despite the fact that the
+redistricting algorithm is continuous, there is a sharp bimodal distribution
+present in the states of Idaho and Maine, and to a lesser degree Utah and New
+Hampshire.
+
+This finding is somewhat surprising. It implies that even though the MCMC
+algorithm explores the entire set of feasible districting plans, any district
+in any feasible plan will take on a specific form. In other words---no matter
+how one draws the plan, each district's spatial diversity is largely pinned
+down by its state's political geography. Some states have very spatially
+diverse districts, some states have very homogeneous ones, and this is a
+function of their geography and not the way the districts are drawn.
+
+![Spatial diversity of districts binned by state \label{sd_districts_binned}](../30_results/all_districts_sd.png)
+
+Given that each district's spatial diversity is largely exogenous, we should
+expect each state's overall spatial diversity not to vary much as well.
+Indeed, we see in Figure \ref{sd_plans} that each state occupies a narrow
+band in the range of possible spatial diversity scores. While the range of
+spatial diversity scores ranges from 0.50 to 0.80, the range of a state's
+spatial diversity score is only 0.05. While this range is small, it is not
+insignificant. Figure \ref{sd_responsiveness} shows that an increase in a
+state's spatial diversity by 0.05 is correlated with a decrease in electoral
+responsiveness by 0.3, about 10% of the variance.
+
+![Overall spatial diversity of districting plans by state \label{sd_plans}](../30_results/all_plans_sd.png)
+
+#### Districts that are small and urban are usually more spatially diverse
+
+Maryland provides the clearest example, although the same pattern repeats in
+all other states...
+
+![Pairwise plot of Maryland's districts: urban districts have highest SD](../30_results/22_pairwise_plot.png)
+
+This seems rather intuitive, as 
+
+Look at Stephanopoulos's factors and the weightages.
+
+### Compactness measures largely agree with one another, but human compactness less so
+
+This is the aggregated pairwise Pearson's correlation coefficient on the
+aggregated dataset. We can see that PP, Reock and CH largely agree with one
+another (pairwise correlation ranges from 0.5 to 0.6), but the human
+compactness metric disagrees.
 
 ```
              sd        hc        pp     reock        ch
@@ -554,12 +835,30 @@ hc    -0.357926  1.000000 -0.409995 -0.111860  0.110439
 pp    -0.094629 -0.409995  1.000000  0.480940  0.606623
 reock -0.007729 -0.111860  0.480940  1.000000  0.629797
 ch    -0.455142  0.110439  0.606623  0.629797  1.000000
+
 ```
 
+This is the aggregate analysis though. We should look at the individual
+states, and the results look better. (Appendix C?)
 
-![](../30_results/09_pairwise_plot_grouped.png)
+The human compactness metric 
 
-### The overall effect of compactness on spatial diversity is equivocal. Only human compactness has a significant negative effect on spatial diversity
+One way to visualise is the
+
+![Correlation heatmap of Connecticut](../30_results/09_corr_matrix_grouped)
+
+![Correlation heatmap of Connecticut](../30_results/44_corr_matrix_grouped)
+
+A similar way to visualise the findings...
+
+![Correlation plot of Connecticut\label{pairwise_plot_grouped}](../30_results/09_pairwise_plot_grouped.png)
+
+Figure \ref{pairwise_plot_grouped} is a correlation plot between spatial
+diversity and the various compactness metrics for the state of Connecticut.
+
+This means that the use of an ensemble is quite warranted? How to justify...
+
+### The overall effect of compactness on spatial diversity is equivocal. Only human compactness has a significant negative effect on spatial diversity.
 
 #### Multivariate regression with country dummies
 
@@ -584,10 +883,7 @@ Compactness + \beta_2 State$$ where $State$ is a dummy variable, taking care
 to avoid the dummy variable trap.
 
 Table \ref{table:ols_sd_hc} shows the results for human compactness. I run
-the same regression for each indivi
-
-find that only human compactness has a statistically significant negative
-coefficient on spatial diversity, as shown here:
+the same regression for each compactness metric and obtain the following:
 
 ```
 HC: -0.0404, t-value -40.632
@@ -595,6 +891,17 @@ PP: +0.0251, t-value 29.841
 Reock: +0.0209, t-value 27.645
 CHull: -0.0016, t-value -1.801
 ```
+
+I find that only human compactness has a statistically significant negative
+coefficient on spatial diversity, while Polsby-Popper and Reock have a
+significant positive effect on spatial diversity. This initial result
+suggests two things: firstly, and rather disappointingly, that optimising
+over the two most popular compactness measures may have adverse effects on
+electoral competitiveness and responsiveness. More encouragingly, though,
+these effects can be mitigated by the judicious choice of compactness
+measure. The results show that optimising over Convex Hull does not come at
+the cost of diversity, and that increasing human compactness actually
+decreases spatial diversity.
 
 
 ![The individual-level regressions show a weak downward trend between human
@@ -605,108 +912,310 @@ diversity\label{indiv_reg}](../30_results/individual_regressions.png)
 of compactness and commits the ecological
 fallacy \label{grouped_reg}](../30_results/grouped_regressions.png)
 
-
-\begin{table}[h!]
+\begin{table}[h!] 
 \begin{center}
+\caption{OLS Regression of Spatial Diversity on Human Compactness with
+Country Dummies}
+\label{table:ols_sd_hc}
 \begin{tabular}{lclc}
 \toprule
 \textbf{Dep. Variable:}    &        sd        & \textbf{  R-squared:         } &     0.988   \\
 \textbf{Model:}            &       OLS        & \textbf{  Adj. R-squared:    } &     0.988   \\
 \textbf{Method:}           &  Least Squares   & \textbf{  F-statistic:       } & 8.188e+05   \\
-\textbf{Date:}             & Tue, 10 Mar 2020 & \textbf{  Prob (F-statistic):} &     0.00    \\
-\textbf{Time:}             &     16:04:33     & \textbf{  Log-Likelihood:    } & 3.2365e+05  \\
+\textbf{Date:}             & Wed, 11 Mar 2020 & \textbf{  Prob (F-statistic):} &     0.00    \\
+\textbf{Time:}             &     20:23:45     & \textbf{  Log-Likelihood:    } & 3.2365e+05  \\
 \textbf{No. Observations:} &      100000      & \textbf{  AIC:               } & -6.473e+05  \\
 \textbf{Df Residuals:}     &       99989      & \textbf{  BIC:               } & -6.472e+05  \\
 \textbf{Df Model:}         &          10      & \textbf{                     } &             \\
 \bottomrule
 \end{tabular}
 \begin{tabular}{lcccccc}
-                           & \textbf{coef} & \textbf{std err} & \textbf{t} & \textbf{P$> |$t$|$} & \textbf{[0.025} & \textbf{0.975]}  \\
+                      & \textbf{coef} & \textbf{std err} & \textbf{t} & \textbf{P$> |$t$|$} & \textbf{[0.025} & \textbf{0.975]}  \\
 \midrule
-\textbf{Intercept}         &       0.7837  &        0.001     &  1042.069  &         0.000        &        0.782    &        0.785     \\
-\textbf{C(district)[T.13]} &      -0.0725  &        0.000     &  -520.351  &         0.000        &       -0.073    &       -0.072     \\
-\textbf{C(district)[T.16]} &      -0.1783  &        0.000     & -1255.474  &         0.000        &       -0.179    &       -0.178     \\
-\textbf{C(district)[T.22]} &      -0.0687  &        0.000     &  -460.458  &         0.000        &       -0.069    &       -0.068     \\
-\textbf{C(district)[T.23]} &      -0.2533  &        0.000     & -1540.668  &         0.000        &       -0.254    &       -0.253     \\
-\textbf{C(district)[T.24]} &       0.0194  &        0.000     &   142.303  &         0.000        &        0.019    &        0.020     \\
-\textbf{C(district)[T.33]} &      -0.2132  &        0.000     & -1534.138  &         0.000        &       -0.213    &       -0.213     \\
-\textbf{C(district)[T.44]} &      -0.0763  &        0.000     &  -549.486  &         0.000        &       -0.077    &       -0.076     \\
-\textbf{C(district)[T.49]} &      -0.1276  &        0.000     &  -843.636  &         0.000        &       -0.128    &       -0.127     \\
-\textbf{C(district)[T.55]} &      -0.1698  &        0.000     & -1216.197  &         0.000        &       -0.170    &       -0.170     \\
-\textbf{hc}                &      -0.0404  &        0.001     &   -40.632  &         0.000        &       -0.042    &       -0.038     \\
+\textbf{C(state)[09]} &       0.7837  &        0.001     &  1042.069  &         0.000        &        0.782    &        0.785     \\
+\textbf{C(state)[13]} &       0.7111  &        0.001     &   993.725  &         0.000        &        0.710    &        0.713     \\
+\textbf{C(state)[16]} &       0.6054  &        0.001     &   856.490  &         0.000        &        0.604    &        0.607     \\
+\textbf{C(state)[22]} &       0.7149  &        0.001     &  1039.373  &         0.000        &        0.714    &        0.716     \\
+\textbf{C(state)[23]} &       0.5303  &        0.001     &   626.929  &         0.000        &        0.529    &        0.532     \\
+\textbf{C(state)[24]} &       0.8030  &        0.001     &  1097.735  &         0.000        &        0.802    &        0.804     \\
+\textbf{C(state)[33]} &       0.5705  &        0.001     &   725.232  &         0.000        &        0.569    &        0.572     \\
+\textbf{C(state)[44]} &       0.7073  &        0.001     &   899.177  &         0.000        &        0.706    &        0.709     \\
+\textbf{C(state)[49]} &       0.6561  &        0.001     &   959.927  &         0.000        &        0.655    &        0.657     \\
+\textbf{C(state)[55]} &       0.6138  &        0.001     &   858.803  &         0.000        &        0.612    &        0.615     \\
+\textbf{hc}           &      -0.0404  &        0.001     &   -40.632  &         0.000        &       -0.042    &       -0.038     \\
 \bottomrule
 \end{tabular}
 \begin{tabular}{lclc}
 \textbf{Omnibus:}       & 3979.140 & \textbf{  Durbin-Watson:     } &    1.171  \\
 \textbf{Prob(Omnibus):} &   0.000  & \textbf{  Jarque-Bera (JB):  } & 9332.569  \\
 \textbf{Skew:}          &  -0.236  & \textbf{  Prob(JB):          } &     0.00  \\
-\textbf{Kurtosis:}      &   4.420  & \textbf{  Cond. No.          } &     53.4  \\
+\textbf{Kurtosis:}      &   4.420  & \textbf{  Cond. No.          } &     67.9  \\
 \bottomrule
 \end{tabular}
-\caption{OLS Regression of Spatial Diversity on Human Compactness with
-Country Dummies}
-\label{table:ols_sd_hc}
 \end{center}
 \end{table}
 
 
-### The most compact plans have better spatial diversity than average
+### The most compact plans have lower spatial diversity than average
 
-I therefore consider the top 500 plans
+While the results of the overall regression are discouraging, this may not be
+the last word. The neutral ensemble approach means that the generated plans
+run the whole gamut of compactness scores, including both highly compact
+plans and highly noncompact ones in the sample of 100,000. In reality,
+though, legislators will try to optimise for compactness to some degree. A
+plan proposed in real life---while not being optimally compact---would be
+reasonably so. Rather than regressing over the entire sample, then, we should
+specifically check the spatial diversity of plans which exceed the threshold
+of "reasonable compactness".
 
-I run a differences-in-means test using Welch's t-test, as Student's t-test
-relies on a homogeneity in variances assumption. When the assumption of equal
-variances is not met, Student’s t-test yields unreliable results, while
-Welch’s t-test controls Type 1 error rates as expected. \cite{delacre2017}
+But what is the threshold of "reasonable compactness"? The choice of the
+threshold cannot be determined *a priori*. One would have to know the
+distribution of compactness in a sample of plans generated in real life. Of
+course, as real-life expert districtors do not produce a distribution of
+plans, this is also a tall order. I therefore run the same OLS regression for
+different thresholds of "reasonable compactness", ranging from the top 90%
+(excluding the bottom 10%) of plans to the top 10% of plans.[^8] The results
+are as follows:
 
-I find a very strong result that
+[^8]: The results are similar when we take the top 5% or 2% of plans, but the
+small sample sizes of those thresholds mean that it is difficult to get
+statistical significance.
 
-This result is even more robust than one would expect, because 
+```
+10th percentile:
+                   coef    std err          t      P>|t|      [0.025      0.975]
+hc              -0.0256      0.001    -19.660      0.000      -0.028      -0.023
+pp               0.0339      0.001     34.757      0.000       0.032       0.036
+reock            0.0287      0.001     34.723      0.000       0.027       0.030
+ch              -0.0001      0.001     -0.143      0.886      -0.002       0.002
+
+25th percentile:
+                   coef    std err          t      P>|t|      [0.025      0.975]
+hc              -0.0274      0.002    -16.018      0.000      -0.031      -0.024
+pp               0.0357      0.001     30.861      0.000       0.033       0.038
+reock            0.0307      0.001     33.635      0.000       0.029       0.032
+ch              -0.0024      0.001     -2.153      0.031      -0.005      -0.000
+
+50th percentile:
+                   coef    std err          t      P>|t|      [0.025      0.975]
+hc              -0.0514      0.003    -15.722      0.000      -0.058      -0.045
+pp               0.0154      0.001     10.269      0.000       0.012       0.018
+reock            0.0267      0.001     24.400      0.000       0.025       0.029
+ch              -0.0119      0.001     -8.627      0.000      -0.015      -0.009
+
+75th percentile:
+                   coef    std err          t      P>|t|      [0.025      0.975]
+hc              -0.1154      0.007    -17.023      0.000      -0.129      -0.102
+pp              -0.0338      0.002    -14.814      0.000      -0.038      -0.029
+reock            0.0185      0.002     12.136      0.000       0.015       0.021
+ch              -0.0589      0.002    -30.961      0.000      -0.063      -0.055
+
+90th percentile:
+                   coef    std err          t      P>|t|      [0.025      0.975]
+hc              -0.0396      0.013     -3.098      0.002      -0.065      -0.015
+pp               0.0412      0.005      7.756      0.000       0.031       0.052
+reock            0.0074      0.003      2.285      0.022       0.001       0.014
+ch              -0.0274      0.004     -6.862      0.000      -0.035      -0.020
+```
+
+The results vary somewhat depending on our choice of threshold, but are on
+the whole remarkably consistent. The Reock measure performs poorly in all
+thresholds. The Polsby-Popper metric is not much better either. Only when the
+threshold is set to the top 25% of plans does the coefficient go below 0, and
+the effect reverses when we look at the top 10% of plans. I am inclined to
+believe that is an outlier. The Convex Hull metric is the best of the
+dispersion-based metrics. It consistently has a negative coefficient,
+although the negative coefficients are very small---particularly when the
+threshold is low. Finally, the human compactness metric performs well on all
+subsample. The coefficient on human compactness is larger than all the other
+metrics on all the thresholds---a strong indication that it is the metric
+that best minimises spatial diversity.
+
+### The average spatial diversity of top plans under human compactness is significantly lower than the average spatial diversity of top plans under other compactness metrics
+
+The OLS regressions we run give the relationship between compactness and
+spatial diversity. But perhaps one is not concerned about the marginal effect
+of compactness on diversity. One might ask a more basic question: if we
+mandate that plans are "reasonably compact"---whatever that means---and force
+legislators to propose only plans that cross a threshold of reasonable
+compactness, will that adversely affect spatial diversity?
+
+If there is indeed a fundamental trade-off between compactness and spatial
+diversity, then we should observe the average spatial diversity of highly
+compact plans to be higher than the spatial diversity across all plans. I
+therefore compare the mean spatial diversity of top 500 plans under each
+compactness metric to the mean spatial diversity of all plans. As a
+robustness check, I look at different proportions (top 10%/5%/2%) and obtain
+almost-identical results. The results are as follows:
 
 ```
 Mean SD of plans with highest Human Compactness scores: 0.635558
 Mean SD of plans with highest Polsby-Popper scores: 0.640954
 Mean SD of plans with highest Reock scores: 0.639897
 Mean SD of plans with highest Convex Hull scores: 0.639985
-Mean SD of all plans: 0.66879
+Mean SD of all plans: 0.639758
 ```
 
-```
-Ttest_indResult(statistic=array([-26.95882013]), pvalue=array([4.92355005e-150]))
-Ttest_indResult(statistic=array([-23.01140913]), pvalue=array([1.00564593e-111]))
-Ttest_indResult(statistic=array([-23.65074847]), pvalue=array([1.33953995e-117]))
-Ttest_indResult(statistic=array([-23.36762755]), pvalue=array([5.64959214e-115]))
-```
-
-### The average spatial diversity of top plans under human compactness is significantly lower than the average spatial diversity of top plans under other compactness metrics
-
-
-Do a t-test
-
-Means:
+Only the mean spatial diversity of human compactness is significantly lower
+than the mean spatial diversity of all plans. In order to check the
+significance of this result, I run a differences-in-means test using Welch's
+t-test. I use Welch's t-test as Student's t-test relies on a homogeneity in
+variances assumption. When the assumption of equal variances is not met,
+Student’s t-test yields unreliable results, while Welch’s t-test controls
+Type 1 error rates as expected \citep{delacre2017}. In this case, since the
+top plans come from different distributions, it is unlikely that the
+variances are homogeneous. The results are as follows:
 
 ```
-Mean SD of top plans under Human Compactness: 0.635558
-Mean SD of top plans under Polsby-Popper: 0.640954
-Mean SD of top plans under Reock: 0.639897
-Mean SD of top plans under Convex Hull: 0.639985
+Welch's t-tests for the top 5% of plans
+
+HC vs All: statistic=[-3.36526759]), pvalue=[0.00076992]
+Reock vs All: statistic=[0.97597048]), pvalue=[0.32912173]
+PP vs All: statistic=[0.11228718]), pvalue=[0.91059979]
+CHull vs All: statistic=[0.18211076]), pvalue=[0.85550249]
 ```
 
-Top 10%:
-
-Top 5%:
+Only human compactness had a statistically significant difference in mean
+spatial diversity. For completeness, I ran pairwise differences-in-means
+tests between all four metrics, for a total of 6 tests. The results are as
+follows:
 
 ```
-Ttest_indResult(statistic=array([-3.16361084]), pvalue=array([0.00156292]))
-Ttest_indResult(statistic=array([-2.53127357]), pvalue=array([0.01138011]))
-Ttest_indResult(statistic=array([-2.57101923]), pvalue=array([0.0101543]))
+Welch's t-tests for the top 5% of plans (significant results only)
+
+HC vs PP: statistic=[-3.16361084]), pvalue=[0.00156292]
+HC vs Reock: statistic=([-2.53127357]), pvalue=[0.01138011]
+HC vs CHull: statistic=[-2.57101923]), pvalue=array([0.0101543]))
 ```
 
-Top 2%:
+As expected, there were no significant differences in means between any of
+the geometric compactness metrics, but there was a significant difference in
+the means between human compactness and the other compactness metrics.
+Similar results obtain when I rerun the tests for the top 10% and top 2% of
+plans under each compactness metric. The results show that the top plans
+under human compactness have significantly lower spatial diversity than the
+top plans under other compactness metrics.
+
+While this analysis is suggestive, there are two rejoinders to this. Firstly,
+one could argue that the difference in means is quite small: only 1.5% of the
+total variance in spatial diversity. Secondly, one might think that looking
+only at the aggregated results could be misleading. A difference in means in
+the aggregate could be due to one or a few outlier states driving the
+results.
+
+To address these two criticisms, I run Welch's t-tests for each metric for
+all ten states (giving a total of 40 t-tests). The full list of t-tests is
+available in Appendix B.
+
+Once again, human compactness performs the best. The top plans under the
+Reock metric have statistically significant negative differences in spatial
+diversity means in 3 out of 10 states. Polsby-Popper and Convex Hull do a
+little better with 4 out of 10 states. Human Compactness has a whopping seven
+states. If we look at
+*meaningful* differences---not just statistically significant ones (instances
+where the mean is lower by more than 5% of the total variance)---then human
+compactness outperforms by a wide margin. Human compactness has a
+statistically significant and meaningfully lower spatial diversity in six of
+the states. Reock does in two states, and Convex Hull and Polsby-Popper only
+in one. Finally, in two cases (both under the human compactness metric), the
+difference is so meaningful that it makes up 25% and 35% of the total
+variance. Concretely, the spatial diversity of all 10,000 New Hampshire plans
+lie within a range of 0.03. The top 1,000 plans under human compactness have
+a spatial diversity that is 0.01 lower than the mean --- a very meaningful
+effect that spans one-third of the total range. Far from being a small
+effect, it seems that the choice of compactness metric to optimise over can
+have very meaningful impacts.
+
+In order to understand 
+
+\begin{table}[h!]
+\begin{center}
+\caption{What percentile the top 10 percent of plans under each metric occupy}
+\label{table:top_plans_sd_percentile}
+\begin{tabular}{lrrrr}
+\toprule
+{} &     hc &     pp &  reock &     ch \\
+\midrule
+0 Connecticut &  \textbf{34.31} &  54.02 &  55.61 &  48.25 \\
+1 Georgia &  48.29 &  \textbf{44.24} &  48.34 &  47.62 \\
+2 Idaho &  59.92 &  48.62 &  \textbf{20.90} &  26.88 \\
+3 Louisiana &  \textbf{39.03} &  39.12 &  42.45 &  41.24 \\
+4 Maine &  26.22 &  92.48 &  78.12 &  \textbf{23.56} \\
+5 Rhode Island &  \textbf{23.32} &  56.46 &  53.71 &  52.70 \\
+6 Maryland &  36.99 &  \textbf{33.00} &  33.00 &  48.68 \\
+7 New Hampshire &   \textbf{8.25} &  58.08 &  40.30 &  65.73 \\
+8 Utah &  77.05 &  61.72 &  58.57 &  59.92 \\
+9 Wisconsin &  \textbf{34.09} &  42.14 &  47.26 &  43.07 \\
+\bottomrule
+Mean percentile & \textbf{38.75} &  52.99  &  47.83 &  45.77 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+Table \ref{table:top_plans_sd_percentile} shows what percentile the top 10
+percent of plans under each metric would occupy in the distribution of 10,000
+plans (lower is better). If there is no relationship between a compactness
+metric and spatial diversity, then we should expect the mean percentile to
+lie around 50 percent. If, however, the top plans under a metric are
+significantly less spatially diverse, then we should see a low percentile for
+many of the states. In the table, I have \textbf{bolded} the best-performing
+metric in each row, subject to it being less than the median (<50th
+percentile). As before, I run robustness checks and get qualitatively similar
+results for various threshold cut-offs.
+
+As we can see, the human compactness metric consistently outperforms the
+other metrics, forestalling the criticism that the results may be driven by
+outliers. While human compactness does particularly well in New Hampshire and
+Rhode Island, it still performs best overall even if we remove those two
+states from consideration.
+
+## Discussion and further work
+
+Is there a fundamental trade-off between compactness and communities of
+interest? ... 
+
+In hindsight, it was certainly the right call to use an ensemble of
+compactness metrics, because of the possibility (and existence!) of outliers.
+(Elaborate...)
+
+Cast doubt upon work that only uses a singular compactness metric: external
+validity is very low, vulnerable to outliers (not trying to single out
+\citeauthor{s2020}'s work or anything...)
+
+The low correlation between human compactness and the other compactness
+measures suggests that human compactness is qualitatively different from
+geometric/dispersion-based compactness measures.
+
+human compactness better tracks spatial diversity, which in turn correlates
+with democratic outcomes like responsiveness and competitiveness.
+
+**TODO** explain why human compactness performs better... 
+
+...
+
+The results suggest that optimising for human compactness will tend to give
+plans
 
 
+In my work, I analyse 10 out of the 50 states. Restricting analysis to a
+subset of states is common in other redistricting work, due to the onerous
+computational burdens of the procedure. \cite{ddj2019comp} measure the effect of
+competitiveness on partisanship for five states, and \cite{s2020} looks at
+the trade-off between compactness and partisan symmetry for only two states.
+My analysis covers more states than much of the literature, but further work
+should nonetheless extend the analysis to cover more states---especially
+large states like Texas, Florida and California.
 
-# Appendix A
+## Acknowledgements
+
+Big thanks to Daryl Deford and Filip
+
+and Stephanopoulos
+
+Am I allowed to thank Andy or name him as my supervisor? Ask Tak Huen about this
+
+# Appendix A: Explanation of human compactness metric
 
 # Appendix B:  Results of difference-in-means tests for individual states
 
@@ -716,125 +1225,49 @@ the average spatial diversity of the 500 most compact plans per state.
 I present the results for each state and each metric in the ensemble, using
 Welch's t-test.
 
-```
-0 Connecticut
-hc
-Ttest_indResult(statistic=array([-6.49740127]), pvalue=array([8.53280274e-11]))
-pp
-Ttest_indResult(statistic=array([0.86781049]), pvalue=array([0.3855318]))
-reock
-Ttest_indResult(statistic=array([0.83762575]), pvalue=array([0.40227492]))
-ch
-Ttest_indResult(statistic=array([-1.68248732]), pvalue=array([0.09251047]))
-1 Georgia
-hc
-Ttest_indResult(statistic=array([-1.88909516]), pvalue=array([0.05904629]))
-pp
-Ttest_indResult(statistic=array([-3.3741558]), pvalue=array([0.00075958]))
-reock
-Ttest_indResult(statistic=array([0.39887338]), pvalue=array([0.69005064]))
-ch
-Ttest_indResult(statistic=array([-3.13625521]), pvalue=array([0.00174518]))
-2 Idaho
-hc
-Ttest_indResult(statistic=array([10.42666125]), pvalue=array([2.16882037e-25]))
-pp
-Ttest_indResult(statistic=array([5.86780509]), pvalue=array([4.9782383e-09]))
-reock
-Ttest_indResult(statistic=array([5.33166925]), pvalue=array([1.24215121e-07]))
-ch
-Ttest_indResult(statistic=array([0.03089443]), pvalue=array([0.9753569]))
-3 Louisiana
-hc
-Ttest_indResult(statistic=array([-3.55779128]), pvalue=array([0.00037512]))
-pp
-Ttest_indResult(statistic=array([-3.21856506]), pvalue=array([0.00129316]))
-reock
-Ttest_indResult(statistic=array([-1.77611238]), pvalue=array([0.07574051]))
-ch
-Ttest_indResult(statistic=array([-2.95273326]), pvalue=array([0.00315286]))
-4 Maine
-hc
-Ttest_indResult(statistic=array([-13.2240253]), pvalue=array([9.28561364e-40]))
-pp
-Ttest_indResult(statistic=array([24.8919901]), pvalue=array([3.52063173e-110]))
-reock
-Ttest_indResult(statistic=array([11.72570569]), pvalue=array([1.36024936e-31]))
-ch
-Ttest_indResult(statistic=array([-13.6832433]), pvalue=array([1.9646117e-42]))
-5 Rhode_Island
-hc
-Ttest_indResult(statistic=array([-26.07171472]), pvalue=array([3.68436833e-134]))
-pp
-Ttest_indResult(statistic=array([13.82562159]), pvalue=array([8.51520228e-42]))
-reock
-Ttest_indResult(statistic=array([5.01734031]), pvalue=array([5.92797527e-07]))
-ch
-Ttest_indResult(statistic=array([5.64708581]), pvalue=array([1.93856794e-08]))
-6 Maryland
-hc
-Ttest_indResult(statistic=array([-7.72406455]), pvalue=array([1.8720555e-14]))
-pp
-Ttest_indResult(statistic=array([-10.69599062]), pvalue=array([7.44090023e-26]))
-reock
-Ttest_indResult(statistic=array([-11.43688714]), pvalue=array([2.07114299e-29]))
-ch
-Ttest_indResult(statistic=array([-2.44035376]), pvalue=array([0.01480235]))
-7 New_Hampshire
-hc
-Ttest_indResult(statistic=array([-77.79139703]), pvalue=array([0.]))
-pp
-Ttest_indResult(statistic=array([5.66328049]), pvalue=array([2.13182847e-08]))
-reock
-Ttest_indResult(statistic=array([-5.62644692]), pvalue=array([2.32800657e-08]))
-ch
-Ttest_indResult(statistic=array([10.76371698]), pvalue=array([4.81248181e-25]))
-8 Utah
-hc
-Ttest_indResult(statistic=array([18.41406631]), pvalue=array([8.86499654e-75]))
-pp
-Ttest_indResult(statistic=array([8.17458673]), pvalue=array([3.54250317e-16]))
-reock
-Ttest_indResult(statistic=array([6.8129706]), pvalue=array([1.05271654e-11]))
-ch
-Ttest_indResult(statistic=array([7.40371108]), pvalue=array([1.49308888e-13]))
-9 Wisconsin
-hc
-Ttest_indResult(statistic=array([-6.45251298]), pvalue=array([1.16333085e-10]))
-pp
-Ttest_indResult(statistic=array([-2.37112098]), pvalue=array([0.01776865]))
-reock
-Ttest_indResult(statistic=array([-0.73082387]), pvalue=array([0.46492516]))
-ch
-Ttest_indResult(statistic=array([-2.87931061]), pvalue=array([0.00400501]))
-
-```
-
-## Very similar paper
-
-We posit that this is due to thepolitical geographies of the two states, and
-examining this effect isan important thread for understanding what kinds of
-reforms mightor might not be effective in various jurisdictions. Future work
-coulduse more sophisticated mathematical and statistical techniques todescribe
-a relationship between political geography and the trade-offs we consider here.
-Our analysis suggests that a one-size-fits-allapproach to drawing ‘fair’
-districts is inappropriate and that indi-vidual states and localities should
-carefully consider the relevanttrade-offs when redistricting or implementing
-redistricting reforminitiatives. One factor ignored in this analysis, which is
-critical to theprocess of drawing districts, isrespecting
-communities-of-interest.Even defining and locating geographically such
-communities is avery difficult problem, let alone the determination of whether
-ornot to preserve that group in a single district. We therefore pro-pose our
-analysis as a framework for discussion about trade-offs inredistricting rather
-than as a policy recommendation.In this work, we have demonstrated with a
-simple model thatdemanding districts be drawn to be as compact as possible
-anddemanding that they satisfy a notion of partisan symmetry areincompatible,
-but to different degrees depending on the particularfeatures of the geographic
-region in question. Since existing propos-als and methodologies for automated
-and algorithmic redistrictinginvolve finding an approximate solution to an
-optimization problem,it is important to understand how changing the objective
-functionof these procedures can affect the outcome. As more
-jurisdictionsconsider redistricting reforms, they should be cautious about
-abdi-cating the line drawing process to algorithms which encode valuesdifferent
-from those of the voters who use the districts to elect theirrepresentatives.
-
+\begin{tabular}{lrlrrrrr}
+\toprule
+{} &  state & metric &  mean\_diff &  variance &  pct\_variance &      t-stat &        p-value \\
+\midrule
+0  &      0 &     hc &  -0.003460 &  0.058642 &     -5.900607 &  -17.425785 &   1.366961e-61 \\
+1  &      0 &     pp &   0.000069 &  0.058642 &      0.118009 &    0.288166 &   7.732681e-01 \\
+2  &      0 &  reock &   0.000381 &  0.058642 &      0.650317 &    1.624462 &   1.045297e-01 \\
+3  &      0 &     ch &  -0.001042 &  0.058642 &     -1.776135 &   -5.014481 &   6.033771e-07 \\
+4  &      1 &     hc &  -0.000513 &  0.057499 &     -0.892208 &   -1.868482 &   6.193359e-02 \\
+5  &      1 &     pp &  -0.001423 &  0.057499 &     -2.475505 &   -4.986335 &   7.054193e-07 \\
+6  &      1 &  reock &  -0.000498 &  0.057499 &     -0.865298 &   -1.692770 &   9.076060e-02 \\
+7  &      1 &     ch &  -0.000678 &  0.057499 &     -1.178930 &   -2.231754 &   2.581874e-02 \\
+8  &      2 &     hc &   0.001489 &  0.036047 &      4.131827 &   26.809567 &  2.038788e-153 \\
+9  &      2 &     pp &   0.001104 &  0.036047 &      3.062205 &   10.321991 &   2.820313e-24 \\
+10 &      2 &  reock &  -0.000188 &  0.036047 &     -0.520417 &   -0.859779 &   3.900941e-01 \\
+11 &      2 &     ch &   0.000383 &  0.036047 &      1.063637 &    2.841225 &   4.560090e-03 \\
+12 &      3 &     hc &  -0.001257 &  0.033457 &     -3.756204 &   -9.240446 &   9.523388e-20 \\
+13 &      3 &     pp &  -0.001245 &  0.033457 &     -3.720159 &   -7.632057 &   4.670461e-14 \\
+14 &      3 &  reock &  -0.000776 &  0.033457 &     -2.318159 &   -5.132091 &   3.320205e-07 \\
+15 &      3 &     ch &  -0.000927 &  0.033457 &     -2.770633 &   -7.108140 &   1.896994e-12 \\
+16 &      4 &     hc &  -0.001902 &  0.028376 &     -6.704063 &  -49.155427 &   0.000000e+00 \\
+17 &      4 &     pp &   0.005131 &  0.028376 &     18.081320 &   38.153281 &  1.090249e-206 \\
+18 &      4 &  reock &   0.001304 &  0.028376 &      4.596054 &   20.334160 &   7.714653e-84 \\
+19 &      4 &     ch &  -0.002035 &  0.028376 &     -7.171113 &  -50.341694 &   0.000000e+00 \\
+20 &      5 &     hc &  -0.019707 &  0.077819 &    -25.324736 &  -43.785027 &  7.817121e-271 \\
+21 &      5 &     pp &   0.007385 &  0.077819 &      9.490310 &   14.029691 &   8.033314e-42 \\
+22 &      5 &  reock &   0.005601 &  0.077819 &      7.197869 &   10.059549 &   5.666063e-23 \\
+23 &      5 &     ch &   0.004848 &  0.077819 &      6.229592 &    8.615116 &   2.011837e-17 \\
+24 &      6 &     hc &  -0.004913 &  0.076917 &     -6.386934 &  -12.541515 &   4.676097e-34 \\
+25 &      6 &     pp &  -0.006333 &  0.076917 &     -8.233653 &  -16.445177 &   3.655560e-55 \\
+26 &      6 &  reock &  -0.006334 &  0.076917 &     -8.235342 &  -17.317992 &   1.527167e-60 \\
+27 &      6 &     ch &  -0.000795 &  0.076917 &     -1.033852 &   -1.809545 &   7.061978e-02 \\
+28 &      7 &     hc &  -0.011556 &  0.032940 &    -35.083239 & -120.004988 &   0.000000e+00 \\
+29 &      7 &     pp &   0.002150 &  0.032940 &      6.527335 &    9.218455 &   1.208411e-19 \\
+30 &      7 &  reock &  -0.002165 &  0.032940 &     -6.573630 &  -11.615082 &   6.541658e-30 \\
+31 &      7 &     ch &   0.004050 &  0.032940 &     12.294876 &   17.193270 &   1.023553e-59 \\
+32 &      8 &     hc &   0.005538 &  0.058276 &      9.503582 &   42.778404 &  4.401068e-291 \\
+33 &      8 &     pp &   0.002962 &  0.058276 &      5.082034 &   18.477814 &   2.578165e-69 \\
+34 &      8 &  reock &   0.002492 &  0.058276 &      4.275665 &   14.864941 &   8.132217e-47 \\
+35 &      8 &     ch &   0.002689 &  0.058276 &      4.613737 &   16.787183 &   1.984654e-58 \\
+36 &      9 &     hc &  -0.003290 &  0.049699 &     -6.619743 &  -13.092609 &   8.687410e-37 \\
+37 &      9 &     pp &  -0.001645 &  0.049699 &     -3.309711 &   -6.053633 &   1.889349e-09 \\
+38 &      9 &  reock &  -0.000677 &  0.049699 &     -1.361577 &   -2.476624 &   1.340008e-02 \\
+39 &      9 &     ch &  -0.001482 &  0.049699 &     -2.982079 &   -5.561983 &   3.278783e-08 \\
+\bottomrule
+\end{tabular}
