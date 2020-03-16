@@ -342,13 +342,39 @@ use driving durations, I develop a new measure called *human compactness*.
 This metric incorporates driving durations at the very outset, and builds in
 optimisations to run quickly.
 
-The human compactness metric measures the ratio of driving durations between
-one's nearest neighbours and one's fellow districtors. This ratio ranges from
-0 to 1. The higher this ratio is, the more compact the district.
+Intuitively, the human compactness metric measures the ratio of driving
+durations between one's nearest neighbours and one's fellow districtors. This
+ratio ranges from 0 to 1. The higher this ratio is, the more compact the
+district.
 
-![](img/human_compactness.png)
+The human compactness metric can work as both a voter-level and a
+district-level measure.
 
-$$\frac{2 + 2.5}{4+6}$$
+The following figures will give a simple demonstration of how the human
+compactness metric is calculated.
+
+Figure \ref{hc_demo} gives a simple demonstration of the human compactness
+metric is calculated
+
+consider the red point in the bottom of the district. Its
+
+$HC \frac{2 + 2.5}{4+6}$
+
+![A simplified state assignment with two districts and six voters
+\label{hc_demo}](img/human_compactness_1.png)
+
+![Human compactness measure for voter R1
+\label{hc_r1}](img/human_compactness_2a.png)
+
+![Human compactness measure for voter R1
+\label{hc_r2}](img/human_compactness_2b.png)
+
+![Human compactness measure for voter R1
+\label{hc_r3}](img/human_compactness_2c.png)
+
+$$HC_R = \frac{(1.5+5) + (4 + 4.5) + (2.5 + 2)}{(5+6) + (5+4) + (4+6)} = 0.65$$
+
+
 
 **TODO put a figure here about human compactness**
 
