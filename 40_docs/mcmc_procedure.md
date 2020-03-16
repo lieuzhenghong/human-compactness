@@ -337,49 +337,77 @@ district. This is because most routing engines allow you only to specify a
 route between two (or more) points. They do not further allow you to specify
 regions through which the route cannot pass.
 
+#### Human compactness
+
 Given the difficulties of adapting existing point-based distance metrics to
 use driving durations, I develop a new measure called *human compactness*.
 This metric incorporates driving durations at the very outset, and builds in
 optimisations to run quickly.
 
-Intuitively, the human compactness metric measures the ratio of driving
+Intuitively, it encourages drawing districts that put one's next-door
+neighbours together in the same district. 
+
+The human compactness metric measures the ratio of driving
 durations between one's nearest neighbours and one's fellow districtors. This
 ratio ranges from 0 to 1. The higher this ratio is, the more compact the
-district.
-
-The human compactness metric can work as both a voter-level and a
+district. The human compactness metric can work as both a voter-level and a
 district-level measure.
 
-The following figures will give a simple demonstration of how the human
-compactness metric is calculated.
+At the voter level, human compactness of a voter is the ratio of: the sum of
+driving durations to one's K nearest neighbours, to the sum of driving
+durations to one's co-districtors, where K is the number of voters in that
+voter's district. A simple example will be illuminating. The following
+figures give a simple demonstration of how the human compactness metric is
+calculated both on the voter- and district- level.
 
-Figure \ref{hc_demo} gives a simple demonstration of the human compactness
-metric is calculated
+Figure \ref{hc_demo} shows a highly simplified state assignment, with two
+districts, Red and Blue, and three voters in each district. We label each
+point from top-left to bottom-right. Note here that Red and Blue are not
+partisan affliations: R1, R2 and R3 are red voters simply because they happen
+to fall in the Red district.
 
-consider the red point in the bottom of the district. Its
+We will first calculate the individual human compactness score for each voter
+in the Red district. Figure \ref{hc_r1}
 
-$HC \frac{2 + 2.5}{4+6}$
+Here we use Euclidean distances in order to  
+
+In reality, the "circle of K-nearest neighbours" will not be a circle, but rather be a
+
+
+R1's nearest neighbours are the points B1 and R2, with a distance of
+1.5 and 5 respectively.
+
+$HC_{R1} = \frac{d_{B1}+d_{R2}}{d_{R2} + d_{R3}} = \frac{1.5 + 5}{5+6}$
+
+$HC_{R2} = \frac{4 + 4.5}{5+4}$
+
+$HC_{R3} = \frac{2 + 2.5}{4+6}$
 
 ![A simplified state assignment with two districts and six voters
 \label{hc_demo}](img/human_compactness_1.png)
 
-![Human compactness measure for voter R1
-\label{hc_r1}](img/human_compactness_2a.png)
+
 
 ![Human compactness measure for voter R1
+\label{hc_r1}](img/human_compactness_2c.png)
+
+![Human compactness measure for voter R2
 \label{hc_r2}](img/human_compactness_2b.png)
 
-![Human compactness measure for voter R1
-\label{hc_r3}](img/human_compactness_2c.png)
+![Human compactness measure for voter R3
+\label{hc_r3}](img/human_compactness_2a.png)
 
-$$HC_R = \frac{(1.5+5) + (4 + 4.5) + (2.5 + 2)}{(5+6) + (5+4) + (4+6)} = 0.65$$
+Consider the red point in the top-left corner of the district. This is point
+R1
 
 
 
-**TODO put a figure here about human compactness**
+The district's human compactness measure, $HC_R$, simply takes the ratio of
+all the sum of distances, as follows:
 
-Intuitively, it encourages drawing districts that put one's next-door
-neighbours together in the same district. 
+$$HC_R = \frac{(1.5+5) + (4 + 4.5) + (2.5 + 2)}{(5+6) + (5+4) + (4+6)} =
+0.65$$
+
 
 
 First, I use driving durations rather than Euclidean (as-the-crow-flies)
