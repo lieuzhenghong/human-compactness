@@ -337,28 +337,28 @@ district. This is because most routing engines allow you only to specify a
 route between two (or more) points. They do not further allow you to specify
 regions through which the route cannot pass.
 
-#### Human compactness
+#### An improved point-wise distance metric: Human compactness
 
 Given the difficulties of adapting existing point-based distance metrics to
 use driving durations, I develop a new measure called *human compactness*.
 This metric incorporates driving durations at the very outset, and builds in
-optimisations to run quickly.
+optimisations to run quickly. The human compactness metric measures the ratio
+of driving durations between one's nearest neighbours and one's fellow
+districtors. This ratio ranges from 0 to 1. The higher this ratio is, the
+more compact the district. Intuitively, it encourages drawing districts that
+put one's next-door neighbours together in the same district.
 
-Intuitively, it encourages drawing districts that put one's next-door
-neighbours together in the same district. 
+The human compactness metric works at three-levels: at the voter-level, the
+district-level, and the overall plan-level. At the voter level, human
+compactness of a voter is the ratio of: the sum of driving durations to one's
+K nearest neighbours, to the sum of driving durations to one's
+co-districtors, where K is the number of voters in that voter's district. A
+simple example will be illuminating. The following figures give a simple
+demonstration of how the human compactness metric is calculated both on the
+voter- and district- level.
 
-The human compactness metric measures the ratio of driving
-durations between one's nearest neighbours and one's fellow districtors. This
-ratio ranges from 0 to 1. The higher this ratio is, the more compact the
-district. The human compactness metric can work as both a voter-level and a
-district-level measure.
-
-At the voter level, human compactness of a voter is the ratio of: the sum of
-driving durations to one's K nearest neighbours, to the sum of driving
-durations to one's co-districtors, where K is the number of voters in that
-voter's district. A simple example will be illuminating. The following
-figures give a simple demonstration of how the human compactness metric is
-calculated both on the voter- and district- level.
+![A simplified state assignment with two districts and six voters
+\label{hc_demo}](img/human_compactness_1.png)
 
 Figure \ref{hc_demo} shows a highly simplified state assignment, with two
 districts, Red and Blue, and three voters in each district. We label each
@@ -367,79 +367,118 @@ partisan affliations: R1, R2 and R3 are red voters simply because they happen
 to fall in the Red district.
 
 We will first calculate the individual human compactness score for each voter
-in the Red district. Figure \ref{hc_r1}
-
-Here we use Euclidean distances in order to  
-
-In reality, the "circle of K-nearest neighbours" will not be a circle, but rather be a
-
-
-R1's nearest neighbours are the points B1 and R2, with a distance of
-1.5 and 5 respectively.
-
-$HC_{R1} = \frac{d_{B1}+d_{R2}}{d_{R2} + d_{R3}} = \frac{1.5 + 5}{5+6}$
-
-$HC_{R2} = \frac{4 + 4.5}{5+4}$
-
-$HC_{R3} = \frac{2 + 2.5}{4+6}$
-
-![A simplified state assignment with two districts and six voters
-\label{hc_demo}](img/human_compactness_1.png)
-
-
+in the Red district. Figure \ref{hc_r1} illustrates this for the top-left
+voter, R1. First, we find the sum of driving durations between R1 and his
+fellow co-districtors R2 and R3. This sum, $5 + 6$, forms the denominator of
+the human compactness score.
 
 ![Human compactness measure for voter R1
 \label{hc_r1}](img/human_compactness_2c.png)
 
+Next, we find the sum of driving durations between R1 and his nearest
+neighbours. Because there are two other voters in his district, we will find
+his two nearest neighbours. My algorithm precomputes all the K-nearest
+neighbour for every single point, but here I have drawn a circle centered
+upon R1, and expanded the circle on all sides until it touches two other
+voters. (This is not how the algorithm works in reality)[^20]. We can see that
+R1's nearest neighbours are the points B1 and R2, with a distance of 1.5 and
+5 respectively. The human compactness score of R1 is thus $$HC_{R1} =
+\frac{d_{B1}+d_{R2}}{d_{R2} + d_{R3}} = \frac{1.5 + 5}{5+6} = 0.59$$
+
+[^20]: The method of drawing an ever-expanding circle to get one's K-nearest
+neighbours only works for Euclidean distances. In reality, the "circle of
+K-nearest neighbours" will not be a circle, but rather be what is called an
+*isochrone*: a line drawn on a map that connects points that have the same
+travel duration. The shape of the isochrone will vary with geographic
+features like cliffs or man-made features like highways. My implementation of
+the human compactness algorithm precomputes all the K-nearest neighbours for
+every single point, negating the need to calculate isochrones.
+
 ![Human compactness measure for voter R2
 \label{hc_r2}](img/human_compactness_2b.png)
+
+This is how we calculate an individual human compactness score. We repeat the
+same procedure with R2 and R3, and obtain $HC_{R2} = \frac{4 + 4.5}{5+4} =
+0.94 $ and $HC_{R3} = \frac{2 + 2.5}{4+6} = 0.45$. The compactness score for
+point R3 is particularly low. We can see why this is the case in \ref{hc_r3}.
+Because point R3 is so close to B2 and B3, it really should be put in the
+same district with them---R3 likely lives in the same neighbourhood and/or
+community as B2 and B3. This is why the human compactness metric gives it a
+very low score.
 
 ![Human compactness measure for voter R3
 \label{hc_r3}](img/human_compactness_2a.png)
 
-Consider the red point in the top-left corner of the district. This is point
-R1
-
-
-
-The district's human compactness measure, $HC_R$, simply takes the ratio of
-all the sum of distances, as follows:
+The *district's* human compactness measure, $HC_R$, simply takes the ratio of
+all the sum of distances, as follows:[^21]
 
 $$HC_R = \frac{(1.5+5) + (4 + 4.5) + (2.5 + 2)}{(5+6) + (5+4) + (4+6)} =
 0.65$$
 
+[^21]: Another reasonable approach might be take the arithmetic mean of all
+individual human compactness scores. In that case the district-level
+human compactness score would be $0.59 + 0.94 + 0.45 / 3 = 0.66$, basically
+identical to the value we obtained. I suspect that both approaches will give
+largely the same results.
 
+Finally, we obtain the districting plan's *plan-level* compactness score by
+taking the simple arithmetic mean of all district-level compactness scores.
+Other aggregation functions are plausible: for instance, taking the median,
+or the root-mean-squared value. In the Results section, I run robustness
+checks with the RMSE and find qualitatively similar results.
 
-First, I use driving durations rather than Euclidean (as-the-crow-flies)
-distances between voters. As mentioned, many previous scholars have suggested
-exactly this, giving it strong theoretical support. It keeps the metric
-robust to quirks in political geography like mountains and lakes, and better
-represents the notion of natural communities. The use of driving durations
-also enjoys empirical support---the use of driving durations seems strictly
-superior in many cases involving human-scale distances. Working with Nicholas
-Eubank and Jonathan Rodden, I update their gerrymandering-detection metric to
-use driving durations instead \citep{er2019}. We find a consistently
-different picture of the social context of American suburban voters, raising
-the possibility of false positives under the Euclidean distance measure
-\citep*{elrwp}. Given that there are strong theoretical and empirical reasons
-to adopt driving durations, this is a large improvement.
+![An alternative, more humanly compact proposed districting plan
+\label{hc_better}](img/human_compactness_3.png)
 
-The second improvement I make is algorithmic and computational. My metric
+We have seen how to calculate the human compactness score for a proposed
+districting plan. Now we demonstrate the conditions under which human
+compactness score will assign better scores.
+
+Figure \ref{hc_better} shows a proposed alternative districting plan. Only
+the boundary has changed---the points have not. We can see intuitively that
+this plan is more compact. Rather than being "carved out" of his natural
+community in a snakelike fashion, R3 is now put in a reasonably-shaped
+district with B2 and B3. We can calculate the spatial diversity of this new
+district by imputing reasonable distance values for R1--B1 and R2--B1. We
+thus get
+
+$$HC_{R*} = \frac{(1.5 + 5) + (1.5+4.5) + (4 + 4.5)}{(1.5+5) + (1.5+4.5)
+(5+4.5)} = 0.95$$
+
+As we can see, the new district (and by extension districting plan) is given
+a much higher score under the human compactness metric, which largely accords
+with our intuitions. The human compactness measure enjoys two significant
+advantages over existing approaches. First, the human compactness metric
 improves upon the algorithmic complexity of \citeauthor{fh2011}'s algorithm
 from an NP-hard problem to one with a $O(n^2)$ polynomial runtime. This is an
-exponential decrease in algorithmic complexity, which means the disparity
-between my metric and \citeauthor{fh2011}'s increases as the input size
-grows. I also use programming techniques like precomputation and memoisation
-to decrease the time taken to compute the metric greatly. My implementation
-is competitive with geometry-based compactness measures like Reock: on my
-machine, both metrics took roughly the same amount of time (~0.20s per step).
-Further details on these algorithmic optimisations can be found in Appendix A.
+exponential decrease in algorithmic complexity. I also use programming
+techniques like precomputation and memoisation to decrease the time taken to
+compute the metric greatly. My implementation is competitive with
+geometry-based compactness measures like Reock: on my machine, both metrics
+took roughly the same amount of time (~0.20s per step). This greatly
+increases the capability of political science researchers to conduct ensemble
+analysis without requiring "room-filling supercomputers". Further details on
+these algorithmic optimisations can be found in Appendix A.
+
+Because of these algorithmic improvements and the way I have constructed the
+metric, I am able to use driving durations rather than Euclidean
+(as-the-crow-flies) distances between voters. This is a large improvement
+with strong theoretical and empirical support. Many previous scholars have
+suggested exactly this, giving it strong theoretical support. It keeps the
+metric robust to quirks in political geography like mountains and lakes, and
+better represents the notion of natural communities. And empirically, the use
+of driving durations also seems strictly superior in many cases involving
+human-scale distances. Working with Nicholas Eubank and Jonathan Rodden, I
+update their gerrymandering-detection metric to use driving durations instead
+\citep{er2019}. We find a consistently different picture of the social
+context of American suburban voters, raising the possibility of false
+positives under the Euclidean distance measure \citep*{elrwp}.
 
 Given these considerations, I settle on an ensemble of four different
 compactness measures: Polsby-Popper, Reock, Convex Hull, and Human
 Compactness. I exclude the Schwartzberg metric as the Schwartzberg and
 Polsby-Popper measure are largely mathematically equivalent. Finally, I
-include my point-wise distance metric. This maximises the robustness and
+include the human compactness metric. This maximises the robustness and
 validity of my results.
 
 ### Generating plans with automated districting algorithms
