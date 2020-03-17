@@ -1,0 +1,172 @@
+\begin{thebibliography}{27}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Barnes and Solomon(Forthcoming)]{bswp}
+Richard Barnes and Justin Solomon.
+\newblock Gerrymandering and compactness: Implementation flexibility and abuse.
+\newblock \emph{arXiv preprint arXiv:1803.02857}, Forthcoming.
+
+\bibitem[Chambers and Miller(2010)]{cm2010}
+Christopher~P Chambers and Alan~D Miller.
+\newblock A measure of bizarreness.
+\newblock \emph{Quarterly Journal of Political Science}, 5\penalty0
+  (1):\penalty0 27--44, 2010.
+
+\bibitem[Chen et~al.(2013)Chen, Rodden, et~al.]{cr2013}
+Jowei Chen, Jonathan Rodden, et~al.
+\newblock Unintentional gerrymandering: Political geography and electoral bias
+  in legislatures.
+\newblock \emph{Quarterly Journal of Political Science}, 8\penalty0
+  (3):\penalty0 239--269, 2013.
+
+\bibitem[Cirincione et~al.(2000)Cirincione, Darling, and O'Rourke]{ccd2000}
+Carmen Cirincione, Thomas~A Darling, and Timothy~G O'Rourke.
+\newblock Assessing south carolina's 1990s congressional districting.
+\newblock \emph{Political Geography}, 19\penalty0 (2):\penalty0 189--211, 2000.
+
+\bibitem[DeFord and Duchin(2019)]{dd2019va}
+Daryl DeFord and Moon Duchin.
+\newblock Redistricting reform in virginia: Districting criteria in context.
+\newblock \emph{Virginia Policy Review}, 12\penalty0 (2):\penalty0 120--146,
+  2019.
+
+\bibitem[DeFord et~al.(2019{\natexlab{a}})DeFord, Duchin, and
+  Solomon]{ddj2019comp}
+Daryl DeFord, Moon Duchin, and Justin Solomon.
+\newblock A computational approach to measuring vote elasticity and
+  competitiveness.
+\newblock 2019{\natexlab{a}}.
+
+\bibitem[DeFord et~al.(2019{\natexlab{b}})DeFord, Duchin, and
+  Solomon]{ddj2019recom}
+Daryl DeFord, Moon Duchin, and Justin Solomon.
+\newblock Recombination: A family of markov chains for redistricting,
+  2019{\natexlab{b}}.
+
+\bibitem[Delacre et~al.(2017)Delacre, Lakens, and Leys]{delacre2017}
+Marie Delacre, Daniel Lakens, and Christophe Leys.
+\newblock Why psychologists should by default use welch’s t-test instead of
+  student’s t-test.
+\newblock \emph{International Review of Social Psychology}, 30\penalty0 (1),
+  2017.
+
+\bibitem[Dube and Clark(2016)]{dc2016}
+Matthew~P Dube and Jesse~T Clark.
+\newblock Beyond the circle: Measuring district compactness using graph theory.
+\newblock In \emph{Annual Meeting of the Northeastern Political Science
+  Association}, 2016.
+
+\bibitem[Eubank and Rodden(2019)]{er2019}
+Nicholas Eubank and Jonathan Rodden.
+\newblock Political dislocation: A voter-level measure of partisan
+  representation and gerrymandering.
+\newblock \emph{Forthcoming}, 2019.
+
+\bibitem[Eubank et~al.(Forthcoming)Eubank, Lieu, and Rodden]{elrwp}
+Nicholas Eubank, Zhenghong Lieu, and Jonathan Rodden.
+\newblock Accounting for travel times in estimating political dislocation.
+\newblock Forthcoming.
+
+\bibitem[Fifield et~al.(Working Paper)Fifield, Higgins, Imai, and
+  Tarr]{fifieldwp}
+Benjamin Fifield, Michael Higgins, Kosuke Imai, and Alexander Tarr.
+\newblock Automated redistricting simulation using markov chain monte carlo.
+\newblock Working Paper.
+
+\bibitem[Fryer~Jr and Holden(2011)]{fh2011}
+Roland~G Fryer~Jr and Richard Holden.
+\newblock Measuring the compactness of political districting plans.
+\newblock \emph{The Journal of Law and Economics}, 54\penalty0 (3):\penalty0
+  493--535, 2011.
+
+\bibitem[Herschlag et~al.(2018)Herschlag, Kang, Luo, Graves, Bangia, Ravier,
+  and Mattingly]{h2018}
+Gregory Herschlag, Han~Sung Kang, Justin Luo, Christy~Vaughn Graves, Sachet
+  Bangia, Robert Ravier, and Jonathan~C Mattingly.
+\newblock Quantifying gerrymandering in north carolina.
+\newblock \emph{arXiv preprint arXiv:1801.03783}, 2018.
+
+\bibitem[Kaufman et~al.(Forthcoming)Kaufman, King, and Komisarchik]{kingwp}
+Aaron Kaufman, Gary King, and Mayya Komisarchik.
+\newblock How to measure legislative district compactness if you only know it
+  when you see it.
+\newblock \emph{American Journal of Political Science}, Forthcoming.
+
+\bibitem[Levin and Friedler(2019)]{lf2019}
+Harry~A Levin and Sorelle~A Friedler.
+\newblock Automated congressional redistricting.
+\newblock \emph{Journal of Experimental Algorithmics (JEA)}, 24\penalty0
+  (1):\penalty0 1--24, 2019.
+
+\bibitem[Luxen and Vetter(2011)]{osrm}
+Dennis Luxen and Christian Vetter.
+\newblock Real-time routing with openstreetmap data.
+\newblock In \emph{Proceedings of the 19th ACM SIGSPATIAL International
+  Conference on Advances in Geographic Information Systems}, GIS '11, pages
+  513--516, New York, NY, USA, 2011. ACM.
+\newblock ISBN 978-1-4503-1031-4.
+\newblock \doi{10.1145/2093973.2094062}.
+\newblock URL \url{http://doi.acm.org/10.1145/2093973.2094062}.
+
+\bibitem[Magleby and Mosesson(2018)]{mm2018}
+Daniel~B Magleby and Daniel~B Mosesson.
+\newblock A new approach for developing neutral redistricting plans.
+\newblock \emph{Political Analysis}, 26\penalty0 (2):\penalty0 147--167, 2018.
+
+\bibitem[Moncrief(2011)]{moncrief2011}
+Gary~F Moncrief.
+\newblock \emph{Reapportionment and Redistricting in the West}.
+\newblock Lexington Books, 2011.
+
+\bibitem[Nayuki(2020)]{nayuki2020}
+Project Nayuki.
+\newblock Smallest enclosing circle, 2020.
+\newblock URL \url{https://www.nayuki.io/page/smallest-enclosing-circle}.
+
+\bibitem[Olson(2010)]{olson2010}
+Brian Olson.
+\newblock Bdistricting, 2010.
+\newblock URL \url{https://bdistricting.com/about.html#for}.
+
+\bibitem[Polsby and Popper(1991)]{pp1991}
+Daniel~D Polsby and Robert~D Popper.
+\newblock The third criterion: Compactness as a procedural safeguard against
+  partisan gerrymandering.
+\newblock \emph{Yale Law \& Policy Review}, 9\penalty0 (2):\penalty0 301--353,
+  1991.
+
+\bibitem[Reock(1961)]{reock1961}
+Ernest~C Reock.
+\newblock A note: Measuring compactness as a requirement of legislative
+  apportionment.
+\newblock \emph{Midwest Journal of Political Science}, 5\penalty0 (1):\penalty0
+  70--74, 1961.
+
+\bibitem[Schutzman(2020)]{s2020}
+Zachary Schutzman.
+\newblock Trade-offs in fair redistricting.
+\newblock In \emph{AIES '20}, 2020.
+
+\bibitem[Snyder~Jr and Str{\"o}mberg(2010)]{snyder2010}
+James~M Snyder~Jr and David Str{\"o}mberg.
+\newblock Press coverage and political accountability.
+\newblock \emph{Journal of political Economy}, 118\penalty0 (2):\penalty0
+  355--408, 2010.
+
+\bibitem[Stephanopoulos(2012)]{steph2012}
+Nicholas~O Stephanopoulos.
+\newblock Spatial diversity.
+\newblock \emph{Harvard Law Review}, pages 1903--2010, 2012.
+
+\bibitem[Wolf(2015)]{wolf2015}
+Steven Wolf.
+\newblock Compactness is a terrible standard for redistricting and determining
+  if maps were gerrymandered, 2015.
+\newblock URL
+  \url{https://www.dailykos.com/stories/2015/5/12/1384062/-Compactness-is-a-terrible-standard-for-redistricting-and-determining-if-maps-were-gerrymandered}.
+
+\end{thebibliography}

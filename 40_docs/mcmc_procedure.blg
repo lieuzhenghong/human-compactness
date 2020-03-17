@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: mcmc_procedure.aux
+The style file: plainnat.bst
+Database file #1: references.bib.bib
+Warning--entry type for "wolf2015" isn't style-file defined
+--line 193 of file references.bib.bib
+Warning--entry type for "olson2010" isn't style-file defined
+--line 201 of file references.bib.bib
+Warning--entry type for "nayuki2020" isn't style-file defined
+--line 209 of file references.bib.bib
+Warning--empty journal in ddj2019comp
+Warning--empty journal in elrwp
+Warning--empty journal in fifieldwp
+You've used 27 entries,
+            2773 wiz_defined-function locations,
+            746 strings with 9017 characters,
+and the built_in function-call counts, 11471 in all, are:
+= -- 1027
+> -- 615
+< -- 20
++ -- 211
+- -- 183
+* -- 868
+:= -- 1759
+add.period$ -- 84
+call.type$ -- 27
+change.case$ -- 140
+chr.to.int$ -- 26
+cite$ -- 57
+duplicate$ -- 550
+empty$ -- 983
+format.name$ -- 232
+if$ -- 2409
+int.to.chr$ -- 2
+int.to.str$ -- 1
+missing$ -- 24
+newline$ -- 145
+num.names$ -- 108
+pop$ -- 294
+preamble$ -- 1
+purify$ -- 114
+quote$ -- 0
+skip$ -- 436
+stack$ -- 0
+substring$ -- 355
+swap$ -- 48
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 292
+warning$ -- 3
+while$ -- 107
+width$ -- 0
+write$ -- 348
+(There were 6 warnings)
