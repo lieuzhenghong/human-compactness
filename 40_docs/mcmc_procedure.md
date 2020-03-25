@@ -8,109 +8,254 @@ header-includes:
 
 ## Introduction
 
-Good job today. To reiterate, basically I think your research question should
-be something like: 
+Research shows that districts that consist of more homogeneous groups of voters
+achieve better representation on several dimensions. And many statutes require
+that districts be "reasonably compact". However, some have argued that
+requiring compactness may come at the cost of district homogeneity by drawing
+districts without regard for communities of interest, which has deletrious
+effects on democratic outcomes like representation and responsiveness. Are
+compactness and homogeneity fundamentally conflicting goals? Are some measures
+of compactness more consistent with homogeneity than others? 
 
-"Research shows that districts that consist of more
-homogeneous groups of voters achieve better representation on several
-dimensions. Meanwhile, many statutes require that districts be "compact", a
-term with many interpretations. It is not clear, however, that more compact
-districting plans (however compactness is measured) result in more homogeneous
-districts. Are compactness and homogeneity fundamentally conflicting goals? Are
-some measures of compactness more consistent with homogeneity than others?"      
-
-### My contribution
-
-I make two main contributions to the literature.
-
-I am the first to measure the relationship between district compactness and
-spatial diversity. A lot of work has focused on the relationship between
-compactness and electoral outcomes such as partisan bias and responsiveness.
-But to my knowledge, I am the first using an MCMC approach to measure the
-effect of compactness on a non-electoral outcome.
-
-I also develop a new compactness metric that improves upon previous point-based
-measures (e.g. \citeapos{cm2010} bizarreness and \citeapos{fh2011} relative
-proximity index) by incorporating a notion of travel times. I show that
-optimising over my compactness metric results in more homogeneous districts,
-with positive implications for political participation and electoral
-responsiveness.
-
-## Theoretical stuff
-
-### Why compactness
-
-- states mandate it
-- good check against gerrymandering
-
-### Why spatial diversity
-
-Spatial diversity is the opposite of homogeneity, and homogeneity is good
-because it increases political participation, electoral responsiveness, and
-(paradoxically) electoral competitiveness. These are important democratic
+I make two contributions in this work. First, I develop a new compactness
+metric (*human compactness*) that improves upon previous measures by
+incorporating a notion of travel times. Second, I use a Markov Chain Monte
+Carlo (MCMC) approach to generate a large sample of districting plans and
+consider empirically how compactness and homogeneity trade off with one
+another. I find no trade-off between compactness and homogeneity across all
+four compactness measures I examine. I further find that my human compactness
+measure consistently produces more homogeneous districts, suggesting that a
+judicious choice of compactness metric can in fact encourage better electoral
 outcomes.
 
-![Effect of spatial diversity on electoral rolloff](img/sd_rolloff.png)
+## Why compactness?
 
-![Effect of electoral responsiveness on spatial diversity \label{sd_responsiveness}](./img/average_spatial-diversity.png)
+Thirty-sven states require their legislative districts be reasonably compact,
+and eighteen states require congressional districts to be compact as well
+(Levitt 2019). Why do states do this? Simply put, demanding compactness is a
+procedural safeguard against gerrymandering. Gerrymandering is performed by
+packing and cracking, which involves either pulling disparate blocs from
+far-flung communities into a singular tendril-like district, or splitting
+natural blocs of voters into multiple districts to dilute their influence. In
+order to do so, districts must be drawn in a very contorted way which a
+compactness test picks up on. As \cite{pp1991} put: "Without the ability to
+distend district lines ...  it is not possible to gerrymander. The diagnostic
+mark of the gerrymander is the noncompact district." Their assertion that
+gerrymandering is impossible if compactness is mandated has been supported by
+the literature. \cite{altman1998} writes that "compactness standards can be
+used to limit gerrymandering, but only if such standards require severe
+compactness". And \cite{apollonio2006} use both theoretical graph-theoretic
+models as well as experimental computational results and find that "compactness
+is a good shield against the practice of gerrymandering".
 
-> spatial diversity remained a statistically significant predictor of
-roll-off rate. With these variables held constant at their means, a House
-district’s shift from the tenth to the ninetieth percentile in spatial
-diversity was associated with an increase in roll-off rate of about six
-percentage points.
+For this reason, the courts have long relied on compactness as a marker of
+gerrymandering. In *Davis v. Bandemer*, Justices Powell and Stephens pointed to
+compactness as a major determinant of partisan gerrymandering. And, as
+\cite{altman1998} writes:
 
-Electoral responsiveness refers to the rate at which a party gains or loses
-seats given changes in its statewide vote share. For instance, if Democrats
-would win ten percent more seats if they received five percent more of the
-vote, then a plan would have a responsiveness of 2.0. As a general matter, the
-lower a plan’s bias, and the higher its responsiveness, the better the plan is
-thought to be.
+> In Shaw v. Reno (1993), the Court allowed a challenge to North Carolina’s
+redistricting plan to proceed on the basis that the ill-compactness of the
+districts indicated a racial gerrymander. Justice O’Connor’s words in this case
+especially emphasized the role district shape played in the decision: 'we
+believe that reapportionment is one area in which appearances do matter.'...
+Justice O’Connor, writing for the majority in Bush v. Vera (1996) declares that
+violations of compactness and other districting principles are necessary
+conditions for strict scrutiny to apply.
 
-The story with responsiveness is more straightforward. As the se- cond chart
-illustrates, responsiveness simply tends to decrease as aver- age spatial
-diversity increases. The states whose districts are most homogeneous, on
-average, are also the states whose elections are most responsive to changes in
-public opinion. In contrast, the states whose districts are most heterogeneous
-are also the ones in which even large swings in voter sentiment have little
-impact on the parties’ seat shares.  This finding indicates that while high
-spatial diversity is not a prereq- uisite for a partisan gerrymander (low
-spatial diversity can also do the trick), it is indeed an effective way to
-protect incumbents of both parties from shifting political tides. **Advocates
-of responsive elections, then, may push without hesitation for spatially
-homogeneous districts to be drawn, since it is these districts that seem most
-likely (in the aggregate) to reflect the public’s evolving preferences.**
+## The problem with compactness
 
-\cite{steph2012}
+While compactness is undoubtedly an important and useful measure in preventing
+gerrymandering, it may not come without costs. Some have argued that
+compactness may conflict with other desired criteria such as minority vote
+share, electoral competitiveness, keeping communities of interest together, and
+so on. \citep{cain1984}, \cite[karlan1989}. Recent work has lent support to
+such a view. \cite{ddj2019comp} show that mandating competitiveness has effects
+on the partisan lean of the districting plans. And \cite{s2020} finds that
+compactness and partisan symmetry (competitiveness) are somewhat incompatible,
+suggesting that mandating compactness may have unwanted effects on desired
+electoral outcomes.
 
-### How compactness might affect spatial diversity
+In this work, I will examine the possible conflict between compactness and
+community. We know that communities of interest are important: Twenty-four
+states explicitly mention communities of interest, asking that they be
+considered in the redistricting process \cite{brennan}. And the California
+Redistricting Committee ranked maintaining communities of interest fourth in
+its list of priorities---above compactness.
 
-### Previous work
+It would thus be problematic if mandating compactness meant splitting
+communities of interest. \citeauthor{wolf2015} writes that "all [compactness]
+does is needlessly and unproductively split communities, cities, and
+counties"---in other words, that it separates people with much in common, and
+puts together people with little. The question at hand is thus: are more
+compact districts more likely to split communities of interest?
 
-- people have done how compactness affects competitiveness (schutzman 2020)
-- people have used MCMC approach to look at how districts are more or less competitive
-( daryl's work)
+## Why homogeneity matters
 
-One factor ignored in this analysis, which is critical to theprocess of drawing
-districts, isrespecting communities-of-interest.Even defining and locating
-geographically such communities is avery difficult problem, let alone the
-determination of whether ornot to preserve that group in a single district. We
-therefore pro-pose our analysis as a framework for discussion about trade-offs
-inredistricting rather than as a policy recommendation.
+While the legislature speaks in terms of 'communities of interest', I choose to
+redefine it as district homogeneity instead. One big reason is because the
+former term is ill-defined and incredibly difficult to measure. As
+\citeauthor{altman1998} writes, 
 
-In this work, we have demonstrated with a
-simple model thatdemanding districts be drawn to be as compact as possible
-anddemanding that they satisfy a notion of partisan symmetry areincompatible,
-but to different degrees depending on the particularfeatures of the geographic
-region in question. Since existing propos-als and methodologies for automated
-and algorithmic redistrictinginvolve finding an approximate solution to an
-optimization problem,it is important to understand how changing the objective
-functionof these procedures can affect the outcome. As more
-jurisdictionsconsider redistricting reforms, they should be cautious about
-abdi-cating the line drawing process to algorithms which encode valuesdifferent
-from those of the voters who use the districts to elect theirrepresentatives.
+> The question of how redistricting in general, and compactness in particular,
+ affects ‘communities of interest’is important, but ill-defined... the term is
+ often used when we are unable to more conventionally classify the ‘interest’
+ involved. In part because ofthis use of ‘communities of interest’ as a
+ catch-all, these communities are difficult to quantify. The lack of an
+ objective, quantitative, standard for recognizing such communities makes the
+ subject difficult to examine through either statistics or simulation.
+
+We have seen how difficult defining communities of interest can be. In 2010,
+the California Redistricting Committee made districting maps that respected
+"communities of interest" through a year-long, drawn-out process, which
+involved recruiting unbiased candidates to form the committee, holding dozens
+of public input hearings, reading through comments and suggestions from over
+20,000 individuals and groups, and conducting hundreds of field interviews. It
+relied on the "active participation" of citizens across California to weigh in
+on an "open conversation" in which "[the commission] deliberated over the best
+approach to minimize the splitting of cities, counties, neighbourhoods, and
+local communities of interest". More recently, the MGGG Redistricting Lab built
+a tool inviting members of the public to tag and identify communities of
+interest---because "communities of interest are notoriously hard to locate"
+\citep{mggg2020}.
+
+In sum, communities of interest are hard to define, hard to measure, and hard
+to agree on. This is why I use district homogeneity instead as a proxy for
+communities of interest. The big advantage of using district homogeneity is
+that we have national-level data in form of the American Community Survey
+(ACS), which are the "best available proxies for how closely the districts
+correspond to geographic communities of interest" \citet[p.~283]{steph2012}.
+
+Furthermore, district homogeneity tracks communities of interest quite closely.
+The idea is simple: people in the same "communities of interest" are often more
+alike than not: for instance, they may often be of the same age group, race, or
+religion. In fact, communities of interest are often viewed through exactly
+that lens. The Constitution of Colorado defines communities of interest as
+"ethnic, cultural, economic, trade area, geographic, and demographic factors",
+and Massachussets defines them based on "trade areas, geographic location,
+communication and transportation networks, media markets, Indian reservations,
+urban and rural interests, social, cultural and economic interests, or
+occupations and lifestyles". \citep{brennan}. And unlike communities of
+interest, there is broad agreement on what homogeneity constitutes (at least in
+the general case).
+
+A wealth of evidence suggests that more homogeneous districts have better
+democratic outcomes, mainly due to better descriptive and substantive
+representation. \cite{heath2016} writes that "a growing body of work has
+shown...[that] descriptive---or social representation matters, and all else
+being equal, people with a given social characteristic prefer candidates or
+leaders who share that characteristic. As Johnston et al. argue 'the more an
+agent resembles oneself the more he or she might be expected reflexively to
+understand and act on one's own interests'... because the voter observes the
+relationship between these traits and real-life behaviour as part of his daily
+experience". \cite{ogrady2018} conducts corpus analysis on MPs' parliamentery
+speeches and finds that middle-class MPs were less likely to represent the
+interests of their working-class voters: their speeches were more likely to be
+anti-welfare, and they were less likely to rebel against the party whip when
+bills that slashed welfare were passed. In other words, a representative that
+mirrors his constituents' descriptive (racial/socioeconomic/religious) makeup
+is more likely to act in their best interests.
+
+But in order for a representative to mirror his constituents, his constituents
+must be somewhat homogeneous. A single representative cannot resemble multiple
+highly heterogeneous populations at once. Professor Bruce Cain writes that if a
+district is spatially "divided between nonwhite and white, rich and poor, rural
+and urban,", "then it may be very hard for one representative to represent all
+factions well." And Professor Thomas Brunell contends that "the more
+homogeneous a district, the better able the elected official is to accurately
+reflect the views of more of his constituents." \cite{steph2012} further
+writes:
+
+> In two well-known series of interviews carried out by political scientists,
+elected officials... repeatedly stated that they found it difficult to
+represent spatially diverse districts. House members complained that they could
+not easily discern the "lowest common denominator of interests” in
+geographically varied districts, while state legislators expressed frustration
+that they "simply [could not] 'represent' the views of...  diverse groups when
+there are sharp conflicts." More conventional studies confirm that
+representation (in the sense of responsiveness to constituent interests) is
+inversely related to districts’ top-line demographic, economic, and ideological
+diversity.
+
+In sum, district homogeneity is important: similar individuals are likely to
+have similar legislative concerns, and therefore benefit from cohesive
+representation in the legislature. To operationalise district homogeneity, I
+use a particular instantiation of homogeneity called *spatial diversity*
+developed by Professor Nicholas Stephanopoulos, which measures the variance in
+each Congressional Tract along factors such as race, ethnicity, age, income,
+education, and so on. The higher the spatial diversity score, the less
+homogeneous the district. 
+
+![Increased spatial diversity (lower homogeneity) increases roll-off
+rate \label{sd_rolloff}](img/sd_rolloff.png)
+
+In accordance with the evidence presented so far, Stephanopoulos finds that
+district homogeneity and statewide homogeneity are both strong predictors of
+democratic outcomes. Figure \ref{sd_rolloff} shows the relationship between
+spatial diversity and roll-off rate, which is defined as the difference between
+the proportion of voters who cast a ballot for a presidential race, but not for
+a lower-ticket (e.g. Congressional) race. Roll-off rates are important
+indicators of democratic participation, because they zero in on the confusion,
+lack of knowledge, or apathy that prevents voters from casting their vote in
+the Congressional race despite having cast a top-ticket vote. Stephanopoulos
+finds that increasing spatial diversity increases the roll-off rate, which
+makes sense given what we know so far: homogeneous districts are easier to
+represent and representatives can better act in their constituents' interests.
+
+And while one might worry that more homogeneous districts would be less
+competitive than heterogeneous ones, Stephanopoulos finds that the reverse is
+true: empirically, more geographically uniform districts are in fact more
+competitive (p. 1922--1923). Stephanopulos finds that homogeneous districts
+also tend to be the ones whose elections are most responsive to changes in
+public opinion.
+
+![Relationship between spatial diversity and electoral responsiveness\label{sd_responsiveness}](./img/average_spatial-diversity.png)
+
+Figure \ref{sd_responsiveness} plots the relationship Stephanopoulos found
+between spatial diversity and electoral responsiveness. Electoral
+responsiveness refers to the rate at which a party gains or loses seats given
+changes in its statewide vote share. For instance, if Democrats would win ten
+percent more seats if they received five percent more of the vote, then a plan
+would have a responsiveness of two. The higher a plan's responsiveness, the
+better it is thought to be. Stephanopoulos writes:
+
+> **Advocates of responsive elections... may push
+without hesitation for spatially homogeneous districts to be drawn, since it is
+these districts that seem most likely (in the aggregate) to reflect the
+public’s evolving preferences.**
+
+In sum, district homogeneity is associated with a variety of positive
+democratic outcomes.
 
 ## Key research questions
+
+In the previous section, I have established the importance of compactness and
+raised one possible problem with mandating compactness, namely that it may
+cleave communities of interest---causing greater heterogeneity---and lead to
+worse democratic outcomes. I then explained one mechanism through which this
+could happen: heterogeneity results in decreased descriptive and substantive
+representation, which in turn feeds into decreased political participation and
+lower responsiveness. If this claim is true, we should seriously reconsider
+mandating compactness in state legislation!
+
+So let us examine the claim against compactness. The claim is that mandating
+compactness may lead to districts that do not properly represent their
+constituents, i.e. are more heterogeneous. But it is unclear if mandating
+compact districts results in more heterogeneous districts *overall*. While
+*some* very compact districts may split communities, there may also be very
+compact districts that do not. The key question is whether there is an
+*inherent, fundamental* tradeoff between compactness and homogeneity.
+
+Secondly, while almost all states mandate that districts are drawn in a
+"reasonably compact" fashion, they do not specify *how* compactness should be
+measured. As there are dozens (if not hundreds) of compactness measures that
+have been proposed in the literature, one natural question is to ask which
+compactness measure should be used. And while there are many theoretical and
+methodological reasons to choose one compactness measure over another, there is
+also an empirical consideration. District homogeneity might give us a normative
+basis for choosing among the measures if the plans under one compactness
+measure are consistently more homogeneous than the others.
+
+Along these lines of thought, I therefore ask the following research questions:
 
 1. Is there an inherent trade-off between compactness and homogeneity?
 	- Do more compact districts have better, equal, or worse spatial diversity
@@ -118,6 +263,22 @@ from those of the voters who use the districts to elect theirrepresentatives.
 	- Does it depend on the compactness metric we use?
 2. Does spatial diversity give us a normative basis to select one compactness
 	 metric over another?
+
+## My contribution (feel like this section should be somewhere else)
+
+I make two main contributions to the literature.
+
+To my knowledge, I am the first to measure the relationship between district
+compactness and a non-electoral outcome (district homogeneity/spatial
+diversity). A lot of work has focused on the relationship between compactness
+and electoral outcomes such as partisan bias and responsiveness.
+
+I also develop a new compactness metric that improves upon previous point-based
+measures (e.g. \citeapos{cm2010} bizarreness and \citeapos{fh2011} relative
+proximity index) by incorporating a notion of travel times. I show that
+optimising over my compactness metric results in more homogeneous districts,
+with positive implications for political participation and electoral
+responsiveness.
 
 ## Research procedure
 
@@ -129,8 +290,9 @@ To answer my research questions, I adopt the following procedure:
 
 This three-step procedure is used by many previous works, including
 \cite{cr2013}, \cite{ddj2019comp}, and \cite{s2020}. While the specifics
-differ, they all follow the same general procedure. I will now explain why this
-procedure has its advantages over more traditional political science methods.
+differ, they all follow the same general procedure. I will explain why this
+procedure (analyzing hypothetical districting plans) has advantage over
+analyzing enacted or proposed districting plans.
 
 ### Why generate many plausible districting plans?
 
@@ -171,17 +333,21 @@ subsequent elections.
 It would be incredibly useful to vary compactness unilaterally while knowing
 that that variation was not due to a previous change in political
 participation. But this is precisely what simulation approaches allow us to do.
+
 If the simulations are able to generate a representative sample of all
 districting plans (a big caveat---more on this later), then we can solve the
 problem of sample size and endogeneity in one fell swoop.
+
+Within a sample of automatically generated plans (which are made to satisfy the
+constraints of), there is Y relationship between SD and HC
 
 A simulation approach is therefore advantageous due to the limitations of our
 data. But the simulation procedure introduces several new considerations. We
 need to choose two things in the procedure: a method to generate districting
 plans, and a compactness metric to score these districting plans. This choice
-is not arbitrary: different generating functions and the choice of compactness
-metric can give very different results. I now explain how I chose both of
-these.
+highly consequential: different generating functions and the choice of
+compactness metric can give very different results. I now explain how I chose
+both of these.
 
 ### Overview of compactness measures
 
@@ -217,13 +383,13 @@ circle whose circumference is equal to the perimeter of the district
 
 $$4\pi \times \frac{A}{P^2}$$
 
-![Polsby-Popper scores of four example regions: a perfect circle, a square, a
+![Polsby-Popper scores of four example districts: a perfect circle, a square, a
 circle with a ragged boundary, an an example district from a Pennsylvania plan.
 Taken from \cite{s2020}.](img/pp_example.png)
 
 ##### Reock
 
-The Reock score is a measure of the ratio of the district to the area of the
+The Reock score is the ratio of the district's area to the area of the
 minimum bounding circle that encloses the district's geometry \citep{reock1961}.
 
 $$\frac{Area}{AreaOfMinimumBoundingCircle}$$
@@ -256,29 +422,28 @@ are well-cited in the literature and enjoy widespread use. They have been
 cited in U.S. Supreme Court cases, *amici* briefs, and redistricting
 commissions \citep{moncrief2011}. 
 
-Despite their widespread acceptance,
-however, the problems with compactness measures are many, and well-covered in
-the literature. As an example, the most popular compactness measure in the
-literature---Polsby-Popper---is sensitive to small perturbations in data
-resolution (the coastline problem).[^0] The same is true for other geometric
-compactness measures: no single metric is perfect. It is therefore important
-to use an *ensemble* of compactness measures to make sure that one's data and
-conclusions are robust.
+Despite their widespread use, however, the problems with compactness measures
+are many, and well-covered in the literature. As an example, the most popular
+compactness measure in the literature---Polsby-Popper---is sensitive to small
+perturbations in data resolution (the coastline problem).[^0] The same is true
+for other geometric compactness measures: no single metric is perfect. It is
+therefore important to use an *ensemble* of compactness measures to make sure
+that one's data and conclusions are robust.
 
 But even this is not enough. Because all three of these compactness measures
 are purely geometric, they are all vulnerable to a specific family of
-geographic perturbations. Indeed, \cite{bswp} show that minimally tweaking
-the geometric features of states is enough for the four most popular
-compactness measures (Polsby-Popper, Convex Hull, Reock, Schwartzberg) to
-give very different conclusions on nominally identical data.
-
-Thus, it is important to include a non-geometric compactness measure in the
-ensemble to guard against the possibility that the results are driven by a
-specific quirk in geography. Many such measures have been proposed. For
-instance, \cite{dc2016} bring in a discipline of mathematics---graph
-theory---to formulate a new metric of compactness. And \cite{kingwp} use a
-machine learning model to try and ape human intuition---quantifying the
-intuitive metric of "I know it when I see it".
+geographic perturbations. Indeed, \cite{bswp} show that minimal changes in the
+geometric features of states are enough for the four most popular compactness
+measures (Polsby-Popper, Convex Hull, Reock, Schwartzberg) to give very
+different conclusions on nominally identical data. That means that small
+changes in the way the data is collected or processed can affect the
+conclusions we draw. Thus, it is important to include a non-geometric
+compactness measure in the ensemble to guard against the possibility that the
+results are driven by some small geometric changes. Many such measures have
+been proposed. For instance, \cite{dc2016} bring in a discipline of
+mathematics---graph theory---to formulate a new metric of compactness. And
+\cite{kingwp} use a machine learning model to try and ape human
+intuition---quantifying the intuitive metric of "I know it when I see it".
 
 #### Point-wise distance compactness measures
 
@@ -300,6 +465,14 @@ voters in the same area are especially likely to belong to the same social
 communities --- all suggest the importance of voters being located in districts
 with their geographic peers."
 
+A wealth of empirical evidence supports the above statement. Arzheimer and
+Evans (2012) find that constituents support less strongly candidates that live
+far from them, even controlling for strong predictors of vote choice like party
+feeling and socio-economic distance. In part, voters strongly support proximate
+candidates because they think that these candidates better represent their
+interests. Similarly, Dyck and Gimpel (2005) find that voters living further
+away from a voting site are less likely to turn out to vote.
+
 In contrast, districts that put people with unrelated, faraway others carve
 voters out of their natural communities and are thus to be avoided. We care
 about whether co-districtors live in the same area and belong to the same
@@ -313,62 +486,6 @@ lack. It has therefore been an active area of development in the literature.
 relative difficulty in traveling between two points within the district". And
 \cite{fh2011} measures "the distance between voters within the same district
 relative to the minimum distance achievable".
-
-Despite the relative merits of point-wise distance metrics, there are two
-areas of improvement---one theoretical, the other empirical. Firstly, all
-point-wise distance metrics suggested in the literature use Euclidean
-distances. But many have rightly suggested that we should consider travel
-times/driving durations instead. For instance, while \cite{fh2011} used
-Euclidean distance in their metric, they point out its shortcomings:
-
-> Suppose there is a city on a hill. On the West side is [a] mild, long incline
-toward the rest of the city, which is in a plane. On the East side is a steep
-cliff, either impassable or with just a narrow, winding road that very few
-people use. While the next residential center to the East is much closer to
-the hilltop on a horizontal plane, it is much further on all sorts
-of distances that we think might matter: transportation time, intensity of
-social interactions, sets of shared local public goods and common interests,
-etc. Thus, for all practical purposes, one probably wants to include the
-hilltop in a Western district rather than an Eastern one. More general
-notions of distance can handle this.
-
-The "impassable" region on the East would have a short Euclidean distance,
-and any districting plan that put the hilltop with the Eastern district would
-be unfairly penalised by these point-wise distance metrics. On the other
-hand, the impassable region would have a long driving duration, accurately
-reflecting the political geography. In this and many other cases like it
-(e.g. large bodies of water), driving durations better reflect a state's
-unique political geographies.
-
-After acknowledging the shortcomings of Euclidean distance,
-\citeauthor{fh2011} specifically suggest using driving durations to improve
-their metric: "one can extend much of [our analysis] by using driving
-distance or what legal scholars refer to as 'communities of interest'".
-
-There are thus strong theoretical grounds for using driving durations in
-point-wise distance metrics. Why then have scholars not adopted it, seeing as
-they agree on its superiority? This brings me to my empirical criticism: the
-point-wise distance metrics scholars have proposed are either far too
-computationally complex to compute at scale, or have restrictions that make
-using travel times difficult, if not impossible. For instance, the metric
-that \citet{fh2011} propose requires solving an *NP-complete* problem. A term
-used in computer science, an NP-complete problem scales exponentially with
-the size of the input. This makes it prohibitively expensive on larger
-states. And while they have an approximation that runs much quicker, they
-provide no bounds on the correctness of this approximation.
-
-Similarly, \citeauthor{olson2010} has a metric that minimises the average
-distance from each voter to the center of their district. He says of travel
-times "that it might be the right kind of thing to measure, but it would take
-too long... The large amount of map data and extra computer time to calculate
-all those travel times would slow the process down horribly. It would then
-require a room filling supercomputer to get an answer in a reasonable amount
-of time." \citep{olson2010}. And finally, \citeauthor{cm2010}'s measure
-cannot feasibly be improved with driving durations due to the difficulty of
-finding point-to-point travel distances without passing through another
-district. This is because most routing engines allow you only to specify a
-route between two (or more) points. They do not further allow you to specify
-regions through which the route cannot pass.
 
 #### An improved point-wise distance metric: Human compactness
 
@@ -634,7 +751,12 @@ the "best" plan.
 
 #### Choosing the best MCMC approach
 
-I use the third approach in my analysis. 
+To recap, there are three plausible MCMC approaches to generate a large subset
+of redistricting plans: local optimisation, score function, or neutral
+ensemble. I examine them each in turn and decide on the neutral ensemble
+approach because it generates the largest and most representative subset of
+redistricting plans, which best represents the plans that legislators are
+likely to draw in real life.
 
 The first proposal is local optimisation. Local optimisation approaches like
 the `Flip` proposal have one key problem.  The "mixing time" of the Markov
@@ -775,16 +897,18 @@ and \cite{s2020} analyse only five and two states respectively.
 
 ### Calculating spatial diversity and compactness scores for 100,000 plans
 
-After generating the plans, I calculate spatial diversity and compactness
-scores for all of them. I obtain data on spatial diversity from Professor
-Nicholas Stephanopoulos. The dataset he gave me has *factor scores* for each
-Census Tract in the country. A district's spatial diversity score is calculated
-by the sum of the standard deviation of each factor score, normalised by the
-proportion of the variance each factor score explains. As an example, consider
-a district made up of three Census Tracts (A, B, C), and let each Tract have
-three factor scores (1, 2, 3). Let the proportion of the variance explained by
-each factor score be 50%, 30% and 20% respectively. Then the total spatial
-diversity score would be:
+After generating the plans, I calculate spatial diversity (a measure of
+district heterogeneity) and compactness scores for all of them. I obtain data
+on spatial diversity from Professor Nicholas Stephanopoulos. The dataset he
+gave me has eight *factor scores* for each Census Tract in the country, where a
+factor score is a combined variable that covers vital areas like race,
+education, profession, marital status, and housing. A district's spatial
+diversity score is calculated by the sum of the standard deviation of each
+factor score, normalised by the proportion of the variance each factor score
+explains. As an example, consider a district made up of three Census Tracts (A,
+B, C), and let each Tract have three factor scores (1, 2, 3). Let the
+proportion of the variance explained by each factor score be 50%, 30% and 20%
+respectively. Then the total spatial diversity score would be:
 
 $$ \sigma(A_1, B_1, C_1) \times 0.5 + \sigma(A_2, B_2, C_2) \times 0.3 + \sigma(A_3,
 B_3, C_3) \times 0.2$$
@@ -1527,7 +1651,7 @@ interest would be other point-wise distance metrics like bizarreness, and
 
 Finally, future work should analyse a variety of other outcomes of interest
 apart from spatial diversity. As the primary draw of point-based distance
-measures is that it should keep communities of people togetherin the same
+measures is that it should keep communities of people together in the same
 district, I would particularly like to see future work whether human
 compactness does a better job of keeping communities of interest together. We
 should also examine the effect of compactness on a wider range of normative

@@ -1,14 +1,34 @@
-\begin{thebibliography}{27}
+\begin{thebibliography}{32}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
+\bibitem[Altman(1998)]{altman1998}
+Micah Altman.
+\newblock Modeling the effect of mandatory district compactness on partisan
+  gerrymanders.
+\newblock \emph{Political Geography}, 17\penalty0 (8):\penalty0 989--1012,
+  1998.
+
+\bibitem[Apollonio et~al.(2006)Apollonio, Becker, Lari, Ricca, and
+  Simeone]{apollonio2006}
+Nicola Apollonio, Ronald~I Becker, Isabella Lari, Federica Ricca, and Bruno
+  Simeone.
+\newblock The sunfish against the octopus: opposing compactness to
+  gerrymandering.
+\newblock In \emph{Mathematics and Democracy}, pages 19--41. Springer, 2006.
+
 \bibitem[Barnes and Solomon(Forthcoming)]{bswp}
 Richard Barnes and Justin Solomon.
 \newblock Gerrymandering and compactness: Implementation flexibility and abuse.
 \newblock \emph{arXiv preprint arXiv:1803.02857}, Forthcoming.
+
+\bibitem[Cain(1984)]{cain1984}
+Bruce~E Cain.
+\newblock \emph{The reapportionment puzzle}.
+\newblock Univ of California Press, 1984.
 
 \bibitem[Chambers and Miller(2010)]{cm2010}
 Christopher~P Chambers and Alan~D Miller.
@@ -77,6 +97,12 @@ Benjamin Fifield, Michael Higgins, Kosuke Imai, and Alexander Tarr.
 \newblock Automated redistricting simulation using markov chain monte carlo.
 \newblock Working Paper.
 
+\bibitem[for Justice(2020)]{brennan}
+Brennan~Center for Justice.
+\newblock Communities of interest, 2020.
+\newblock URL
+  \url{https://www.brennancenter.org/sites/default/files/analysis/6%20Communities%20of%20Interest.pdf}.
+
 \bibitem[Fryer~Jr and Holden(2011)]{fh2011}
 Roland~G Fryer~Jr and Richard Holden.
 \newblock Measuring the compactness of political districting plans.
@@ -95,6 +121,11 @@ Aaron Kaufman, Gary King, and Mayya Komisarchik.
 \newblock How to measure legislative district compactness if you only know it
   when you see it.
 \newblock \emph{American Journal of Political Science}, Forthcoming.
+
+\bibitem[Lab(2020)]{mggg2020}
+MGGG~Redistricting Lab.
+\newblock Public mapping with districtr, 2020.
+\newblock URL \url{https://districtr.org/assets/brochure.pdf}.
 
 \bibitem[Levin and Friedler(2019)]{lf2019}
 Harry~A Levin and Sorelle~A Friedler.
@@ -127,10 +158,12 @@ Project Nayuki.
 \newblock Smallest enclosing circle, 2020.
 \newblock URL \url{https://www.nayuki.io/page/smallest-enclosing-circle}.
 
-\bibitem[Olson(2010)]{olson2010}
-Brian Olson.
-\newblock Bdistricting, 2010.
-\newblock URL \url{https://bdistricting.com/about.html#for}.
+\bibitem[O’Grady(2019)]{ogrady2018}
+Tom O’Grady.
+\newblock Careerists versus coal-miners: Welfare reforms and the substantive
+  representation of social groups in the british labour party.
+\newblock \emph{Comparative Political Studies}, 52\penalty0 (4):\penalty0
+  544--578, 2019.
 
 \bibitem[Polsby and Popper(1991)]{pp1991}
 Daniel~D Polsby and Robert~D Popper.
