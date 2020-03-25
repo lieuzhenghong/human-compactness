@@ -1,7 +1,9 @@
 ---
+title: Is there a trade-off between compactness and homogeneity?
 author: Zhenghong Lieu
 header-includes:
 	- \usepackage{booktabs}
+date: 25th March 2020
 ---
 
 \def\citeapos#1{\citeauthor{#1}'s (\citeyear{#1})} 
@@ -30,7 +32,7 @@ outcomes.
 
 ## Why compactness?
 
-Thirty-sven states require their legislative districts be reasonably compact,
+Thirty-seven states require their legislative districts be reasonably compact,
 and eighteen states require congressional districts to be compact as well
 (Levitt 2019). Why do states do this? Simply put, demanding compactness is a
 procedural safeguard against gerrymandering. Gerrymandering is performed by
@@ -140,7 +142,7 @@ the general case).
 
 A wealth of evidence suggests that more homogeneous districts have better
 democratic outcomes, mainly due to better descriptive and substantive
-representation. \cite{heath2016} writes that "a growing body of work has
+representation. \cite{heath2018} writes that "a growing body of work has
 shown...[that] descriptive---or social representation matters, and all else
 being equal, people with a given social characteristic prefer candidates or
 leaders who share that characteristic. As Johnston et al. argue 'the more an
