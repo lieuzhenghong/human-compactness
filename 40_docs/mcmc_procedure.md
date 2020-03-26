@@ -53,7 +53,8 @@ is a good shield against the practice of gerrymandering".
 For this reason, the courts have long relied on compactness as a marker of
 gerrymandering. In *Davis v. Bandemer*, Justices Powell and Stephens pointed to
 compactness as a major determinant of partisan gerrymandering. And, as
-\cite{altman1998} writes:
+\cite{altman1998} writes, other Justices have explicitly pointed out
+compactness violations as critical to their judgments:
 
 > In Shaw v. Reno (1993), the Court allowed a challenge to North Carolina’s
 redistricting plan to proceed on the basis that the ill-compactness of the
@@ -70,7 +71,7 @@ While compactness is undoubtedly an important and useful measure in preventing
 gerrymandering, it may not come without costs. Some have argued that
 compactness may conflict with other desired criteria such as minority vote
 share, electoral competitiveness, keeping communities of interest together, and
-so on. \citep{cain1984}, \cite[karlan1989}. Recent work has lent support to
+so on (\citep{cain1984}, \cite{karlan1989}). Recent work has lent support to
 such a view. \cite{ddj2019comp} show that mandating competitiveness has effects
 on the partisan lean of the districting plans. And \cite{s2020} finds that
 compactness and partisan symmetry (competitiveness) are somewhat incompatible,
@@ -78,30 +79,41 @@ suggesting that mandating compactness may have unwanted effects on desired
 electoral outcomes.
 
 In this work, I will examine the possible conflict between compactness and
-community. We know that communities of interest are important: Twenty-four
-states explicitly mention communities of interest, asking that they be
-considered in the redistricting process \cite{brennan}. And the California
+community. We know that communities of interest are also desired by states:
+twenty-four states explicitly mention communities of interest, asking that they
+be considered in the redistricting process \citep{brennan}. And the California
 Redistricting Committee ranked maintaining communities of interest fourth in
-its list of priorities---above compactness.
+its list of priorities---over and above compactness.
 
 It would thus be problematic if mandating compactness meant splitting
 communities of interest. \citeauthor{wolf2015} writes that "all [compactness]
-does is needlessly and unproductively split communities, cities, and
-counties"---in other words, that it separates people with much in common, and
-puts together people with little. The question at hand is thus: are more
-compact districts more likely to split communities of interest?
+does is needlessly and unproductively split communities, cities, and counties".
+But is this true? Are more compact districts more likely to split communities
+of interest?
 
 ## Why homogeneity matters
 
+Why should we even care if redistricting splits communities of interest? In
+this section, I explain why communities of interest are important. Keeping
+communities of interest together in a district increases descriptive and
+substantive representation, which leads to better democratic outcomes. More
+homogeneous districts (a strong proxy for communities of interest) have higher
+turnout levels, more responsive elections, and their elected representatives
+fight more for their interests \citep{ogrady2018}.
+
 While the legislature speaks in terms of 'communities of interest', I choose to
-redefine it as district homogeneity instead. One big reason is because the
-former term is ill-defined and incredibly difficult to measure. As
-\citeauthor{altman1998} writes, 
+use district homogeneity as a proxy instead. This is for two reasons: i)
+'communities of interest' are ill-defined and incredibly difficult to measure;
+ii) it is comparatively easier to measure district homogeneity, and it is the
+best proxy for communities of interest.
+
+\citeauthor{altman1998} writes that communities of interest are important but
+difficult to pin down:
 
 > The question of how redistricting in general, and compactness in particular,
- affects ‘communities of interest’is important, but ill-defined... the term is
+ affects 'communities of interest' is important, but ill-defined... the term is
  often used when we are unable to more conventionally classify the ‘interest’
- involved. In part because ofthis use of ‘communities of interest’ as a
+ involved. In part because of this use of ‘communities of interest’ as a
  catch-all, these communities are difficult to quantify. The lack of an
  objective, quantitative, standard for recognizing such communities makes the
  subject difficult to examine through either statistics or simulation.
@@ -218,12 +230,13 @@ responsiveness refers to the rate at which a party gains or loses seats given
 changes in its statewide vote share. For instance, if Democrats would win ten
 percent more seats if they received five percent more of the vote, then a plan
 would have a responsiveness of two. The higher a plan's responsiveness, the
-better it is thought to be. Stephanopoulos writes:
+better it is thought to be. Stephanopoulos finds that more homogeneous
+districts are more responsive, and writes:
 
-> **Advocates of responsive elections... may push
+> Advocates of responsive elections... may push
 without hesitation for spatially homogeneous districts to be drawn, since it is
 these districts that seem most likely (in the aggregate) to reflect the
-public’s evolving preferences.**
+public’s evolving preferences.
 
 In sum, district homogeneity is associated with a variety of positive
 democratic outcomes.
@@ -409,47 +422,21 @@ $$\frac{Area}{AreaOfMinimumConvexPolygon}$$
 
 ![A visualisation of the Convex Hull metric.](img/ch.png)
 
-
-#### Choosing a compactness metric
-
-[^0]: The Polsby-Popper metric measures the ratio of the area of the district
-	to the area of a circle whose circumference is equal to the perimeter of the
-	district.  But depending on the resolution of the map, the perimeter can be
-	effectively infinite. \citeauthor{bswp} find that the choice of resolution
-	has "a substantial impact on compactness scores, with the Polsby-Popper score
-	especially affected."
-
-Which compactness measure should we choose? All three compactness measures
-are well-cited in the literature and enjoy widespread use. They have been
-cited in U.S. Supreme Court cases, *amici* briefs, and redistricting
-commissions \citep{moncrief2011}. 
-
-Despite their widespread use, however, the problems with compactness measures
-are many, and well-covered in the literature. As an example, the most popular
-compactness measure in the literature---Polsby-Popper---is sensitive to small
-perturbations in data resolution (the coastline problem).[^0] The same is true
-for other geometric compactness measures: no single metric is perfect. It is
-therefore important to use an *ensemble* of compactness measures to make sure
-that one's data and conclusions are robust.
-
-But even this is not enough. Because all three of these compactness measures
-are purely geometric, they are all vulnerable to a specific family of
-geographic perturbations. Indeed, \cite{bswp} show that minimal changes in the
-geometric features of states are enough for the four most popular compactness
-measures (Polsby-Popper, Convex Hull, Reock, Schwartzberg) to give very
-different conclusions on nominally identical data. That means that small
-changes in the way the data is collected or processed can affect the
-conclusions we draw. Thus, it is important to include a non-geometric
-compactness measure in the ensemble to guard against the possibility that the
-results are driven by some small geometric changes. Many such measures have
-been proposed. For instance, \cite{dc2016} bring in a discipline of
-mathematics---graph theory---to formulate a new metric of compactness. And
-\cite{kingwp} use a machine learning model to try and ape human
-intuition---quantifying the intuitive metric of "I know it when I see it".
-
 #### Point-wise distance compactness measures
 
-However, one particular class of metrics I term *point-wise distance*
+Another large family of compactness measures are *non-geometric measures*,
+which do not take into account the geometric properties (e.g. area, perimeter)
+of the district explicitly. Many such non-geometric measures have been
+proposed. For instance, \cite{dc2016} bring in a discipline of
+mathematics---graph theory---to formulate a new metric of compactness. And
+\cite{kingwp} use a machine learning model to try and ape human
+intuition---quantifying the intuitive metric of "I know it when I see it".[^24]
+
+[^24]: The machine model actually does take into account the shape in terms of
+	how it looks to a human, but doesn't have any explicit formula in terms of
+	area and perimeter.
+
+But one particular class of metrics I term *point-wise distance*
 compactness stands out for its ease of understanding (critical if it is to be
 persuasive to Supreme Court judges), theoretical attractiveness, and academic
 consensus. Roughly speaking, this class of compactness metrics tries to
@@ -458,7 +445,7 @@ the lower that distance is.
 
 This class of metrics enjoys strong theoretical grounding. Paramount to the
 idea of single-member districts is that there is some value in voters who
-live in the same area being put into the same district. \cite{er2019}:
+live in the same area being put into the same district. \cite{er2019} write:
 
 > "Voters in the same area are likely to share political interests; voters in the
 same area are better able to communicate and coordinate with one another;
@@ -467,13 +454,13 @@ voters in the same area are especially likely to belong to the same social
 communities --- all suggest the importance of voters being located in districts
 with their geographic peers."
 
-A wealth of empirical evidence supports the above statement. Arzheimer and
-Evans (2012) find that constituents support less strongly candidates that live
-far from them, even controlling for strong predictors of vote choice like party
-feeling and socio-economic distance. In part, voters strongly support proximate
-candidates because they think that these candidates better represent their
-interests. Similarly, Dyck and Gimpel (2005) find that voters living further
-away from a voting site are less likely to turn out to vote.
+A wealth of empirical evidence supports the above statement.
+\cite{arzheimer2012} find that constituents support less strongly candidates
+that live far from them, even controlling for strong predictors of vote choice
+like party feeling and socio-economic distance. In part, voters strongly
+support proximate candidates because they think that these candidates better
+represent their interests. Similarly, \cite{dyck2005} find that voters
+living further away from a voting site are less likely to turn out to vote.
 
 In contrast, districts that put people with unrelated, faraway others carve
 voters out of their natural communities and are thus to be avoided. We care
@@ -489,7 +476,97 @@ relative difficulty in traveling between two points within the district". And
 \cite{fh2011} measures "the distance between voters within the same district
 relative to the minimum distance achievable".
 
-#### An improved point-wise distance metric: Human compactness
+#### Flaws with existing compactness metrics
+
+In this section, I show existing compactness metrics are useful but somewhat
+inadequate. Geometric compactness measures have several well-known problems,
+and while point-wise distance metrics fix many of these problems, they have
+several areas of improvement. I thus develop a new compactness metric which
+improves upon existing point-wise distance metrics.
+
+All three geometric compactness measures are well-cited in the literature and
+enjoy widespread use. They have been cited in U.S. Supreme Court cases, *amici*
+briefs, and redistricting commissions \citep{moncrief2011}. Despite their
+widespread use, however, the problems with compactness measures are many, and
+well-covered in the literature. As an example, the most popular compactness
+measure in the literature---Polsby-Popper---is sensitive to small perturbations
+in data resolution (the coastline problem).[^0] The same is true for other
+geometric compactness measures: no single metric is perfect.
+
+[^0]: The Polsby-Popper metric measures the ratio of the area of the district
+	to the area of a circle whose circumference is equal to the perimeter of the
+	district.  But depending on the resolution of the map, the perimeter can be
+	effectively infinite. \citeauthor{bswp} find that the choice of resolution
+	has "a substantial impact on compactness scores, with the Polsby-Popper score
+	especially affected."
+
+Because all three of these compactness measures are purely geometric, they are
+all vulnerable to geographic perturbations. Indeed, \cite{bswp} show that
+minimal changes in the geometric features of states are enough for the four
+most popular compactness measures (Polsby-Popper, Convex Hull, Reock,
+Schwartzberg) to give very different conclusions on nominally identical data.
+These changes do not have to be made on purpose: small changes in the way the
+data is collected or processed can suffice to affect the conclusions we draw.
+
+And despite the relative merits of point-wise distance metrics, there are two
+areas of improvement---one theoretical, the other empirical. Firstly, all
+point-wise distance metrics suggested in the literature use Euclidean
+distances. But many have rightly suggested that we should consider travel
+times/driving durations instead. For instance, while \cite{fh2011} used
+Euclidean distance in their metric, they point out its shortcomings:
+
+> Suppose there is a city on a hill. On the West side is [a] mild, long incline
+toward the rest of the city, which is in a plane. On the East side is a steep
+cliff, either impassable or with just a narrow, winding road that very few
+people use. While the next residential center to the East is much closer to the
+hilltop on a horizontal plane, it is much further on all sorts of distances
+that we think might matter: transportation time, intensity of social
+interactions, sets of shared local public goods and common interests, etc.
+Thus, for all practical purposes, one probably wants to include the hilltop in
+a Western district rather than an Eastern one. More general notions of distance
+can handle this.
+
+Here we see the key problem with using Euclidean distances in point-wise
+distance metrics. The "impassable" region on the East would have a short
+Euclidean distance, and any districting plan that put the hilltop with the
+Eastern district would be unfairly penalised by these point-wise distance
+metrics. Evidently, using driving durations instead would give us more accurate
+scores. Using driving durations, the impassable region would have a long
+driving duration, accurately reflecting the political geography. In this and
+many other cases like it (e.g. large bodies of water), driving durations better
+reflect a state's unique political geographies.
+
+After acknowledging the shortcomings of Euclidean distance,
+\citeauthor{fh2011} specifically suggest using driving durations to improve
+their metric: "one can extend much of [our analysis] by using driving
+distance or what legal scholars refer to as 'communities of interest'".
+
+There are thus strong theoretical grounds for using driving durations in
+point-wise distance metrics. Why then have scholars not adopted it, seeing as
+they agree on its superiority? This brings me to my empirical criticism: the
+point-wise distance metrics scholars have proposed are either far too
+computationally complex to compute at scale, or have restrictions that make
+using travel times difficult, if not impossible. For instance, the metric
+that \citet{fh2011} propose requires solving an *NP-complete* problem. A term
+used in computer science, an NP-complete problem scales exponentially with
+the size of the input. This makes it prohibitively expensive on larger
+states. And while they have an approximation that runs much quicker, they
+provide no bounds on the correctness of this approximation.
+
+Similarly, \citeauthor{olson2010} has a metric that minimises the average
+distance from each voter to the center of their district. He says of travel
+times "that it might be the right kind of thing to measure, but it would take
+too long... The large amount of map data and extra computer time to calculate
+all those travel times would slow the process down horribly. It would then
+require a room filling supercomputer to get an answer in a reasonable amount
+of time." \citep{olson2010}. And finally, \citeauthor{cm2010}'s measure
+cannot feasibly be improved with driving durations due to the difficulty of
+finding point-to-point travel distances without passing through another
+district. This is because most routing engines allow you only to specify a
+route between two (or more) points. They do not further allow you to specify
+regions through which the route cannot pass.
+
+#### A new compactness metric: Human compactness
 
 Given the difficulties of adapting existing point-based distance metrics to
 use driving durations, I develop a new measure called *human compactness*.
@@ -502,12 +579,13 @@ put one's next-door neighbours together in the same district.
 
 The human compactness metric works at three-levels: at the voter-level, the
 district-level, and the overall plan-level. At the voter level, human
-compactness of a voter is the ratio of: the sum of driving durations to one's
-K nearest neighbours, to the sum of driving durations to one's
-co-districtors, where K is the number of voters in that voter's district. A
-simple example will be illuminating. The following figures give a simple
-demonstration of how the human compactness metric is calculated both on the
-voter- and district- level.
+compactness of a voter is the ratio of: the sum of driving durations to one's K
+nearest neighbours, to the sum of driving durations to one's co-districtors,
+where K is the number of voters in that voter's district. A simple example will
+be illuminating. The following figures give a simple demonstration of how the
+human compactness metric is calculated both on the voter- and district- level.
+I explain it for Euclidean distances, but using driving durations requires only
+a simple substitution.
 
 ![A simplified state assignment with two districts and six voters
 \label{hc_demo}](img/human_compactness_1.png)
@@ -520,9 +598,9 @@ to fall in the Red district.
 
 We will first calculate the individual human compactness score for each voter
 in the Red district. Figure \ref{hc_r1} illustrates this for the top-left
-voter, R1. First, we find the sum of driving durations between R1 and his
-fellow co-districtors R2 and R3. This sum, $5 + 6$, forms the denominator of
-the human compactness score.
+voter, R1. First, we find the sum of distances between R1 and his fellow
+co-districtors R2 and R3. This sum, $5 + 6$, forms the denominator of the human
+compactness score.
 
 ![Human compactness measure for voter R1
 \label{hc_r1}](img/human_compactness_2a.png)
@@ -531,11 +609,10 @@ Next, we find the sum of driving durations between R1 and his nearest
 neighbours. Because there are two other voters in his district, we will find
 his two nearest neighbours. To find the two nearest neighbours, here I have
 drawn a circle centered upon R1, and expanded the circle on all sides until it
-touches two other voters. (This is not how the algorithm works in
-reality)[^20]. We can see that R1's nearest neighbours are the points B1 and
-R2, with a distance of 1.5 and 5 respectively. The human compactness score of
-R1 is thus $$HC_{R1} = \frac{d_{B1}+d_{R2}}{d_{R2} + d_{R3}} = \frac{1.5 +
-5}{5+6} = 0.59$$
+touches two other voters.[^20]. We can see that R1's nearest neighbours are the
+points B1 and R2, with a distance of 1.5 and 5 respectively. The human
+compactness score of R1 is thus $$HC_{R1} = \frac{d_{B1}+d_{R2}}{d_{R2} +
+d_{R3}} = \frac{1.5 + 5}{5+6} = 0.59$$
 
 [^20]: The method of drawing an ever-expanding circle to get one's K-nearest
 neighbours only works for Euclidean distances. In reality, the "circle of
@@ -626,12 +703,26 @@ update their gerrymandering-detection metric to use driving durations instead
 context of American suburban voters, raising the possibility of false
 positives under the Euclidean distance measure \citep*{elrwp}.
 
-Given these considerations, I settle on an ensemble of four different
-compactness measures: Polsby-Popper, Reock, Convex Hull, and Human
-Compactness. I exclude the Schwartzberg metric as the Schwartzberg and
-Polsby-Popper measure are largely mathematically equivalent. Finally, I
-include the human compactness metric. This maximises the robustness and
-validity of my results.
+#### Choosing a districting measure
+
+[TODO]
+
+Without question, we need to include at least one of the geometric compactness
+measures. This is because these geometric compactness measures are by far the
+most widely used both inside academic political science and out. As mentioned,
+they have been cited in U.S. Supreme Court cases, *amici* briefs, and
+redistricting commissions \citep{moncrief2011}.
+
+But as mentioned, the geometric compactness measure all suffer from ... 
+
+I would have liked to include another non-geometric compactness measure...
+but time constraints and algorithmic complexity ... 
+
+Given these considerations, I settle on using four different compactness
+measures: Polsby-Popper, Reock, Convex Hull, and Human Compactness. I exclude
+the Schwartzberg metric as the Schwartzberg and Polsby-Popper measure are
+largely mathematically equivalent. Finally, I include the human compactness
+metric. This maximises the robustness and validity of my results.
 
 ### Generating plans with automated districting algorithms
 
@@ -1538,7 +1629,7 @@ threshold cut-offs.
 3 Louisiana &  \textbf{39.03} &  39.12 &  42.45 &  41.24 \\
 4 Maine &  26.22 &  92.48 &  78.12 &  \textbf{23.56} \\
 5 Rhode Island &  \textbf{23.32} &  56.46 &  53.71 &  52.70 \\
-6 Maryland &  36.99 &  \textbf{33.00} &  33.00 &  48.68 \\
+6 Maryland &  36.99 &  \textbf{33.00} &  \textbf{33.00} &  48.68 \\
 7 New Hampshire &   \textbf{8.25} &  58.08 &  40.30 &  65.73 \\
 8 Utah &  77.05 &  61.72 &  58.57 &  59.92 \\
 9 Wisconsin &  \textbf{34.09} &  42.14 &  47.26 &  43.07 \\

@@ -1,4 +1,4 @@
-\begin{thebibliography}{33}
+\begin{thebibliography}{37}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -20,10 +20,22 @@ Nicola Apollonio, Ronald~I Becker, Isabella Lari, Federica Ricca, and Bruno
   gerrymandering.
 \newblock In \emph{Mathematics and Democracy}, pages 19--41. Springer, 2006.
 
+\bibitem[Arzheimer and Evans(2012)]{arzheimer2012}
+Kai Arzheimer and Jocelyn Evans.
+\newblock Geolocation and voting: Candidate--voter distance effects on party
+  choice in the 2010 uk general election in england.
+\newblock \emph{Political Geography}, 31\penalty0 (5):\penalty0 301--310, 2012.
+
 \bibitem[Barnes and Solomon(Forthcoming)]{bswp}
 Richard Barnes and Justin Solomon.
 \newblock Gerrymandering and compactness: Implementation flexibility and abuse.
 \newblock \emph{arXiv preprint arXiv:1803.02857}, Forthcoming.
+
+\bibitem[{Brennan Center for Justice}(2020)]{brennan}
+{Brennan Center for Justice}.
+\newblock Communities of interest, 2020.
+\newblock URL
+  \url{https://www.brennancenter.org/sites/default/files/analysis/6%20Communities%20of%20Interest.pdf}.
 
 \bibitem[Cain(1984)]{cain1984}
 Bruce~E Cain.
@@ -80,6 +92,12 @@ Matthew~P Dube and Jesse~T Clark.
 \newblock In \emph{Annual Meeting of the Northeastern Political Science
   Association}, 2016.
 
+\bibitem[Dyck and Gimpel(2005)]{dyck2005}
+Joshua~J Dyck and James~G Gimpel.
+\newblock Distance, turnout, and the convenience of voting.
+\newblock \emph{Social Science Quarterly}, 86\penalty0 (3):\penalty0 531--548,
+  2005.
+
 \bibitem[Eubank and Rodden(2019)]{er2019}
 Nicholas Eubank and Jonathan Rodden.
 \newblock Political dislocation: A voter-level measure of partisan
@@ -96,12 +114,6 @@ Nicholas Eubank, Zhenghong Lieu, and Jonathan Rodden.
 Benjamin Fifield, Michael Higgins, Kosuke Imai, and Alexander Tarr.
 \newblock Automated redistricting simulation using markov chain monte carlo.
 \newblock Working Paper.
-
-\bibitem[for Justice(2020)]{brennan}
-Brennan~Center for Justice.
-\newblock Communities of interest, 2020.
-\newblock URL
-  \url{https://www.brennancenter.org/sites/default/files/analysis/6%20Communities%20of%20Interest.pdf}.
 
 \bibitem[Fryer~Jr and Holden(2011)]{fh2011}
 Roland~G Fryer~Jr and Richard Holden.
@@ -123,16 +135,17 @@ Gregory Herschlag, Han~Sung Kang, Justin Luo, Christy~Vaughn Graves, Sachet
 \newblock Quantifying gerrymandering in north carolina.
 \newblock \emph{arXiv preprint arXiv:1801.03783}, 2018.
 
+\bibitem[Karlan(1989)]{karlan1989}
+Pamela~S Karlan.
+\newblock Maps and misreadings: The role of geographic compactness in racial
+  vote dilution litigation.
+\newblock \emph{Harv. CR-CLL Rev.}, 24:\penalty0 173, 1989.
+
 \bibitem[Kaufman et~al.(Forthcoming)Kaufman, King, and Komisarchik]{kingwp}
 Aaron Kaufman, Gary King, and Mayya Komisarchik.
 \newblock How to measure legislative district compactness if you only know it
   when you see it.
 \newblock \emph{American Journal of Political Science}, Forthcoming.
-
-\bibitem[Lab(2020)]{mggg2020}
-MGGG~Redistricting Lab.
-\newblock Public mapping with districtr, 2020.
-\newblock URL \url{https://districtr.org/assets/brochure.pdf}.
 
 \bibitem[Levin and Friedler(2019)]{lf2019}
 Harry~A Levin and Sorelle~A Friedler.
@@ -155,15 +168,20 @@ Daniel~B Magleby and Daniel~B Mosesson.
 \newblock A new approach for developing neutral redistricting plans.
 \newblock \emph{Political Analysis}, 26\penalty0 (2):\penalty0 147--167, 2018.
 
+\bibitem[{MGGG Redistricting Lab}(2020)]{mggg2020}
+{MGGG Redistricting Lab}.
+\newblock Public mapping with districtr, 2020.
+\newblock URL \url{https://districtr.org/assets/brochure.pdf}.
+
 \bibitem[Moncrief(2011)]{moncrief2011}
 Gary~F Moncrief.
 \newblock \emph{Reapportionment and Redistricting in the West}.
 \newblock Lexington Books, 2011.
 
-\bibitem[Nayuki(2020)]{nayuki2020}
-Project Nayuki.
-\newblock Smallest enclosing circle, 2020.
-\newblock URL \url{https://www.nayuki.io/page/smallest-enclosing-circle}.
+\bibitem[Olson(2010)]{olson2010}
+Brian Olson.
+\newblock Bdistricting, 2010.
+\newblock URL \url{https://bdistricting.com/about.html#for}.
 
 \bibitem[O’Grady(2019)]{ogrady2018}
 Tom O’Grady.
@@ -178,6 +196,11 @@ Daniel~D Polsby and Robert~D Popper.
   partisan gerrymandering.
 \newblock \emph{Yale Law \& Policy Review}, 9\penalty0 (2):\penalty0 301--353,
   1991.
+
+\bibitem[{Project Nayuki}(2020)]{nayuki2020}
+{Project Nayuki}.
+\newblock Smallest enclosing circle, 2020.
+\newblock URL \url{https://www.nayuki.io/page/smallest-enclosing-circle}.
 
 \bibitem[Reock(1961)]{reock1961}
 Ernest~C Reock.

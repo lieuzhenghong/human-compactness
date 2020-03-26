@@ -4,55 +4,57 @@ The top-level auxiliary file: mcmc_procedure.aux
 The style file: plainnat.bst
 Database file #1: references.bib.bib
 Warning--entry type for "wolf2015" isn't style-file defined
---line 242 of file references.bib.bib
+--line 253 of file references.bib.bib
+Warning--entry type for "olson2010" isn't style-file defined
+--line 261 of file references.bib.bib
 Warning--entry type for "nayuki2020" isn't style-file defined
---line 258 of file references.bib.bib
+--line 269 of file references.bib.bib
 Warning--entry type for "brennan" isn't style-file defined
---line 266 of file references.bib.bib
+--line 277 of file references.bib.bib
 Warning--entry type for "mggg2020" isn't style-file defined
---line 274 of file references.bib.bib
+--line 285 of file references.bib.bib
 Warning--empty journal in ddj2019comp
 Warning--empty journal in elrwp
 Warning--empty journal in fifieldwp
-You've used 33 entries,
+You've used 37 entries,
             2773 wiz_defined-function locations,
-            781 strings with 9998 characters,
-and the built_in function-call counts, 13959 in all, are:
-= -- 1256
-> -- 713
-< -- 26
-+ -- 247
-- -- 213
-* -- 1045
-:= -- 2134
-add.period$ -- 103
-call.type$ -- 33
-change.case$ -- 167
-chr.to.int$ -- 32
-cite$ -- 69
-duplicate$ -- 677
-empty$ -- 1221
-format.name$ -- 268
-if$ -- 2940
+            805 strings with 10547 characters,
+and the built_in function-call counts, 15505 in all, are:
+= -- 1400
+> -- 775
+< -- 30
++ -- 269
+- -- 231
+* -- 1155
+:= -- 2369
+add.period$ -- 115
+call.type$ -- 37
+change.case$ -- 185
+chr.to.int$ -- 36
+cite$ -- 77
+duplicate$ -- 752
+empty$ -- 1368
+format.name$ -- 294
+if$ -- 3267
 int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 30
-newline$ -- 175
-num.names$ -- 132
-pop$ -- 358
+missing$ -- 33
+newline$ -- 195
+num.names$ -- 148
+pop$ -- 393
 preamble$ -- 1
-purify$ -- 136
+purify$ -- 150
 quote$ -- 0
-skip$ -- 526
+skip$ -- 585
 stack$ -- 0
-substring$ -- 475
-swap$ -- 61
+substring$ -- 542
+swap$ -- 65
 text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 353
+type$ -- 397
 warning$ -- 3
-while$ -- 134
+while$ -- 151
 width$ -- 0
-write$ -- 425
-(There were 7 warnings)
+write$ -- 476
+(There were 8 warnings)
