@@ -68,7 +68,7 @@
 
 \title{Is there a trade-off between compactness and homogeneity?}
 \author{Zhenghong Lieu}
-\date{25th March 2020}
+\date{26th March 2020}
 
 \begin{document}
 \maketitle
@@ -653,8 +653,8 @@ metrics}\label{flaws-with-existing-compactness-metrics}}
 In this section, I show existing compactness metrics are useful but
 somewhat inadequate. Geometric compactness measures have several
 well-known problems, and while point-wise distance metrics fix many of
-these problems, they have several areas of improvement. I thus develop a
-new compactness metric which improves upon existing point-wise distance
+these problems, they have issues of their own. I thus develop a new
+compactness metric which improves upon existing point-wise distance
 metrics.
 
 All three geometric compactness measures are well-cited in the
@@ -762,16 +762,18 @@ nearest neighbours and one's fellow districtors. This ratio ranges from
 Intuitively, it encourages drawing districts that put one's next-door
 neighbours together in the same district.
 
-The human compactness metric works at three-levels: at the voter-level,
+The human compactness metric works at three levels: at the voter-level,
 the district-level, and the overall plan-level. At the voter level,
 human compactness of a voter is the ratio of: the sum of driving
 durations to one's K nearest neighbours, to the sum of driving durations
 to one's co-districtors, where K is the number of voters in that voter's
-district. A simple example will be illuminating. The following figures
-give a simple demonstration of how the human compactness metric is
-calculated both on the voter- and district- level. I explain it for
-Euclidean distances, but using driving durations requires only a simple
-substitution.
+district.
+
+A simple example will be illuminating. The following figures give a
+simple demonstration of how the human compactness metric is calculated
+both on the voter- and district- level. The example works for both
+Euclidean distances and driving durations: only a simple swap is
+required.
 
 \begin{figure}
 \centering
@@ -840,7 +842,7 @@ compactness metric gives it a very low score.
 \end{figure}
 
 The \emph{district's} human compactness measure, \(HC_R\), simply takes
-the ratio of all the sum of distances, as follows:\footnote{Another
+the ratio of all the sum of durations, as follows:\footnote{Another
   reasonable approach might be take the arithmetic mean of all
   individual human compactness scores. In that case the district-level
   human compactness score would be \(0.59 + 0.94 + 0.45 / 3 = 0.66\),
@@ -902,39 +904,74 @@ improvement with strong theoretical and empirical support. Many previous
 scholars have suggested exactly this, giving it strong theoretical
 support. It keeps the metric robust to quirks in political geography
 like mountains and lakes, and better represents the notion of natural
-communities. Empirically, too, the use of driving durations seems
-strictly superior in many cases involving human-scale distances. Working
-with Nicholas Eubank and Jonathan Rodden, I update their
-gerrymandering-detection metric to use driving durations instead
-\citep{er2019}. We find a consistently different picture of the social
-context of American suburban voters, raising the possibility of false
-positives under the Euclidean distance measure \citep*{elrwp}.
+communities.
 
-\hypertarget{choosing-a-districting-measure}{%
-\paragraph{Choosing a districting
-measure}\label{choosing-a-districting-measure}}
+\begin{figure}
+\centering
+\includegraphics{./img/hc_impassable.jpg}
+\caption{With an impassible cliff face, Euclidean distance gives the
+wrong answer \label{hc_impassible}}
+\end{figure}
+
+Figure \ref{hc_impassible} shows how driving durations is able to get
+the right answer despite quirks in political geography. It represents
+the situation that \cite{fh2011} point out: the voters in red live atop
+a cliff, and the valley below (inhabited by the voters in blue) is
+impassible. In this case, it would be better to put the voters in red
+together, as they are ``closer'' together on all sorts of metrics that
+would matter: shared communities, public services, and so on. A
+compactness measure that used Euclidean distances would not be able to
+accommodate this.
+
+Empirically, too, the use of driving durations seems strictly superior
+in many cases involving human-scale distances. Working with Nicholas
+Eubank and Jonathan Rodden, I update their gerrymandering-detection
+metric to use driving durations instead \citep{er2019}. We find a
+consistently different picture of the social context of American
+suburban voters, raising the possibility of false positives under the
+Euclidean distance measure \citep*{elrwp}.
+
+\hypertarget{choosing-a-compactness-measure}{%
+\paragraph{Choosing a compactness
+measure}\label{choosing-a-compactness-measure}}
 
 {[}TODO{]}
 
-Without question, we need to include at least one of the geometric
+I have evaluated many compactness measures, which raises the question:
+which compactness measure should we use? This is a false dilemma. As
+each compactness measure has its advantages and disadvantages, we should
+include the broadest subset of measures possible. This will also
+maximise the generalisability of my results: in order to claim that
+there is or isn't a tradeoff between compactness and homogeneity, we
+should make sure that the relationship holds for as many compactness
+measures as possible! At the same time, though, the inclusion of each
+additional compactness measure incurs time, effort and computational
+costs. Given finite time and resources, there is thus a trade-off
+between the number of compactness measures and the number of
+states/districting plans I can analyse. I therefore made a judgement
+call to include the most-used and most representative compactness
+measures.
+
+Without question, we must include at least one of the geometric
 compactness measures. This is because these geometric compactness
-measures are by far the most widely used both inside academic political
+measures are by far the most widely used, both inside academic political
 science and out. As mentioned, they have been cited in U.S. Supreme
 Court cases, \emph{amici} briefs, and redistricting commissions
-\citep{moncrief2011}.
+\citep{moncrief2011}. I therefore include the three most popular
+geometric compactness measures (Polsby-Popper, Convex Hull, and Reock).
 
-But as mentioned, the geometric compactness measure all suffer from
-\ldots{}
-
-I would have liked to include another non-geometric compactness
-measure\ldots{}
+It is also important to include a non-geometric compactness measure as
+the geometric compactness measures are all sensitive to small changes in
+the way the geospatial data are collected and processed. As my human
+compactness measure is the only one that makes use of travel durations,
+I use it as a representative of non-geometric compactness measure. While
+I would have liked to include another non-geometric compactness measure,
+it would have taken too much time to implement the measure and calculate
+it for 100,000 districting plans.
 
 Given these considerations, I settle on using four different compactness
-measures: Polsby-Popper, Reock, Convex Hull, and Human Compactness. I
-exclude the Schwartzberg metric as the Schwartzberg and Polsby-Popper
-measure are largely mathematically equivalent. Finally, I include the
-human compactness metric. This maximises the robustness and validity of
-my results.
+measures in total: Polsby-Popper, Reock, Convex Hull, and Human
+Compactness.
 
 \hypertarget{generating-plans-with-automated-districting-algorithms}{%
 \subsubsection{Generating plans with automated districting
@@ -1104,44 +1141,50 @@ Mixing time aside, the extreme compactness of local optimisation is in
 fact something that I want to avoid. I aim to find out if mandating
 compactness in state constitutions can inadvertently adversely affect
 democratic representation. But restricting one's analysis to extremely
-compact plans deals a huge blow to the external validity of any such
-finding. Redistrictors care about a lot of other considerations apart
-from compactness, and therefore most definitely do not optimise solely
-over compactness. State constitutions demand that plans be ``reasonably
-compact'', not ``maximally compact'': it's vanishingly unlikely that
-those extremely compact plans would resemble the types of plans that
-would be drawn in real life. As such, \emph{even} if I found that
-optimally compact plans had greater spatial diversity, this would have
-very little bearing on redistricting policy. It's far more instructive
-to see whether the relationship holds in the plans that legislators
-could actually be expected to draw.
+compact plans means that we cannot say much about the relationship
+between compactness and spatial diversity. In addition, extremely
+compact plans are \emph{not} a representative subset of the plans
+unbiased redistrictors might draw. This is because redistrictors care
+about a lot of other considerations apart from compactness, and
+therefore most definitely do not optimise solely over compactness. State
+constitutions demand that plans be ``reasonably compact'', not
+``maximally compact'': it's vanishingly unlikely that those extremely
+compact plans would resemble the types of plans that would be drawn in
+real life. As such, \emph{even} if I found that optimally compact plans
+had greater spatial diversity, this would have very little bearing on
+redistricting policy. It's far more instructive to see whether the
+relationship holds in the plans that legislators could actually be
+expected to draw.
 
 \begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
 
-Given that legislators care a lot about many different considerations,
-might it be better to try and include these considerations into the
-score function? This is what the second approach does. While this
-approach holds strong theoretical merit, I find that this approach
-introduces too many degrees of freedom. The choice of what factors to
-include in the score function is contentious: \citeauthor{h2018} use
-population deviation, Polsby-Popper score, county boundaries and
-minority deviation. But they could just as easily have included factors
-such as proportionality or number of cut edges (proposed in
-\cite{dc2016}) for instance. Even if there is a strong justification for
-including exactly those factors, there is still significant researcher
-freedom to operationalise the scores. For instance, \citeauthor{h2018}
-and \citeauthor{dd2019va} both include a population deviation score, but
-operationalise the metric differently. Furthermore, any score function
-has to be assigned specific weights--- but this assignment is somewhat
-arbitrary and open to argument. For instance, \citeauthor{h2018} ``chose
-a VRA score function which awards lower scores to districting plans
-which had one district close to 44.48\% African-Americans and a second
-district close to 36.20\% African-Americans'', on the basis that the
-2016 districting plan which was accepted by the Court had districts with
-those proportions. But this is incredibly arbitrary. Obviously, just
-because a particular district was accepted by the Court with those
-proportions of African-Americans doesn't imply that those exact
-proportions of African-Americans are optimal.
+How can we get a representative subset of plans that legislators could
+actually be expected to draw? Given that legislators care a lot about
+many different considerations, might it be better to try and include
+these considerations into the score function? This is what the second
+approach does. While this approach holds strong theoretical merit, I
+find that this approach introduces too many degrees of freedom. The
+choice of what factors to include in the score function is contentious:
+\citeauthor{h2018} use population deviation, Polsby-Popper score, county
+boundaries and minority deviation. But they could just as easily have
+included factors such as proportionality or number of cut edges
+(proposed in \cite{dc2016}) for instance. Even if there is a strong
+justification for including exactly those factors, there is still
+significant researcher freedom to operationalise the scores. For
+instance, \citeauthor{h2018} and \citeauthor{dd2019va} both include a
+population deviation score, but operationalise the metric differently.
+
+Furthermore, any score function has to be assigned specific weights---
+but this assignment is somewhat arbitrary and open to argument. For
+instance, \citeauthor{h2018} ``chose a VRA score function which awards
+lower scores to districting plans which had one district close to
+44.48\% African-Americans and a second district close to 36.20\%
+African-Americans'', on the basis that the 2016 districting plan which
+was accepted by the Court had districts with those proportions. But this
+is incredibly arbitrary. Obviously, just because a particular district
+was accepted by the Court with those proportions of African-Americans
+doesn't imply that those exact proportions of African-Americans are
+optimal.
 
 To be clear, these problems are not insurmountable. If there is a strong
 theoretical basis for one particular operationalisation over another,
@@ -1156,14 +1199,16 @@ second approach.
 
 \begin{center}\rule{0.5\linewidth}{\linethickness}\end{center}
 
-The last approach is one that makes the fewest assumptions. It generates
-a neutral ensemble and does not favour one plan over another (except for
-some minimal compactness and population deviation requirements). This
-approach gives us the largest space of plausible plans, which has a key
-advantage: it allows the results to be applicable even for districting
-algorithms that do not use an MCMC approach. This includes not only the
-regular low-tech way of drawing districts, but also other automated
-districting algorithms like \cite{mm2018} and \cite{lf2019}.
+Finally, the neutral ensemble approach is the most permissive, and thus
+gives us the best chance of getting a representative sample of
+legislators' plans. It generates a neutral ensemble and does not favour
+one plan over another (except for some minimal compactness and
+population deviation requirements). This approach gives us the largest
+space of plausible plans, which has a key advantage: it allows the
+results to be applicable even for districting algorithms that do not use
+an MCMC approach. This includes not only the regular low-tech way of
+drawing districts, but also other automated districting algorithms like
+\cite{mm2018} and \cite{lf2019}.
 
 Therefore, I elect to use the last, ``neutral walk'' approach. I use a
 global \texttt{Recom} proposal to generate the states, but accept every
