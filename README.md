@@ -22,7 +22,7 @@ districts without regard for communities of interest, which has deletrious
 effects on democratic outcomes like representation and responsiveness. Are
 compactness and homogeneity fundamentally conflicting goals? Are some measures
 of compactness more consistent with homogeneity than others? 
-
+> 
 > I make two contributions in this work. First, I develop a new compactness
 metric (*human compactness*) that improves upon previous measures by
 incorporating a notion of travel times. Second, I use a Markov Chain Monte
