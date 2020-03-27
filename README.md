@@ -1,28 +1,39 @@
-# README
+# Is there a trade-off between compactness and homogeneity?
 
-## How Daryl's code works
+## Introduction
 
-He uses ReCom (a Markov Chain proposal function) to generate 100,000 plans
+This GitHub repo contains all the data and code for my undergraduate political
+science thesis.
 
-First he generates a "starting_plan.json". This plan assigns each Census Tract
-to a district subject to population balance constraints. Each Census Tract's
-district is given in nodes, under the "New_Seed" key.
+It requires some data in a shared repo I have with Prof. Nick Eubank,
+[geographically_sensitive_dislocation](https://github.com/nickeubank/geographically_sensitive_dislocation),
+because I don't want to duplicate the data files. I'll have to find a better
+way to store this data.
 
-`data["nodes'][0]['New_Seed']`
+My political science thesis is entitled "Is there a trade-off between
+compactness and homogeneity?". You can find it in the `40_docs` folder. Here is
+the introduction:
 
-## Understanding flips_X.json
+> Research shows that districts that consist of more homogeneous groups of voters
+achieve better representation on several dimensions. And many statutes require
+that districts be "reasonably compact". However, some have argued that
+requiring compactness may come at the cost of district homogeneity by drawing
+districts without regard for communities of interest, which has deletrious
+effects on democratic outcomes like representation and responsiveness. Are
+compactness and homogeneity fundamentally conflicting goals? Are some measures
+of compactness more consistent with homogeneity than others? 
 
-Each `flips_X.json` contains 10,000 different plans. More accurately, they are
-a collection of dictionaries of the nodes that changed assignment at each step,
-so you just have to update a single dictionary with the new assignments. 
+> I make two contributions in this work. First, I develop a new compactness
+metric (*human compactness*) that improves upon previous measures by
+incorporating a notion of travel times. Second, I use a Markov Chain Monte
+Carlo (MCMC) approach to generate a large sample of districting plans and
+consider empirically how compactness and homogeneity trade off with one
+another. I find no trade-off between compactness and homogeneity across all
+four compactness measures I examine. I further find that my human compactness
+measure consistently produces more homogeneous districts, suggesting that a
+judicious choice of compactness metric can in fact encourage better electoral
+outcomes.
 
-It starts with "starting_plan.json", which assigns each Census Tract to a
-district.
-
-If you have {"21": 13}, this means that Census Tract 21 has been assigned to
-District 13.
-
-[TODO] Issue with Census Tracts not matching between Stephanopoulos's data and
-Daryl's data. For instance, 13083040101, Census Tract 401.01 (and 401.02) in
-Dade County, but Stephanopoulos only has 1308040100, Census Tract 401 in Dade
-County. The tracts are combined.
+The results (mostly plots) are all available in `30_results`, and as a
+robustness check I also run the results with a different aggregation function,
+in `31_results_rc`.
