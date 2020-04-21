@@ -1,4 +1,4 @@
-\begin{thebibliography}{37}
+\begin{thebibliography}{38}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -36,6 +36,12 @@ Richard Barnes and Justin Solomon.
 \newblock Communities of interest, 2020.
 \newblock URL
   \url{https://www.brennancenter.org/sites/default/files/analysis/6%20Communities%20of%20Interest.pdf}.
+
+\bibitem[Brunell(2010)]{brunell2010}
+Thomas Brunell.
+\newblock \emph{Redistricting and representation: Why competitive elections are
+  bad for America}.
+\newblock Routledge, 2010.
 
 \bibitem[Cain(1984)]{cain1984}
 Bruce~E Cain.
@@ -121,13 +127,6 @@ Roland~G Fryer~Jr and Richard Holden.
 \newblock \emph{The Journal of Law and Economics}, 54\penalty0 (3):\penalty0
   493--535, 2011.
 
-\bibitem[Heath(2018)]{heath2018}
-Oliver Heath.
-\newblock Policy alienation, social alienation and working-class abstention in
-  britain, 1964--2010.
-\newblock \emph{British Journal of Political Science}, 48\penalty0
-  (4):\penalty0 1053--1073, 2018.
-
 \bibitem[Herschlag et~al.(2018)Herschlag, Kang, Luo, Graves, Bangia, Ravier,
   and Mattingly]{h2018}
 Gregory Herschlag, Han~Sung Kang, Justin Luo, Christy~Vaughn Graves, Sachet
@@ -189,6 +188,11 @@ Tom O’Grady.
   representation of social groups in the british labour party.
 \newblock \emph{Comparative Political Studies}, 52\penalty0 (4):\penalty0
   544--578, 2019.
+
+\bibitem[Pitkin(1967)]{pitkin}
+Hanna~F Pitkin.
+\newblock \emph{The concept of representation}, volume~75.
+\newblock Univ of California Press, 1967.
 
 \bibitem[Polsby and Popper(1991)]{pp1991}
 Daniel~D Polsby and Robert~D Popper.
