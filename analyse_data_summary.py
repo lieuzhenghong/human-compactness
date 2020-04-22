@@ -39,12 +39,32 @@ state_names = {"02": "Alaska", "01": "Alabama", "05": "Arkansas", "04": "Arizona
                "48": "Texas", "49": "Utah", "51": "Virginia", "50": "Vermont", "53": "Washington",
                "55": "Wisconsin", "54": "West_Virginia", "56": "Wyoming"}
 
+def _get_best_and_worst_plans_2(grouped_df, cutoff):
+    grouped_df.loc[grouped_df['hc'] >
+                   grouped_df['hc'].quantile(cutoff), 'from'] = 'hc'
+    top_hc_plans = grouped_df[grouped_df['hc']
+                              > grouped_df['hc'].quantile(cutoff)].copy()
+    grouped_df.loc[grouped_df['pp'] >
+                   grouped_df['pp'].quantile(cutoff), 'from'] = 'pp'
+    top_pp_plans = grouped_df[grouped_df['pp']
+                              > grouped_df['pp'].quantile(cutoff)].copy()
+    grouped_df.loc[grouped_df['ch'] >
+                   grouped_df['ch'].quantile(cutoff), 'from'] = 'ch'
+    top_ch_plans = grouped_df[grouped_df['ch']
+                              > grouped_df['ch'].quantile(cutoff)].copy()
+    grouped_df.loc[grouped_df['reock'] >
+                   grouped_df['reock'].quantile(cutoff), 'from'] = 'reock'
+    top_reock_plans = grouped_df[grouped_df['reock']
+                                 > grouped_df['reock'].quantile(cutoff)].copy()
+    grouped_top_df = [top_hc_plans, top_pp_plans,
+                      top_ch_plans, top_reock_plans]
+    return grouped_top_df
 
 def _get_best_and_worst_plans(grouped_df):
     # cutoffs = [0.01]
     # cutoffs = [0.90]
     # cutoffs = [0.95]
-    cutoffs = [0.98]
+    cutoffs = [0.95]
     # cutoffs = [0.90]
     # cutoffs = [0.75]
     for cutoff in cutoffs:
@@ -111,6 +131,7 @@ for district in num_districts:
     top_dfs.append(_get_best_and_worst_plans(grouped_df))
     lowest_sds.append(_get_lowest_sd_plans(grouped_df))
     dfs.append(dfa)
+
 
 
 # First check if any particular compactness measure tracks spatial diversity
@@ -191,11 +212,14 @@ print(state_percentiles.to_latex())
 print(state_percentiles)
 print(state_percentiles.mean())
 
-assert(False)
+# assert(False)
 
 df = pd.concat(dfs)
 gdf = pd.concat(grouped_dfs)
 print(gdf)
+gdf.to_csv('grouped_data.csv')
+
+# assert(False)
 
 # Find a Pearson's correlation to see how closely the metrics track one another
 
@@ -235,13 +259,33 @@ for idx, metric in enumerate(['hc', 'pp', 'reock', 'ch']):
     print(fit.summary())
     print(fit.summary().as_latex())
 
+for cutoff in [0.10, 0.25, 0.5, 0.75, 0.9]:
+    top_dfs = []
+    for district in num_districts:
+        states.append(state_names[district])
+        dfa = pd.read_csv(f'{LOAD_PATH}/{district}_df.csv')
+        grouped_df = (dfa.groupby('plan').sum())
+        grouped_df = grouped_df.div(num_districts[district])
+        grouped_df = grouped_df.reset_index()
+        grouped_df['state'] = district
+        top_dfs.append(_get_best_and_worst_plans_2(grouped_df, cutoff))
+        grouped_dfs.append(grouped_df)
+    top_plans = []
+    for i in range(4):
+        top_plans.append(pd.concat([d[i] for d in top_dfs]))
+    for idx, top_plan in enumerate(top_plans):
+        print(top_plan[['sd']].describe())
+        top_plan.to_csv(f'top_plan_{cutoff}_{idx}.csv')
+
+assert(False)
+
 # These are top plans for HC, PP, CH, Reock
 # print(top_plans)
 # We should check if within these top plans, which has the best (lowest) spatial
 # diversity mean
 
-for top_plan in top_plans:
-    print(top_plan[['sd']].describe())
+
+
 
 print(gdf[['sd']].describe())
 
@@ -252,6 +296,8 @@ g = sns.kdeplot(gdf.loc[:, 'sd'], shade=True, ax=ax)
 fig.savefig(f'./30_results/kde_all_dfs')
 
 # Testing that top plans have significantly lower SD than the mean
+
+
 
 print(top_plans[0][['sd']].mean())  # human compactness
 print(top_plans[1][['sd']].mean())  # human compactness
