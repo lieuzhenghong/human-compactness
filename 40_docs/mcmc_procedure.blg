@@ -18,47 +18,46 @@ Warning--entry type for "brennan" isn't style-file defined
 Warning--entry type for "mggg2020" isn't style-file defined
 --line 307 of file references.bib.bib
 Warning--empty journal in ddj2019comp
-Warning--empty journal in elrwp
 Warning--empty journal in fifieldwp
-You've used 38 entries,
+You've used 37 entries,
             2773 wiz_defined-function locations,
-            808 strings with 10559 characters,
-and the built_in function-call counts, 15691 in all, are:
-= -- 1405
-> -- 785
+            805 strings with 10434 characters,
+and the built_in function-call counts, 15279 in all, are:
+= -- 1372
+> -- 755
 < -- 32
-+ -- 273
-- -- 234
-* -- 1157
-:= -- 2405
-add.period$ -- 118
-call.type$ -- 38
-change.case$ -- 187
-chr.to.int$ -- 37
-cite$ -- 79
-duplicate$ -- 772
-empty$ -- 1390
-format.name$ -- 298
-if$ -- 3305
++ -- 263
+- -- 225
+* -- 1123
+:= -- 2339
+add.period$ -- 115
+call.type$ -- 37
+change.case$ -- 181
+chr.to.int$ -- 36
+cite$ -- 76
+duplicate$ -- 752
+empty$ -- 1359
+format.name$ -- 288
+if$ -- 3222
 int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 36
-newline$ -- 200
-num.names$ -- 152
-pop$ -- 409
+missing$ -- 35
+newline$ -- 195
+num.names$ -- 148
+pop$ -- 395
 preamble$ -- 1
-purify$ -- 153
+purify$ -- 148
 quote$ -- 0
-skip$ -- 597
+skip$ -- 582
 stack$ -- 0
-substring$ -- 513
+substring$ -- 511
 swap$ -- 67
 text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 398
-warning$ -- 3
-while$ -- 152
+type$ -- 387
+warning$ -- 2
+while$ -- 149
 width$ -- 0
-write$ -- 488
+write$ -- 477
 (There was 1 error message)

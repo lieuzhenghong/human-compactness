@@ -1,4 +1,4 @@
-\begin{thebibliography}{38}
+\begin{thebibliography}{37}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -109,11 +109,6 @@ Nicholas Eubank and Jonathan Rodden.
 \newblock Political dislocation: A voter-level measure of partisan
   representation and gerrymandering.
 \newblock \emph{Forthcoming}, 2019.
-
-\bibitem[Eubank et~al.(Forthcoming)Eubank, Lieu, and Rodden]{elrwp}
-Nicholas Eubank, Zhenghong Lieu, and Jonathan Rodden.
-\newblock Accounting for travel times in estimating political dislocation.
-\newblock Forthcoming.
 
 \bibitem[Fifield et~al.(Working Paper)Fifield, Higgins, Imai, and
   Tarr]{fifieldwp}
