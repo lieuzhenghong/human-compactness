@@ -1,8 +1,8 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.11.20)  23 APR 2020 02:37
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.11.20)  23 APR 2020 04:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**mcmc_procedure.tex -output-file=1026376_Thesis in Politics
+**mcmc_procedure.tex
 (./mcmc_procedure.tex
 LaTeX2e <2017-04-15>
 Babel <3.18> and hyphenation patterns for 3 language(s) loaded.
@@ -987,79 +987,79 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 File: ./img/why_compactness_and_community1.png Graphic file (type png)
 <use ./img/why_compactness_and_community1.png>
 Package pdftex.def Info: ./img/why_compactness_and_community1.png  used on inpu
-t line 169.
+t line 175.
 (pdftex.def)             Requested size: 344.99901pt x 194.06194pt.
  [4]
 [5 <./img/why_compactness_and_community1.png (PNG copy)>] [6] [7]
 <img/sd_rolloff.png, id=342, 597.23125pt x 436.63126pt>
 File: img/sd_rolloff.png Graphic file (type png)
 <use img/sd_rolloff.png>
-Package pdftex.def Info: img/sd_rolloff.png  used on input line 335.
+Package pdftex.def Info: img/sd_rolloff.png  used on input line 341.
 (pdftex.def)             Requested size: 345.00008pt x 252.22694pt.
  [8 <./img/sd_rolloff.png>]
 <./img/average_spatial-diversity.png, id=352, 634.37pt x 466.74374pt>
 File: ./img/average_spatial-diversity.png Graphic file (type png)
 <use ./img/average_spatial-diversity.png>
 Package pdftex.def Info: ./img/average_spatial-diversity.png  used on input lin
-e 357.
+e 363.
 (pdftex.def)             Requested size: 345.01334pt x 253.84683pt.
  [9 <./img/average_spatial-diversity.png>] [10] [11] [12]
 <img/pp_example.png, id=401, 741.77126pt x 228.855pt>
 File: img/pp_example.png Graphic file (type png)
 <use img/pp_example.png>
-Package pdftex.def Info: img/pp_example.png  used on input line 574.
+Package pdftex.def Info: img/pp_example.png  used on input line 581.
 (pdftex.def)             Requested size: 344.9993pt x 106.4409pt.
  [13 <./img/pp_example.png>]
 <img/reock.png, id=425, 803.0pt x 803.0pt>
 File: img/reock.png Graphic file (type png)
 <use img/reock.png>
-Package pdftex.def Info: img/reock.png  used on input line 591.
+Package pdftex.def Info: img/reock.png  used on input line 598.
 (pdftex.def)             Requested size: 345.00146pt x 345.00146pt.
  [14 <./img/reock.png>]
-<img/ch.png, id=436, 803.0pt x 803.0pt>
+<img/ch.png, id=438, 803.0pt x 803.0pt>
 File: img/ch.png Graphic file (type png)
 <use img/ch.png>
-Package pdftex.def Info: img/ch.png  used on input line 607.
+Package pdftex.def Info: img/ch.png  used on input line 615.
 (pdftex.def)             Requested size: 345.00146pt x 345.00146pt.
  [15 <./img/ch.png>] [16] [17]
 [18]
 <img/human_compactness_1.png, id=505, 437.635pt x 478.78876pt>
 File: img/human_compactness_1.png Graphic file (type png)
 <use img/human_compactness_1.png>
-Package pdftex.def Info: img/human_compactness_1.png  used on input line 810.
+Package pdftex.def Info: img/human_compactness_1.png  used on input line 818.
 (pdftex.def)             Requested size: 345.00665pt x 377.44995pt.
 <img/human_compactness_2a.png, id=508, 388.45125pt x 423.5825pt>
 File: img/human_compactness_2a.png Graphic file (type png)
 <use img/human_compactness_2a.png>
-Package pdftex.def Info: img/human_compactness_2a.png  used on input line 829.
+Package pdftex.def Info: img/human_compactness_2a.png  used on input line 837.
 (pdftex.def)             Requested size: 345.00923pt x 376.21164pt.
 <img/human_compactness_2b.png, id=510, 386.44376pt x 422.57875pt>
 File: img/human_compactness_2b.png Graphic file (type png)
 <use img/human_compactness_2b.png>
-Package pdftex.def Info: img/human_compactness_2b.png  used on input line 854.
+Package pdftex.def Info: img/human_compactness_2b.png  used on input line 862.
 (pdftex.def)             Requested size: 345.00114pt x 377.26099pt.
  [19] [20 <./img/human_compactness_1.png>] [21 <./img/human_compactness_2a.png>
 ] [22 <./img/human_compactness_2b.png>]
 <img/human_compactness_2c.png, id=538, 388.45125pt x 424.58624pt>
 File: img/human_compactness_2c.png Graphic file (type png)
 <use img/human_compactness_2c.png>
-Package pdftex.def Info: img/human_compactness_2c.png  used on input line 870.
+Package pdftex.def Info: img/human_compactness_2c.png  used on input line 878.
 (pdftex.def)             Requested size: 345.00923pt x 377.10313pt.
  [23 <./img/human_compactness_2c.png>]
 <img/human_compactness_3.png, id=547, 438.63875pt x 473.77pt>
 File: img/human_compactness_3.png Graphic file (type png)
 <use img/human_compactness_3.png>
-Package pdftex.def Info: img/human_compactness_3.png  used on input line 893.
+Package pdftex.def Info: img/human_compactness_3.png  used on input line 901.
 (pdftex.def)             Requested size: 345.00816pt x 372.64041pt.
  [24 <./img/human_compactness_3.png>]
 <./img/hc_impassable.jpg, id=558, 341.77687pt x 371.13657pt>
 File: ./img/hc_impassable.jpg Graphic file (type jpg)
 <use ./img/hc_impassable.jpg>
-Package pdftex.def Info: ./img/hc_impassable.jpg  used on input line 940.
+Package pdftex.def Info: ./img/hc_impassable.jpg  used on input line 946.
 (pdftex.def)             Requested size: 341.78123pt x 371.14131pt.
  [25] [26 <./img/hc_impassable.jpg>]
 [27]
-LaTeX Font Info:    Try loading font information for T1+lmtt on input line 1037
+LaTeX Font Info:    Try loading font information for T1+lmtt on input line 1041
 .
  (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
@@ -1067,171 +1067,171 @@ File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 <./img/states_analysed.png, id=612, 5194.40625pt x 3776.1075pt>
 File: ./img/states_analysed.png Graphic file (type png)
 <use ./img/states_analysed.png>
-Package pdftex.def Info: ./img/states_analysed.png  used on input line 1084.
+Package pdftex.def Info: ./img/states_analysed.png  used on input line 1088.
 (pdftex.def)             Requested size: 344.9402pt x 250.75652pt.
  [29 <./img/states_analysed.png>] [30] [31]
 <../30_results/33_points_on_tracts.png, id=653, 1445.4pt x 2168.1pt>
 File: ../30_results/33_points_on_tracts.png Graphic file (type png)
 <use ../30_results/33_points_on_tracts.png>
 Package pdftex.def Info: ../30_results/33_points_on_tracts.png  used on input l
-ine 1257.
+ine 1261.
 (pdftex.def)             Requested size: 344.9843pt x 517.47646pt.
 
 
-LaTeX Warning: Float too large for page by 3.42088pt on input line 1260.
+LaTeX Warning: Float too large for page by 3.42088pt on input line 1264.
 
-[32]
-<../30_results/33_min_max_subplots.png, id=661, 1445.4pt x 2168.1pt>
+<../30_results/33_min_max_subplots.png, id=654, 1445.4pt x 2168.1pt>
 File: ../30_results/33_min_max_subplots.png Graphic file (type png)
 <use ../30_results/33_min_max_subplots.png>
 Package pdftex.def Info: ../30_results/33_min_max_subplots.png  used on input l
-ine 1264.
+ine 1268.
 (pdftex.def)             Requested size: 344.9843pt x 517.47646pt.
 
+LaTeX Warning: Float too large for page by 1.47646pt on input line 1271.
 
-LaTeX Warning: Float too large for page by 1.47646pt on input line 1267.
-
-<../30_results/16_points_on_tracts.png, id=668, 1445.4pt x 2168.1pt>
+[32] [33 <../30_results/33_points_on_tracts.png>] [34 <../30_results/33_min_max
+_subplots.png>]
+<../30_results/16_points_on_tracts.png, id=680, 1445.4pt x 2168.1pt>
 File: ../30_results/16_points_on_tracts.png Graphic file (type png)
 <use ../30_results/16_points_on_tracts.png>
 Package pdftex.def Info: ../30_results/16_points_on_tracts.png  used on input l
-ine 1327.
+ine 1331.
 (pdftex.def)             Requested size: 344.9843pt x 517.47646pt.
 
-LaTeX Warning: Float too large for page by 1.47646pt on input line 1330.
 
-[33] [34 <../30_results/33_points_on_tracts.png>] [35 <../30_results/33_min_max
-_subplots.png>]
-<../30_results/16_min_max_subplots.png, id=687, 1445.4pt x 2168.1pt>
+LaTeX Warning: Float too large for page by 1.47646pt on input line 1334.
+
+<../30_results/16_min_max_subplots.png, id=681, 1445.4pt x 2168.1pt>
 File: ../30_results/16_min_max_subplots.png Graphic file (type png)
 <use ../30_results/16_min_max_subplots.png>
 Package pdftex.def Info: ../30_results/16_min_max_subplots.png  used on input l
-ine 1334.
+ine 1338.
 (pdftex.def)             Requested size: 344.9843pt x 517.47646pt.
-<../30_results/corr_matrix_connecticut.png, id=689, 679.78969pt x 423.08063pt>
+[35] [36 <../30_results/16_points_on_tracts.png>] [37 <../30_results/16_min_max
+_subplots.png>]
+<../30_results/corr_matrix_connecticut.png, id=700, 679.78969pt x 423.08063pt>
 File: ../30_results/corr_matrix_connecticut.png Graphic file (type png)
 <use ../30_results/corr_matrix_connecticut.png>
 Package pdftex.def Info: ../30_results/corr_matrix_connecticut.png  used on inp
-ut line 1378.
+ut line 1382.
 (pdftex.def)             Requested size: 344.99739pt x 214.71599pt.
-<../30_results/corr_matrix_utah.png, id=690, 679.78969pt x 423.08063pt>
+ [38 <../30_results/corr_matrix_connecticut.png (PNG copy)>]
+<../30_results/corr_matrix_utah.png, id=709, 679.78969pt x 423.08063pt>
 File: ../30_results/corr_matrix_utah.png Graphic file (type png)
 <use ../30_results/corr_matrix_utah.png>
 Package pdftex.def Info: ../30_results/corr_matrix_utah.png  used on input line
- 1400.
+ 1405.
 (pdftex.def)             Requested size: 344.99739pt x 214.71599pt.
- [36] [37 <../30_results/16_points_on_tracts.png>] [38 <../30_results/16_min_ma
-x_subplots.png>] [39 <../30_results/corr_matrix_connecticut.png (PNG copy)> <..
-/30_results/corr_matrix_utah.png (PNG copy)>]
-<../30_results/13_pairwise_plot_grouped.png, id=715, 896.148pt x 887.4756pt>
+
+[39 <../30_results/corr_matrix_utah.png (PNG copy)>]
+<../30_results/13_pairwise_plot_grouped.png, id=718, 896.148pt x 887.4756pt>
 File: ../30_results/13_pairwise_plot_grouped.png Graphic file (type png)
 <use ../30_results/13_pairwise_plot_grouped.png>
 Package pdftex.def Info: ../30_results/13_pairwise_plot_grouped.png  used on in
-put line 1429.
+put line 1434.
 (pdftex.def)             Requested size: 344.99753pt x 341.65884pt.
-<../30_results/all_plans_sd.png, id=717, 722.7pt x 722.7pt>
+ [40 <../30_results/13_pairwise_plot_grouped.png>]
+<../30_results/all_plans_sd.png, id=726, 722.7pt x 722.7pt>
 File: ../30_results/all_plans_sd.png Graphic file (type png)
 <use ../30_results/all_plans_sd.png>
-Package pdftex.def Info: ../30_results/all_plans_sd.png  used on input line 145
-7.
+Package pdftex.def Info: ../30_results/all_plans_sd.png  used on input line 146
+2.
 (pdftex.def)             Requested size: 344.99533pt x 344.99533pt.
- [40] [41 <../30_results/13_pairwise_plot_grouped.png>] [42 <../30_results/all_
-plans_sd.png>]
-<../30_results/size_and_sd.png, id=741, 679.78969pt x 618.05907pt>
+ [41 <../30_results/all_plans_sd.png>]
+<../30_results/size_and_sd.png, id=738, 679.78969pt x 618.05907pt>
 File: ../30_results/size_and_sd.png Graphic file (type png)
 <use ../30_results/size_and_sd.png>
-Package pdftex.def Info: ../30_results/size_and_sd.png  used on input line 1494
+Package pdftex.def Info: ../30_results/size_and_sd.png  used on input line 1499
 .
 (pdftex.def)             Requested size: 344.99739pt x 313.66873pt.
-
-[43 <../30_results/size_and_sd.png (PNG copy)>] [44]
-<../30_results/individual_regressions.png, id=762, 1269.7839pt x 1156.32pt>
+ [42] [43 <../30_results/size_and_sd.png (PNG copy)>]
+<../30_results/individual_regressions.png, id=756, 1269.7839pt x 1156.32pt>
 File: ../30_results/individual_regressions.png Graphic file (type png)
 <use ../30_results/individual_regressions.png>
 Package pdftex.def Info: ../30_results/individual_regressions.png  used on inpu
-t line 1563.
+t line 1569.
 (pdftex.def)             Requested size: 344.9969pt x 314.16905pt.
-<../30_results/grouped_regressions.png, id=763, 1269.7839pt x 1156.32pt>
+<../30_results/grouped_regressions.png, id=757, 1269.7839pt x 1156.32pt>
 File: ../30_results/grouped_regressions.png Graphic file (type png)
 <use ../30_results/grouped_regressions.png>
 Package pdftex.def Info: ../30_results/grouped_regressions.png  used on input l
-ine 1571.
+ine 1577.
 (pdftex.def)             Requested size: 344.9969pt x 314.16905pt.
- [45 <../30_results/individual_regressions.png>] [46 <../30_results/grouped_reg
-ressions.png>]
-<../30_results/regression_coefficients.png, id=778, 679.78969pt x 423.08063pt>
+ [44] [45 <../30_results/individual_regressions.png>] [46 <../30_results/groupe
+d_regressions.png>]
+<../30_results/regression_coefficients.png, id=780, 679.78969pt x 423.08063pt>
 File: ../30_results/regression_coefficients.png Graphic file (type png)
 <use ../30_results/regression_coefficients.png>
 Package pdftex.def Info: ../30_results/regression_coefficients.png  used on inp
-ut line 1598.
+ut line 1605.
 (pdftex.def)             Requested size: 344.99739pt x 214.71599pt.
 
-Overfull \hbox (100.08331pt too wide) in paragraph at lines 1606--1637
+Overfull \hbox (100.08331pt too wide) in paragraph at lines 1613--1644
  [][] 
  []
 
 [47 <../30_results/regression_coefficients.png (PNG copy)>] [48]
-<../30_results/regression_coefficients_all.png, id=792, 679.78969pt x 451.6875p
+<../30_results/regression_coefficients_all.png, id=794, 679.78969pt x 451.6875p
 t>
 File: ../30_results/regression_coefficients_all.png Graphic file (type png)
 <use ../30_results/regression_coefficients_all.png>
 Package pdftex.def Info: ../30_results/regression_coefficients_all.png  used on
- input line 1673.
+ input line 1680.
 (pdftex.def)             Requested size: 344.99739pt x 229.23415pt.
  [49 <../30_results/regression_coefficients_all.png (PNG copy)>]
-<../30_results/diff_in_means.png, id=803, 679.78969pt x 423.08063pt>
+<../30_results/diff_in_means.png, id=805, 679.78969pt x 423.08063pt>
 File: ../30_results/diff_in_means.png Graphic file (type png)
 <use ../30_results/diff_in_means.png>
 Package pdftex.def Info: ../30_results/diff_in_means.png  used on input line 17
-26.
+33.
 (pdftex.def)             Requested size: 344.99739pt x 214.71599pt.
  [50] [51 <../30_results/diff_in_means.png (PNG copy)>] [52] [53] [54] [55] [56
-] [57] [58]
-<img/recom_vs_flip.png, id=915, 1014.79124pt x 283.81032pt>
+] [57]
+<img/recom_vs_flip.png, id=912, 1014.79124pt x 283.81032pt>
 File: img/recom_vs_flip.png Graphic file (type png)
 <use img/recom_vs_flip.png>
 Package pdftex.def Info: img/recom_vs_flip.png  used on input line 2177.
 (pdftex.def)             Requested size: 344.99348pt x 96.48557pt.
- [59] [60 <./img/recom_vs_flip.png>]
+ [58] [59 <./img/recom_vs_flip.png>]
 Overfull \hbox (61.94438pt too wide) in paragraph at lines 2272--2318
 [][] 
  []
 
-[61] [62] (./mcmc_procedure.bbl
+[60] [61] (./mcmc_procedure.bbl
 Underfull \hbox (badness 10000) in paragraph at lines 35--39
 \T1/lmr/m/n/10 (+20) / / www . brennancenter . org / sites / default / ^^\les /
  analysis / 6 % 20Communities %
  []
 
-[63
+[62
 
-] [64]
-Underfull \hbox (badness 6808) in paragraph at lines 228--233
+] [63]
+Underfull \hbox (badness 6808) in paragraph at lines 244--249
 []\T1/lmr/m/n/10 (+20) Steven Wolf.  Com-pact-ness is a ter-ri-ble stan-dard fo
 r re-dis-trict-
  []
 
 
-Underfull \hbox (badness 4467) in paragraph at lines 228--233
+Underfull \hbox (badness 4467) in paragraph at lines 244--249
 \T1/lmr/m/n/10 (+20) ing and de-ter-min-ing if maps were ger-ry-man-dered, 2015
 .  URL
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 228--233
+Underfull \hbox (badness 10000) in paragraph at lines 244--249
 []$\T1/lmr/m/n/10 (+20) https : / / www . dailykos . com / stories / 2015 / 5 /
  12 / 1384062/ -[] Compactness -[]
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 228--233
+Underfull \hbox (badness 10000) in paragraph at lines 244--249
 \T1/lmr/m/n/10 (+20) is -[] a -[] terrible -[] standard -[] for -[] redistricti
 ng -[] and -[] determining -[] if -[] maps -[] were -[]
  []
 
 )
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 2323.
- [65]
+ [64]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 2323.
  (./mcmc_procedure.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 2323.
@@ -1242,32 +1242,33 @@ Package rerunfilecheck Info: File `mcmc_procedure.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2323.
  ) 
 Here is how much of TeX's memory you used:
- 12971 strings out of 494923
- 190400 string characters out of 6180741
- 287005 words of memory out of 5000000
- 15661 multiletter control sequences out of 15000+600000
- 85760 words of font info for 158 fonts, out of 8000000 for 9000
+ 12981 strings out of 494923
+ 190548 string characters out of 6180741
+ 287068 words of memory out of 5000000
+ 15668 multiletter control sequences out of 15000+600000
+ 85890 words of font info for 159 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 32i,9n,38p,738b,498s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 32i,9n,38p,698b,494s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dv
-ips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/s
-hare/texmf/fonts/enc/dvips/lm/lm-rm.enc}</usr/share/texmf/fonts/type1/public/lm
-/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texm
-f/fonts/type1/public/lm/lmbx9.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi1
-0.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi7.pfb></usr/share/texmf/fonts
-/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></
-usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/p
-ublic/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmr6.pfb></usr/share
-/texmf/fonts/type1/public/lm/lmr7.pfb></usr/share/texmf/fonts/type1/public/lm/l
-mr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr9.pfb></usr/share/texmf/font
-s/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmri8.pfb>
-</usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr/share/texmf/fonts/type
-1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy7.pfb></usr/
-share/texmf/fonts/type1/public/lm/lmtt10.pfb>
-Output written on mcmc_procedure.pdf (65 pages, 5173013 bytes).
+ips/lm/lm-mathex.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/s
+hare/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/l
+m/lm-rm.enc}</usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texm
+f/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx
+9.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/font
+s/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi7.pfb>
+</usr/share/texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1
+/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/sh
+are/texmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/
+lm/lmr6.pfb></usr/share/texmf/fonts/type1/public/lm/lmr7.pfb></usr/share/texmf/
+fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr9.pfb
+></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/typ
+e1/public/lm/lmri8.pfb></usr/share/texmf/fonts/type1/public/lm/lmro10.pfb></usr
+/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/pub
+lic/lm/lmsy7.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb>
+Output written on mcmc_procedure.pdf (64 pages, 5176438 bytes).
 PDF statistics:
- 1111 PDF objects out of 1200 (max. 8388607)
- 963 compressed objects within 10 object streams
- 257 named destinations out of 1000 (max. 500000)
+ 1116 PDF objects out of 1200 (max. 8388607)
+ 967 compressed objects within 10 object streams
+ 258 named destinations out of 1000 (max. 500000)
  20989 words of extra memory for PDF output out of 24883 (max. 10000000)
 

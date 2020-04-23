@@ -19,45 +19,45 @@ Warning--entry type for "mggg2020" isn't style-file defined
 --line 307 of file references.bib.bib
 Warning--empty journal in ddj2019comp
 Warning--empty journal in fifieldwp
-You've used 37 entries,
+You've used 39 entries,
             2773 wiz_defined-function locations,
-            805 strings with 10434 characters,
-and the built_in function-call counts, 15279 in all, are:
-= -- 1372
-> -- 755
-< -- 32
-+ -- 263
-- -- 225
-* -- 1123
-:= -- 2339
-add.period$ -- 115
-call.type$ -- 37
-change.case$ -- 181
-chr.to.int$ -- 36
-cite$ -- 76
-duplicate$ -- 752
-empty$ -- 1359
-format.name$ -- 288
-if$ -- 3222
+            818 strings with 10791 characters,
+and the built_in function-call counts, 15903 in all, are:
+= -- 1432
+> -- 775
+< -- 34
++ -- 271
+- -- 231
+* -- 1159
+:= -- 2445
+add.period$ -- 125
+call.type$ -- 39
+change.case$ -- 187
+chr.to.int$ -- 38
+cite$ -- 80
+duplicate$ -- 789
+empty$ -- 1416
+format.name$ -- 296
+if$ -- 3351
 int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 35
-newline$ -- 195
-num.names$ -- 148
-pop$ -- 395
+missing$ -- 37
+newline$ -- 209
+num.names$ -- 156
+pop$ -- 410
 preamble$ -- 1
-purify$ -- 148
+purify$ -- 154
 quote$ -- 0
-skip$ -- 582
+skip$ -- 605
 stack$ -- 0
-substring$ -- 511
-swap$ -- 67
+substring$ -- 515
+swap$ -- 70
 text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 387
+type$ -- 404
 warning$ -- 2
-while$ -- 149
+while$ -- 155
 width$ -- 0
-write$ -- 477
+write$ -- 510
 (There was 1 error message)

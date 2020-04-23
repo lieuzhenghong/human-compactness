@@ -63,10 +63,11 @@ df_55$state <- "Wisconsin"
 all_districts <- rbind(df_09, df_13, df_16, df_22, df_23, df_24, df_33, df_44, df_49, df_55)
 
 ggplot(all_districts, aes(x=sd, fill=district_type, color=district_type)) +
-  ggtitle("KDE plot of different districts and their spatial diversity")
+  ggtitle("KDE plot of different districts and their spatial diversity, binned by area") +
   geom_density(alpha=0.5) +
   theme_minimal() +
   theme( 
+    plot.title = element_text(face="bold"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
     axis.title.y = element_blank(),
@@ -214,6 +215,7 @@ dwplot(tidied_all,
        vline = geom_vline(xintercept = 0, colour = "grey60", linetype = 2)) %>%
       relabel_predictors(c('ch' = "Convex Hull", 'hc' = 'Human Compactness', 
                            'pp' = "Polsby-Popper", 'reock' = "Reock")) +
+      ggtitle("Coefficient estimates of OLS regressions") + 
       theme_classic(base_size=15) +
         xlab("Coefficient Estimate") +
     theme(plot.title = element_text(face="bold"))

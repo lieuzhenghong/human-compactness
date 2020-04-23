@@ -19,19 +19,19 @@
 \contentsline {subsubsection}{\numberline {3.2.3}Flaws with existing compactness measures}{17}{subsubsection.3.2.3}
 \contentsline {subsubsection}{\numberline {3.2.4}Building a new compactness measure: Human compactness}{19}{subsubsection.3.2.4}
 \contentsline {subsubsection}{\numberline {3.2.5}Choosing which compactness metrics to evaluate}{27}{subsubsection.3.2.5}
-\contentsline {subsection}{\numberline {3.3}Choosing an algorithm to generate districting plans}{28}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.3}Choosing an algorithm to generate districting plans}{27}{subsection.3.3}
 \contentsline {section}{\numberline {4}Research procedure}{28}{section.4}
-\contentsline {subsection}{\numberline {4.1}Generating 100,000 districting plans with the MCMC algorithm}{29}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.1}Generating 100,000 districting plans with the MCMC algorithm}{28}{subsection.4.1}
 \contentsline {subsection}{\numberline {4.2}Calculating spatial diversity and compactness scores for 100,000 plans}{30}{subsection.4.2}
 \contentsline {subsection}{\numberline {4.3}Performing data analysis on the 100,000 plans}{31}{subsection.4.3}
-\contentsline {section}{\numberline {5}Results}{32}{section.5}
+\contentsline {section}{\numberline {5}Results}{31}{section.5}
 \contentsline {subsection}{\numberline {5.1}Initial analysis}{32}{subsection.5.1}
 \contentsline {subsubsection}{\numberline {5.1.1}The choice of compactness measure can result in very different plans}{32}{subsubsection.5.1.1}
-\contentsline {subsubsection}{\numberline {5.1.2}Compactness measures largely agree with one another, but human compactness less so}{36}{subsubsection.5.1.2}
-\contentsline {paragraph}{\numberline {5.1.2.1}Robustness check}{40}{paragraph.5.1.2.1}
-\contentsline {subsubsection}{\numberline {5.1.3}Spatial diversity varies a lot between states but little within states}{40}{subsubsection.5.1.3}
-\contentsline {subsubsection}{\numberline {5.1.4}Small urban districts are usually more heterogeneous}{43}{subsubsection.5.1.4}
-\contentsline {subsubsection}{\numberline {5.1.5}Conclusions of initial data exploration}{44}{subsubsection.5.1.5}
+\contentsline {subsubsection}{\numberline {5.1.2}Compactness measures largely agree with one another, but human compactness less so}{38}{subsubsection.5.1.2}
+\contentsline {paragraph}{\numberline {5.1.2.1}Robustness check}{39}{paragraph.5.1.2.1}
+\contentsline {subsubsection}{\numberline {5.1.3}Spatial diversity varies a lot between states but little within states}{41}{subsubsection.5.1.3}
+\contentsline {subsubsection}{\numberline {5.1.4}Small urban districts are usually more heterogeneous}{42}{subsubsection.5.1.4}
+\contentsline {subsubsection}{\numberline {5.1.5}Conclusions of initial data exploration}{42}{subsubsection.5.1.5}
 \contentsline {subsection}{\numberline {5.2}Key results}{44}{subsection.5.2}
 \contentsline {subsubsection}{\numberline {5.2.1}Only human compactness positively correlates with district homogeneity}{44}{subsubsection.5.2.1}
 \contentsline {paragraph}{\numberline {5.2.1.1}Robustness check}{47}{paragraph.5.2.1.1}
@@ -44,9 +44,9 @@
 \contentsline {subsection}{\numberline {6.3}Directions for future work}{55}{subsection.6.3}
 \contentsline {subsection}{\numberline {6.4}Conclusion}{55}{subsection.6.4}
 \contentsline {subsection}{\numberline {6.5}Acknowledgements}{55}{subsection.6.5}
-\contentsline {section}{\numberline {7}Technical Appendix A: evaluating different methods of plan generation}{57}{section.7}
-\contentsline {subsection}{\numberline {7.1}Seminal algorithms for plan generation}{57}{subsection.7.1}
-\contentsline {subsection}{\numberline {7.2}Markov Chain algorithms}{58}{subsection.7.2}
-\contentsline {subsection}{\numberline {7.3}Three different Markov Chain algorithms}{58}{subsection.7.3}
-\contentsline {subsection}{\numberline {7.4}Choosing the best MCMC approach}{59}{subsection.7.4}
-\contentsline {section}{\numberline {8}Appendix A: Results of difference-in-means tests for individual states}{61}{section.8}
+\contentsline {section}{\numberline {7}Technical Appendix A: evaluating different methods of plan generation}{56}{section.7}
+\contentsline {subsection}{\numberline {7.1}Seminal algorithms for plan generation}{56}{subsection.7.1}
+\contentsline {subsection}{\numberline {7.2}Markov Chain algorithms}{57}{subsection.7.2}
+\contentsline {subsection}{\numberline {7.3}Three different Markov Chain algorithms}{57}{subsection.7.3}
+\contentsline {subsection}{\numberline {7.4}Choosing the best MCMC approach}{58}{subsection.7.4}
+\contentsline {section}{\numberline {8}Appendix A: Results of difference-in-means tests for individual states}{60}{section.8}

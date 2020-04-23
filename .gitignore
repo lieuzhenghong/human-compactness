@@ -2,3 +2,4 @@
 *.swo
 __pycache__/
 /Tract_Ensembles/2010/*
+.RData
