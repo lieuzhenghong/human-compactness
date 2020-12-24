@@ -8,7 +8,8 @@ import seaborn as sns
 from plotnine import *
 
 
-sys.path.append('/home/lieu/dev/geographically_sensitive_dislocation/10_code')
+# sys.path.append('/home/lieu/dev/geographically_sensitive_dislocation/10_code')
+sys.path.append('../geographically_sensitive_dislocation/10_code')
 
 import sample_rvps  # noqa: E402
 
@@ -189,7 +190,7 @@ def plot_plan(step_number, assignment_list, ctdf, ax=None):
 
 def plot_vrps_on_census_tracts(census_tracts, STATE_CODE):
     # First convert to epsg 2163
-    GEOG_WD = "/home/lieu/dev/geographically_sensitive_dislocation/00_source_data/"
+    GEOG_WD = "../geographically_sensitive_dislocation/00_source_data/"
 
     print("Reading district shapefile...")
     CDB = gpd.read_file(GEOG_WD +

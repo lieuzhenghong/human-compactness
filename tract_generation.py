@@ -27,20 +27,27 @@ def _read_and_process_vrp_shapefile(STATE_CODE, STATE_NAME, NUM_DISTRICTS, SAMPL
     '''
         Returns points_downsampled
     '''
-    GEOG_WD = "/home/lieu/dev/geographically_sensitive_dislocation/00_source_data/"
+    GEOG_WD = "../geographically_sensitive_dislocation/00_source_data/"
 
     print("Reading district shapefile...")
     CDB = gpd.read_file(GEOG_WD +
                         "10_US_Congressional_districts/nhgis0190_shapefile_tl2014_us_cd114th_2014/US_cd114th_2014_wgs84.shp")
 
-    DEM_RVPS = f'{GEOG_WD}00_representative_voter_points/points_D_{STATE_CODE}_2_10000_run1.shp'
-    REP_RVPS = f'{GEOG_WD}00_representative_voter_points/points_R_{STATE_CODE}_2_10000_run1.shp'
+    if STATE_CODE[:1] == '0':
+        DEM_RVPS = f'{GEOG_WD}00_representative_voter_points/points_D_{STATE_CODE[1:]}_2_10000_run1.shp'
+        REP_RVPS = f'{GEOG_WD}00_representative_voter_points/points_R_{STATE_CODE[1:]}_2_10000_run1.shp'
+    else:
+        DEM_RVPS = f'{GEOG_WD}00_representative_voter_points/points_D_{STATE_CODE}_2_10000_run1.shp'
+        REP_RVPS = f'{GEOG_WD}00_representative_voter_points/points_R_{STATE_CODE}_2_10000_run1.shp'
     SAMPLE_RICHNESS = SAMPLE_RICHNESS
     SAMPLE_SIZE = SAMPLE_RICHNESS * int(NUM_DISTRICTS)
 
     print(DEM_RVPS)
 
-    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}.dmx'
+    DM_PATH = f'../geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}.dmx'
+    #DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}.dmx'
+
+    # This is for smaller states
     #DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}_{SAMPLE_SIZE}.dmx'
 
     # after we get the points, downsample
@@ -90,9 +97,9 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
     4. GEOID to tract ID mapping (Daryl's initial assignment)
     '''
     # All global variables here
-    TRACT_SPATIAL_DIVERSITY_SCORES = '/home/lieu/dev/human_compactness/tract_spatial_diversity.csv'
+    TRACT_SPATIAL_DIVERSITY_SCORES = './tract_spatial_diversity.csv'
     CENSUS_TRACTS = gpd.read_file(
-        f"/home/lieu/dev/human_compactness/Data_2000/Shapefiles/Tract2000_{state_code}.shp")
+        f"./Data_2000/Shapefiles/Tract2000_{state_code}.shp")
 
     point_to_tract_mapping = {}
 
@@ -137,7 +144,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
                         args=[point_to_tract_mapping, geoid_to_id_mapping])
 
     print(f'Length of point_to_tract_mapping: {len(point_to_tract_mapping)}')
-    DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{state_name}_{state_code}.dmx'
+    DM_PATH = f'../geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{state_name}_{state_code}.dmx'
     #DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{state_name}_{state_code}_{sample_size}.dmx'
 
     # Append the point ids to each census tract (where point ID is matrix row)

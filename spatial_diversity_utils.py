@@ -16,7 +16,8 @@ def get_all_tract_geoids(state_code):
     tract_dict = {}
     geoid_to_id_mapping = {}
 
-    starting_plan = f'/home/lieu/dev/human_compactness/Data_2000/Dual_Graphs/Tract2000_{state_code}.json'
+    #starting_plan = f'/home/lieu/dev/human_compactness/Data_2000/Dual_Graphs/Tract2000_{state_code}.json'
+    starting_plan = f'./Data_2000/Dual_Graphs/Tract2000_{state_code}.json'
 
     with open(starting_plan) as f:
         data = json.load(f)
