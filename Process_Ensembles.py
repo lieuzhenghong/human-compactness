@@ -61,6 +61,16 @@ fips_list = ['09']
 sample_richness = 1000  # Number of VRPs to sample per district
 
 
+def read_duration_matrix(DM_PATH):
+    sys.path.append(
+        '/home/lieu/dev/geographically_sensitive_dislocation/10_code')
+
+    import distance_matrix  # noqa: E402
+
+    duration_matrix = distance_matrix.read_duration_matrix_from_file(DM_PATH)
+    return duration_matrix
+
+
 def main_old():
     '''
     1. Read tract shapefile into memoru
@@ -89,13 +99,8 @@ def main_old():
         print("Reading tract shapefile into memory...")
         state_shp = gpd.read_file(SHAPEFILE_PATH)
 
-        sys.path.append(
-            '/home/lieu/dev/geographically_sensitive_dislocation/10_code')
-
-        import distance_matrix  # noqa: E402
-
         print("Reading KNN duration matrix file into memory...")
-        DMX = distance_matrix.read_duration_matrix_from_file(DM_PATH)
+        duration_matrix = read_duration_matrix(DM_PATH)
 
         datadir = f"./Tract_Ensembles/2000/{state_fips}/"
         # newdir = f"./20_intermediate_files/{state_fips}/"
@@ -149,7 +154,7 @@ def main_old():
                 "population": Tally("population", alias="population"),
                 "spatial_diversity": spatial_diversity.calc_spatial_diversity,
                 "human_compactness": partial(hc_utils.calculate_human_compactness,
-                                            DURATION_DICT, tract_dict, DMX),
+                                             DURATION_DICT, tract_dict, duration_matrix),
                 "polsby_compactness": polsby_popper,
                 "reock_compactness": partial(reock.reock, state_shp),
                 # "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
@@ -158,12 +163,12 @@ def main_old():
 
         new_assignment = dict(initial_partition.assignment)
         # load graph and make initial partition
-        calculate_metrics(new_assignment, datadir, newdir, graph,
-                          DURATION_DICT, tract_dict, DMX, state_shp)
+        # calculate_metrics(new_assignment, datadir, newdir, graph,
+        #                  DURATION_DICT, tract_dict, duration_matrix, state_shp)
 
 def calculate_metrics_step(step, step_size, dict_list,
                            graph, new_assignment,
-                           DURATION_DICT, tract_dict, DMX, state_shp):
+                           DURATION_DICT, tract_dict, duration_matrix, state_shp):
     print(f"Step: {step}. Step Size: {step_size}")
 
     start = timer()
@@ -184,7 +189,7 @@ def calculate_metrics_step(step, step_size, dict_list,
             "population": Tally("population", alias="population"),
             "spatial_diversity": spatial_diversity.calc_spatial_diversity,
             "human_compactness": partial(hc_utils.calculate_human_compactness,
-                                        DURATION_DICT, tract_dict, DMX),
+                                         DURATION_DICT, tract_dict, duration_matrix),
             "polsby_compactness": polsby_popper,
             "reock_compactness": partial(reock.reock, state_shp),
             # "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
@@ -219,7 +224,7 @@ def calculate_metrics_step(step, step_size, dict_list,
 
 
 def calculate_metrics(new_assignment, datadir, newdir, graph,
-                      DURATION_DICT, tract_dict, DMX, state_shp):
+                      DURATION_DICT, tract_dict, duration_matrix, state_shp):
     data = []
 
     max_steps = 10000
@@ -239,7 +244,7 @@ def calculate_metrics(new_assignment, datadir, newdir, graph,
             step_data = calculate_metrics_step(step, step_size, dict_list,
                                                graph, new_assignment,
                                                DURATION_DICT, tract_dict,
-                                               DMX, state_shp)
+                                               duration_matrix, state_shp)
             data.append(step_data)
             if step % save_step_size == save_step_size - 1:  # 999
                 print(
