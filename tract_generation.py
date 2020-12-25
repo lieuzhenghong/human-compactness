@@ -14,13 +14,7 @@ import sample_rvps  # noqa: E402
 # TODO find a way to bring sample_rvps (as well as other utility functions)
 # into a common library of some sort
 
-# TODO try and make this a relative path
-
 # Import utilities for getting GEOIDs and ids of all Census Tracts
-
-
-def get_vrps_within_tracts():
-    pass
 
 
 def _read_and_process_vrp_shapefile(
@@ -49,7 +43,6 @@ def _read_and_process_vrp_shapefile(
     print(DEM_RVPS)
 
     DM_PATH = f"../geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}.dmx"
-    # DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}.dmx'
 
     # This is for smaller states
     # DM_PATH = f'/home/lieu/dev/geographically_sensitive_dislocation/20_intermediate_files/duration_matrix_{STATE_NAME}_{STATE_CODE}_{SAMPLE_SIZE}.dmx'
@@ -57,8 +50,6 @@ def _read_and_process_vrp_shapefile(
     # after we get the points, downsample
 
     print("Downsampling points...")
-    # points_downsampled = sample_rvps.sample_rvps(CDB, int(STATE_CODE), DEM_RVPS,
-    #                                             REP_RVPS, SAMPLE_SIZE)
     points_downsampled = sample_rvps.sample_rvps(
         CDB, STATE_CODE, DEM_RVPS, REP_RVPS, SAMPLE_SIZE
     )
