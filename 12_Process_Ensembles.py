@@ -18,29 +18,81 @@ from gerrychain.metrics import polsby_popper
 from gerrychain.updaters import Tally, cut_edges
 from timeit import default_timer as timer
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 
 
-state_names = {"02": "Alaska", "01": "Alabama", "05": "Arkansas", "04": "Arizona",
-               "06": "California", "08": "Colorado", "09": "Connecticut", "10": "Delaware",
-               "12": "Florida", "13": "Georgia", "66": "Guam", "15": "Hawaii", "19": "Iowa",
-               "16": "Idaho", "17": "Illinois", "18": "Indiana", "20": "Kansas", "21": "Kentucky",
-               "22": "Louisiana", "25": "Massachusetts", "24": "Maryland", "23": "Maine", "26": "Michigan",
-               "27": "Minnesota", "29": "Missouri", "28": "Mississippi", "30": "Montana",
-               "37": "North_Carolina", "38": "North_Dakota", "31": "Nebraska", "33": "New_Hampshire",
-               "34": "New_Jersey", "35": "New_Mexico", "32": "Nevada", "36": "New_York", "39": "Ohio",
-               "40": "Oklahoma", "41": "Oregon", "42": "Pennsylvania", "72": "Puerto_Rico",
-               "44": "Rhode_Island", "45": "South_Carolina", "46": "South_Dakota", "47": "Tenessee",
-               "48": "Texas", "49": "Utah", "51": "Virginia", "50": "Vermont", "53": "Washington",
-               "55": "Wisconsin", "54": "West_Virginia", "56": "Wyoming"}
+state_names = {
+    "02": "Alaska",
+    "01": "Alabama",
+    "05": "Arkansas",
+    "04": "Arizona",
+    "06": "California",
+    "08": "Colorado",
+    "09": "Connecticut",
+    "10": "Delaware",
+    "12": "Florida",
+    "13": "Georgia",
+    "66": "Guam",
+    "15": "Hawaii",
+    "19": "Iowa",
+    "16": "Idaho",
+    "17": "Illinois",
+    "18": "Indiana",
+    "20": "Kansas",
+    "21": "Kentucky",
+    "22": "Louisiana",
+    "25": "Massachusetts",
+    "24": "Maryland",
+    "23": "Maine",
+    "26": "Michigan",
+    "27": "Minnesota",
+    "29": "Missouri",
+    "28": "Mississippi",
+    "30": "Montana",
+    "37": "North_Carolina",
+    "38": "North_Dakota",
+    "31": "Nebraska",
+    "33": "New_Hampshire",
+    "34": "New_Jersey",
+    "35": "New_Mexico",
+    "32": "Nevada",
+    "36": "New_York",
+    "39": "Ohio",
+    "40": "Oklahoma",
+    "41": "Oregon",
+    "42": "Pennsylvania",
+    "72": "Puerto_Rico",
+    "44": "Rhode_Island",
+    "45": "South_Carolina",
+    "46": "South_Dakota",
+    "47": "Tenessee",
+    "48": "Texas",
+    "49": "Utah",
+    "51": "Virginia",
+    "50": "Vermont",
+    "53": "Washington",
+    "55": "Wisconsin",
+    "54": "West_Virginia",
+    "56": "Wyoming",
+}
 
 # TODO fill this in
-num_districts = {"01": 7, "04": 8, '08': 7,
-                 "09": 5,
-                 "13": 13, "16": 2, '19': 4,
-                 "22": 7, "24": 8, '33': 2,
-                 "23": 2, "44": 2,
-                 '49': 3, "55": 8}
+num_districts = {
+    "01": 7,
+    "04": 8,
+    "08": 7,
+    "09": 5,
+    "13": 13,
+    "16": 2,
+    "19": 4,
+    "22": 7,
+    "24": 8,
+    "33": 2,
+    "23": 2,
+    "44": 2,
+    "49": 3,
+    "55": 8,
+}
 
 num_elections = 1
 
@@ -57,13 +109,12 @@ plan_name = "Enacted"
 # fips_list = ['16']
 # fips_list = ['19', '33', '49']
 # fips_list = ['23', '44'] # Maine and Rhode Island
-fips_list = ['09']
+fips_list = ["09"]
 sample_richness = 1000  # Number of VRPs to sample per district
 
 
 def read_duration_matrix(DM_PATH):
-    sys.path.append(
-        '/home/lieu/dev/geographically_sensitive_dislocation/10_code')
+    sys.path.append("../geographically_sensitive_dislocation/10_code")
 
     import distance_matrix  # noqa: E402
 
@@ -72,7 +123,7 @@ def read_duration_matrix(DM_PATH):
 
 
 def main_old():
-    '''
+    """
     1. Read tract shapefile into memoru
     2. Read KNN duration matrix file into memory
     3. Create new folder if it doesn't exist
@@ -88,13 +139,13 @@ def main_old():
     9. initial_partition
     10. new_assignment
     11. Run 10,000 cycles, calculate all metrics
-    '''
+    """
     for state_fips in fips_list:
         state_name = state_names[state_fips].lower()
-        DD_PATH = f'./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json'
-        DM_PATH = f'./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx'
+        DD_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json"
+        DM_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx"
         DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
-        SHAPEFILE_PATH = f'./Data_2000/Shapefiles/Tract2000_{state_fips}.shp'
+        SHAPEFILE_PATH = f"./Data_2000/Shapefiles/Tract2000_{state_fips}.shp"
 
         print("Reading tract shapefile into memory...")
         state_shp = gpd.read_file(SHAPEFILE_PATH)
@@ -104,81 +155,105 @@ def main_old():
 
         datadir = f"./Tract_Ensembles/2000/{state_fips}/"
         # newdir = f"./20_intermediate_files/{state_fips}/"
-        newdir = f"./21_intermediate_files_rerun/{state_fips}/"
+        # newdir = f"./21_intermediate_files_rerun/{state_fips}/"
+        newdir = f"./22_intermediate_files_rerun_2/{state_fips}/"
 
         os.makedirs(os.path.dirname(newdir + "init"), exist_ok=True)
         with open(newdir + "init", "w") as f:
             f.write("Created Folder")
 
-        graph = Graph.from_json(datadir + 'starting_plan.json')
+        graph = Graph.from_json(datadir + "starting_plan.json")
 
         # add population and spatial diversity data to the graph
         # tract_dict = spatial_diversity.build_spatial_diversity_dict(
         #    *spatial_diversity.get_all_tract_geoids())
 
         tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(
-            state_fips)
+            state_fips
+        )
 
         tract_dict = tract_generation.generate_tracts_with_vrps(
-            state_fips, state_name, num_districts[state_fips], sample_richness)
+            state_fips, state_name, num_districts[state_fips], sample_richness
+        )
 
         # Preprocess the state tract shapefile to include external points
-        state_shp = reock.preprocess_dataframe(
-            state_shp, geoid_to_id_mapping)
+        state_shp = reock.preprocess_dataframe(state_shp, geoid_to_id_mapping)
 
         # just for reference
         num_Nones = 0
         for node in graph.nodes():
 
-            if tract_dict[node]['pfs'] is None:
+            if tract_dict[node]["pfs"] is None:
                 num_Nones += 1
 
-            graph.nodes[node]['pfs'] = tract_dict[node]['pfs']
-            graph.nodes[node]['pop'] = tract_dict[node]['pop']
+            graph.nodes[node]["pfs"] = tract_dict[node]["pfs"]
+            graph.nodes[node]["pop"] = tract_dict[node]["pop"]
             # print(graph.nodes[node])
 
         # Checking the number of empty tracts (tracts without VRPs)
         empty_tracts = []
 
         for tract_id in tract_dict:
-            if len(tract_dict[tract_id]['vrps']) == 0:
+            if len(tract_dict[tract_id]["vrps"]) == 0:
                 empty_tracts.append(tract_id)
 
         print(f"Number of empty tracts: {len(empty_tracts)}")
 
         initial_partition = GeographicPartition(
             graph,
-            assignment='New_Seed',
+            assignment="New_Seed",
             updaters={
                 "cut_edges": cut_edges,
                 "population": Tally("population", alias="population"),
                 "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-                "human_compactness": partial(hc_utils.calculate_human_compactness,
-                                             DURATION_DICT, tract_dict, duration_matrix),
+                "human_compactness": partial(
+                    hc_utils.calculate_human_compactness,
+                    DURATION_DICT,
+                    tract_dict,
+                    duration_matrix,
+                ),
                 "polsby_compactness": polsby_popper,
                 "reock_compactness": partial(reock.reock, state_shp),
                 # "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
-            }
+            },
         )
 
         new_assignment = dict(initial_partition.assignment)
         # load graph and make initial partition
-        # calculate_metrics(new_assignment, datadir, newdir, graph,
-        #                  DURATION_DICT, tract_dict, duration_matrix, state_shp)
+        """
+        calculate_metrics(
+            new_assignment,
+            datadir,
+            newdir,
+            graph,
+            DURATION_DICT,
+            tract_dict,
+            duration_matrix,
+            state_shp,
+        )
+        """
 
-def calculate_metrics_step(step, step_size, dict_list,
-                           graph, new_assignment,
-                           DURATION_DICT, tract_dict, duration_matrix, state_shp):
+
+def calculate_metrics_step(
+    step,
+    step_size,
+    dict_list,
+    graph,
+    new_assignment,
+    DURATION_DICT,
+    tract_dict,
+    duration_matrix,
+    state_shp,
+):
     print(f"Step: {step}. Step Size: {step_size}")
 
     start = timer()
 
-    changes_this_step = (dict_list[step].items())
-    print(f'Changes this step: {len(changes_this_step)}')
+    changes_this_step = dict_list[step].items()
+    print(f"Changes this step: {len(changes_this_step)}")
 
     print("Updating new assignment...")
-    new_assignment.update(
-        {int(item[0]): int(item[1]) for item in changes_this_step})
+    new_assignment.update({int(item[0]): int(item[1]) for item in changes_this_step})
 
     print("Building new GeographicPartition...")
     new_partition = GeographicPartition(
@@ -188,43 +263,53 @@ def calculate_metrics_step(step, step_size, dict_list,
             "cut_edges": cut_edges,
             "population": Tally("population", alias="population"),
             "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-            "human_compactness": partial(hc_utils.calculate_human_compactness,
-                                         DURATION_DICT, tract_dict, duration_matrix),
+            "human_compactness": partial(
+                hc_utils.calculate_human_compactness,
+                DURATION_DICT,
+                tract_dict,
+                duration_matrix,
+            ),
             "polsby_compactness": polsby_popper,
             "reock_compactness": partial(reock.reock, state_shp),
             # "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
-        }
+        },
     )
 
     print("Appending new data...")
 
     start_hc = timer()
-    human_compactness = new_partition['human_compactness']
+    human_compactness = new_partition["human_compactness"]
     end_hc = timer()
-    print(
-        f"Time taken to calculate human compactness: {end_hc - start_hc}")
+    print(f"Time taken to calculate human compactness: {end_hc - start_hc}")
 
     start_reock = timer()
-    reock_compactness, ch_compactness = new_partition['reock_compactness']
+    reock_compactness, ch_compactness = new_partition["reock_compactness"]
     end_reock = timer()
-    print(
-        f"Time taken to calculate reock compactness: {end_reock - start_reock}")
+    print(f"Time taken to calculate reock compactness: {end_reock - start_reock}")
 
     end = timer()
 
     print(f"Time taken for step {step}: {end-start}")
 
     return {
-            'spatial_diversity': new_partition['spatial_diversity'],
-            'polsby_compactness': new_partition['polsby_compactness'],
-            'human_compactness': human_compactness,
-            'reock_compactness': reock_compactness,
-            'convex_hull_compactness': ch_compactness,
+        "spatial_diversity": new_partition["spatial_diversity"],
+        "polsby_compactness": new_partition["polsby_compactness"],
+        "human_compactness": human_compactness,
+        "reock_compactness": reock_compactness,
+        "convex_hull_compactness": ch_compactness,
     }
 
 
-def calculate_metrics(new_assignment, datadir, newdir, graph,
-                      DURATION_DICT, tract_dict, duration_matrix, state_shp):
+def calculate_metrics(
+    new_assignment,
+    datadir,
+    newdir,
+    graph,
+    DURATION_DICT,
+    tract_dict,
+    duration_matrix,
+    state_shp,
+):
     data = []
 
     max_steps = 10000
@@ -235,23 +320,34 @@ def calculate_metrics(new_assignment, datadir, newdir, graph,
 
     for t in ts:
         print(f"Opening flips_{t}.json")
-        with open(datadir+f'flips_{t}.json') as f:
-            #dict_list = ast.literal_eval(f.read())
+        with open(datadir + f"flips_{t}.json") as f:
+            # dict_list = ast.literal_eval(f.read())
             dict_list = json.load(f)
             # Make new partition by updating dictionary
 
         for step in range(step_size):
-            step_data = calculate_metrics_step(step, step_size, dict_list,
-                                               graph, new_assignment,
-                                               DURATION_DICT, tract_dict,
-                                               duration_matrix, state_shp)
+            step_data = calculate_metrics_step(
+                step,
+                step_size,
+                dict_list,
+                graph,
+                new_assignment,
+                DURATION_DICT,
+                tract_dict,
+                duration_matrix,
+                state_shp,
+            )
             data.append(step_data)
             if step % save_step_size == save_step_size - 1:  # 999
                 print(
-                    f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json')
-                with open(newdir + "data" + str(t-step_size + step + + 1) + ".json", "w") as tf1:
+                    f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json'
+                )
+                with open(
+                    newdir + "data" + str(t - step_size + step + +1) + ".json", "w"
+                ) as tf1:
                     json.dump(data, tf1)
                     data = []
+
 
 if __name__ == "__main__":
     main_old()
