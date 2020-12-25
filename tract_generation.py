@@ -120,7 +120,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
 
     tract_dict, geoid_to_id_mapping = sd_utils.get_all_tract_geoids(state_code)
 
-    tract_dict = sd_utils.build_spatial_diversity_dict(tract_dict,
+    tract_dict = sd_utils.fill_tract_dict_with_spatial_diversity_info(tract_dict,
                                                        geoid_to_id_mapping, TRACT_SPATIAL_DIVERSITY_SCORES)
 
     # Reproject 2000 Census Tracts to use the same projection as downsampled tracts

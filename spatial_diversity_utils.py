@@ -24,7 +24,7 @@ class TractEntry(TypedDict):
     geoid: GEOID
     pop: Optional[int]
     pfs: List[Optional[float]]
-    vrps: Optional[List[PointID]]
+    vrps: List[PointID]
 
 TractDict = Mapping[tractid, TractEntry]
 GeoIDToIDMapping = Mapping[GEOID, tractid]
@@ -56,7 +56,7 @@ def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
                 geoid=node["GEOID"], 
                 pop=None, 
                 pfs=[],
-                vrps=None
+                vrps=[]
                 )
 
             geoid_to_id_mapping[node["GEOID"]] = node["id"]
@@ -64,8 +64,7 @@ def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
     # print(tract_dict)
     return (tract_dict, geoid_to_id_mapping)
 
-
-def build_spatial_diversity_dict(tract_dict: TractDict, 
+def fill_tract_dict_with_spatial_diversity_info(tract_dict: TractDict, 
                                  geoid_to_id_mapping: GeoIDToIDMapping, 
                                  tract_spatial_diversity_scores) -> TractDict:
     '''
@@ -219,4 +218,4 @@ def calc_spatial_diversity(partition):
 
 
 if __name__ == "__main__":
-    build_spatial_diversity_dict(*get_all_tract_geoids())
+    fill_tract_dict_with_spatial_diversity_info(*get_all_tract_geoids())
