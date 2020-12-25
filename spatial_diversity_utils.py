@@ -6,15 +6,40 @@ import json
 SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (
     0.1464, 0.1182, 0.101, 0.0775, 0.0501, 0.0399, 0.0389, 0.0366)
 
+PointID = int
+GEOID = str
+tractid = int
 
-def get_all_tract_geoids(state_code):
+from typing import TypedDict, Optional, Tuple
+from collections.abc import Mapping
+
+class TractEntry(TypedDict):
+    '''
+    A TractEntry gives information on a tract ID.
+    This includes its GEOID,
+    its population,
+    its principal factors (for use in spatial diversity calculations),
+    and the voter representative points (VRPs) that belong within it.
+    '''
+    geoid: GEOID
+    pop: Optional[int]
+    pfs: List[Optional[float]]
+    vrps: Optional[List[PointID]]
+
+TractDict = Mapping[tractid, TractEntry]
+GeoIDToIDMapping = Mapping[GEOID, tractid]
+
+class TractNotFoundError(Exception):
+    pass
+
+def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
     '''
     return a mapping of ID to {GEOID, pop, pfs}, as well as a reverse mapping of GEOID to ID
     '''
     # first read the starting plan json to get all the IDs
 
-    tract_dict = {}
-    geoid_to_id_mapping = {}
+    tract_dict: TractDict = {}
+    geoid_to_id_mapping: GeoIDToIDMapping = {}
 
     #starting_plan = f'/home/lieu/dev/human_compactness/Data_2000/Dual_Graphs/Tract2000_{state_code}.json'
     starting_plan = f'./Data_2000/Dual_Graphs/Tract2000_{state_code}.json'
@@ -27,17 +52,24 @@ def get_all_tract_geoids(state_code):
             #geoid_to_id_mapping[node["GEOID10"]] = node["id"]
 
             # Mapping for 2000 Census Tracts
-            tract_dict[node["id"]] = {
-                'geoid': node["GEOID"], 'pop': None, 'pfs': None}
+            tract_dict[node["id"]] = TractEntry(
+                geoid=node["GEOID"], 
+                pop=None, 
+                pfs=[],
+                vrps=None
+                )
+
             geoid_to_id_mapping[node["GEOID"]] = node["id"]
 
     # print(tract_dict)
     return (tract_dict, geoid_to_id_mapping)
 
 
-def build_spatial_diversity_dict(tract_dict, geoid_to_id_mapping, tract_spatial_diversity_scores):
+def build_spatial_diversity_dict(tract_dict: TractDict, 
+                                 geoid_to_id_mapping: GeoIDToIDMapping, 
+                                 tract_spatial_diversity_scores) -> TractDict:
     '''
-    Fills in values of spatial diversity according to the CSV
+    Fills in values of spatial diversity according to the tract_spatial_diversity CSV
     return a mapping of ID to {GEOID, [pf1, ... pf8], pop}
     '''
 
