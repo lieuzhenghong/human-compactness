@@ -220,7 +220,6 @@ def main_old():
 
         new_assignment = dict(initial_partition.assignment)
         # load graph and make initial partition
-        """
         calculate_metrics(
             new_assignment,
             datadir,
@@ -231,7 +230,6 @@ def main_old():
             duration_matrix,
             state_shp,
         )
-        """
 
 
 def calculate_metrics_step(
