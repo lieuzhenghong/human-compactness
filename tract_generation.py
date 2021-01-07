@@ -7,7 +7,7 @@ import os
 import spatial_diversity_utils as sd_utils
 import human_compactness_utils as hc_utils
 
-sys.path.append("/home/lieu/dev/geographically_sensitive_dislocation/10_code")
+sys.path.append("../geographically_sensitive_dislocation/10_code")
 
 import sample_rvps  # noqa: E402
 
@@ -60,7 +60,8 @@ def _read_and_process_vrp_shapefile(
     # the points have already been spatial joined previously; drop this so we can do further
     # spatial joins
     # Also drop GEOID, those are the GEOIDs of the districts (which we don't want)
-    points_downsampled = points_downsampled.drop(["index_right", "GEOID"], axis=1)
+    # points_downsampled = points_downsampled.drop(["index_right", "GEOID"], axis=1)
+    points_downsampled = points_downsampled.drop(["index_righ", "GEOID"], axis=1)
 
     return points_downsampled
 
