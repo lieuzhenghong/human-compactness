@@ -156,7 +156,10 @@ def main_old():
         datadir = f"./Tract_Ensembles/2000/{state_fips}/"
         # newdir = f"./20_intermediate_files/{state_fips}/"
         # newdir = f"./21_intermediate_files_rerun/{state_fips}/"
-        newdir = f"./22_intermediate_files_rerun_2/{state_fips}/"
+        # newdir = f"./22_intermediate_files_rerun_2/{state_fips}/"
+        newdir = f"./22_intermediate_files_rerun_old/{state_fips}/"
+        # newdir = f"./22_intermediate_files_rerun_new/{state_fips}/"
+        # newdir = f"./22_intermediate_files_rerun_new_proj_network_off/{state_fips}/"
 
         os.makedirs(os.path.dirname(newdir + "init"), exist_ok=True)
         with open(newdir + "init", "w") as f:

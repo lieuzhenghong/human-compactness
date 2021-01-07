@@ -18,8 +18,8 @@ PointID = int
 GEOID = str
 tractid = int
 
-from typing import TypedDict, Optional, Tuple, Mapping
-
+from typing import Optional, Tuple, Mapping
+from typing_extensions import TypedDict
 
 class TractEntry(TypedDict):
     """
