@@ -7,14 +7,7 @@ import os
 import spatial_diversity_utils as sd_utils
 import human_compactness_utils as hc_utils
 
-sys.path.append("../geographically_sensitive_dislocation/10_code")
-
-import sample_rvps  # noqa: E402
-
-# TODO find a way to bring sample_rvps (as well as other utility functions)
-# into a common library of some sort
-
-# Import utilities for getting GEOIDs and ids of all Census Tracts
+from pointwise_libs import sample_rvps
 
 
 def _read_and_process_vrp_shapefile(
@@ -56,7 +49,7 @@ def _read_and_process_vrp_shapefile(
 
     # Convert to WGS84
     # points_downsampled = points_downsampled.to_crs("EPSG:4326")
-    points_downsampled = points_downsampled.to_crs({"init":"epsg:4326"})
+    points_downsampled = points_downsampled.to_crs({"init": "epsg:4326"})
 
     # the points have already been spatial joined previously; drop this so we can do further
     # spatial joins
@@ -125,7 +118,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
 
     # Reproject 2000 Census Tracts to use the same projection as downsampled tracts
     # CENSUS_TRACTS = CENSUS_TRACTS.to_crs("EPSG:4326")
-    CENSUS_TRACTS = CENSUS_TRACTS.to_crs({"init":"epsg:4326"})
+    CENSUS_TRACTS = CENSUS_TRACTS.to_crs({"init": "epsg:4326"})
     # print(CENSUS_TRACTS)
 
     # Spatial join all points that lie in a Census Tract

@@ -7,11 +7,7 @@ import sys
 import seaborn as sns
 from plotnine import *
 
-
-# sys.path.append('/home/lieu/dev/geographically_sensitive_dislocation/10_code')
-sys.path.append("../geographically_sensitive_dislocation/10_code")
-
-import sample_rvps  # noqa: E402
+from pointwise_libs import sample_rvps
 
 
 def read_results_from_file(FILE_PATH):

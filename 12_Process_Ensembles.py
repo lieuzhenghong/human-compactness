@@ -114,9 +114,7 @@ sample_richness = 1000  # Number of VRPs to sample per district
 
 
 def read_duration_matrix(DM_PATH):
-    sys.path.append("../geographically_sensitive_dislocation/10_code")
-
-    import distance_matrix  # noqa: E402
+    from pointwise_libs import distance_matrix
 
     duration_matrix = distance_matrix.read_duration_matrix_from_file(DM_PATH)
     return duration_matrix
