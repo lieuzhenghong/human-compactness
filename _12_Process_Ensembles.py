@@ -139,6 +139,11 @@ def _create_new_dir_(state_fips: str) -> str:
 
 
 def _init_(state_fips: str):
+    """
+    Generates a bunch of stuff needed for the various compactness functions.
+    Returns the Gerrychain Graph and 
+    partial functions for human compactness and reock compactness.
+    """
     state_name = state_names[state_fips].lower()
     DD_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json"
     DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
