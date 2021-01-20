@@ -30,6 +30,7 @@ jobs:
       - name: Run a multi-line script
         run: |
           conda config --add channels conda-forge 
+          conda config --set channel_priority strict 
           conda create --name old-human-compactness --file requirements_old.txt
           conda activate old-human-compactness
           python -m pytest test_process_ensembles.py -vv
