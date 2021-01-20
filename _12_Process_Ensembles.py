@@ -120,7 +120,7 @@ def read_duration_matrix(DM_PATH):
     return duration_matrix
 
 
-def _create_new_dir_(state_fips: str) -> None:
+def _create_new_dir_(state_fips: str) -> str:
     """
     Creates a new directory to put the result files
     """
@@ -134,6 +134,72 @@ def _create_new_dir_(state_fips: str) -> None:
     os.makedirs(os.path.dirname(newdir + "init"), exist_ok=True)
     with open(newdir + "init", "w") as f:
         f.write("Created Folder")
+
+    return newdir
+
+
+def _init_(state_fips: str):
+    state_name = state_names[state_fips].lower()
+    DD_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json"
+    DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
+    DM_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx"
+    SHAPEFILE_PATH = f"./Data_2000/Shapefiles/Tract2000_{state_fips}.shp"
+    datadir = f"./Tract_Ensembles/2000/{state_fips}/"
+
+    print("Reading tract shapefile into memory...")
+    state_shp = gpd.read_file(SHAPEFILE_PATH)
+
+    print("Reading KNN duration matrix file into memory...")
+    duration_matrix = read_duration_matrix(DM_PATH)
+
+    graph = Graph.from_json(datadir + "starting_plan.json")
+
+    # add population and spatial diversity data to the graph
+    # tract_dict = spatial_diversity.build_spatial_diversity_dict(
+    #    *spatial_diversity.get_all_tract_geoids())
+
+    tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(state_fips)
+
+    tract_dict = tract_generation.generate_tracts_with_vrps(
+        state_fips, state_name, num_districts[state_fips], sample_richness
+    )
+
+    # Preprocess the state tract shapefile to include external points
+    state_shp = reock.preprocess_dataframe(state_shp, geoid_to_id_mapping)
+
+    human_compactness_function = partial(
+        hc_utils.calculate_human_compactness,
+        DURATION_DICT,
+        tract_dict,
+        duration_matrix,
+    )
+
+    reock_compactness_function = partial(reock.reock, state_shp)
+
+    # just for reference
+    num_Nones = 0
+    for node in graph.nodes():
+
+        if tract_dict[node]["pfs"] is None:
+            num_Nones += 1
+
+        graph.nodes[node]["pfs"] = tract_dict[node]["pfs"]
+        graph.nodes[node]["pop"] = tract_dict[node]["pop"]
+        # print(graph.nodes[node])
+
+    # Checking the number of empty tracts (tracts without VRPs)
+    empty_tracts = []
+
+    for tract_id in tract_dict:
+        if len(tract_dict[tract_id]["vrps"]) == 0:
+            empty_tracts.append(tract_id)
+
+    print(f"Number of empty tracts: {len(empty_tracts)}")
+    return (
+        graph,
+        human_compactness_function,
+        reock_compactness_function,
+    )
 
 
 def main_old():
@@ -155,58 +221,12 @@ def main_old():
     11. Run 10,000 cycles, calculate all metrics
     """
     for state_fips in fips_list:
-        _create_new_dir_(state_fips)
-
-        state_name = state_names[state_fips].lower()
-        DD_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json"
-        DM_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx"
-        DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
-        SHAPEFILE_PATH = f"./Data_2000/Shapefiles/Tract2000_{state_fips}.shp"
-
-        print("Reading tract shapefile into memory...")
-        state_shp = gpd.read_file(SHAPEFILE_PATH)
-
-        print("Reading KNN duration matrix file into memory...")
-        duration_matrix = read_duration_matrix(DM_PATH)
-
+        newdir = _create_new_dir_(state_fips)
         datadir = f"./Tract_Ensembles/2000/{state_fips}/"
 
-        graph = Graph.from_json(datadir + "starting_plan.json")
-
-        # add population and spatial diversity data to the graph
-        # tract_dict = spatial_diversity.build_spatial_diversity_dict(
-        #    *spatial_diversity.get_all_tract_geoids())
-
-        tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(
+        (graph, human_compactness_function, reock_compactness_function,) = _init_(
             state_fips
         )
-
-        tract_dict = tract_generation.generate_tracts_with_vrps(
-            state_fips, state_name, num_districts[state_fips], sample_richness
-        )
-
-        # Preprocess the state tract shapefile to include external points
-        state_shp = reock.preprocess_dataframe(state_shp, geoid_to_id_mapping)
-
-        # just for reference
-        num_Nones = 0
-        for node in graph.nodes():
-
-            if tract_dict[node]["pfs"] is None:
-                num_Nones += 1
-
-            graph.nodes[node]["pfs"] = tract_dict[node]["pfs"]
-            graph.nodes[node]["pop"] = tract_dict[node]["pop"]
-            # print(graph.nodes[node])
-
-        # Checking the number of empty tracts (tracts without VRPs)
-        empty_tracts = []
-
-        for tract_id in tract_dict:
-            if len(tract_dict[tract_id]["vrps"]) == 0:
-                empty_tracts.append(tract_id)
-
-        print(f"Number of empty tracts: {len(empty_tracts)}")
 
         initial_partition = GeographicPartition(
             graph,
@@ -215,15 +235,8 @@ def main_old():
                 "cut_edges": cut_edges,
                 "population": Tally("population", alias="population"),
                 "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-                "human_compactness": partial(
-                    hc_utils.calculate_human_compactness,
-                    DURATION_DICT,
-                    tract_dict,
-                    duration_matrix,
-                ),
-                "polsby_compactness": polsby_popper,
-                "reock_compactness": partial(reock.reock, state_shp),
-                # "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
+                "human_compactness": human_compactness_function,
+                "reock_compactness": reock_compactness_function,
             },
         )
 
@@ -234,26 +247,20 @@ def main_old():
             datadir,
             newdir,
             graph,
-            DURATION_DICT,
-            tract_dict,
-            duration_matrix,
-            state_shp,
+            human_compactness_function,
+            reock_compactness_function,
         )
 
 
 def calculate_metrics_step(
     step,
-    step_size,
     dict_list,
     graph,
     new_assignment,
-    DURATION_DICT,
-    tract_dict,
-    duration_matrix,
-    state_shp,
+    human_compactness_function,
+    reock_compactness_function,
 ):
-    print(f"Step: {step}. Step Size: {step_size}")
-
+    print(f"Step: {step}")
     start = timer()
 
     changes_this_step = dict_list[step].items()
@@ -270,15 +277,9 @@ def calculate_metrics_step(
             "cut_edges": cut_edges,
             "population": Tally("population", alias="population"),
             "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-            "human_compactness": partial(
-                hc_utils.calculate_human_compactness,
-                DURATION_DICT,
-                tract_dict,
-                duration_matrix,
-            ),
+            "human_compactness": human_compactness_function,
             "polsby_compactness": polsby_popper,
-            "reock_compactness": partial(reock.reock, state_shp),
-            # "reock_compactness": partial(reock.compare_reock, state_shp, geoid_to_id_mapping),
+            "reock_compactness": reock_compactness_function,
         },
     )
 
@@ -312,10 +313,8 @@ def calculate_metrics(
     datadir,
     newdir,
     graph,
-    DURATION_DICT,
-    tract_dict,
-    duration_matrix,
-    state_shp,
+    human_compactness_function,
+    reock_compactness_function,
 ):
     data = []
 
@@ -328,21 +327,16 @@ def calculate_metrics(
     for t in ts:
         print(f"Opening flips_{t}.json")
         with open(datadir + f"flips_{t}.json") as f:
-            # dict_list = ast.literal_eval(f.read())
             dict_list = json.load(f)
-            # Make new partition by updating dictionary
 
         for step in range(step_size):
             step_data = calculate_metrics_step(
                 step,
-                step_size,
                 dict_list,
                 graph,
                 new_assignment,
-                DURATION_DICT,
-                tract_dict,
-                duration_matrix,
-                state_shp,
+                human_compactness_function,
+                reock_compactness_function,
             )
             data.append(step_data)
             if step % save_step_size == save_step_size - 1:  # 999
