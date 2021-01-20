@@ -120,6 +120,22 @@ def read_duration_matrix(DM_PATH):
     return duration_matrix
 
 
+def _create_new_dir_(state_fips: str) -> None:
+    """
+    Creates a new directory to put the result files
+    """
+    # newdir = f"./20_intermediate_files/{state_fips}/"
+    # newdir = f"./21_intermediate_files_rerun/{state_fips}/"
+    # newdir = f"./22_intermediate_files_rerun_2/{state_fips}/"
+    newdir = f"./22_intermediate_files_rerun_old/{state_fips}/"
+    # newdir = f"./22_intermediate_files_rerun_new/{state_fips}/"
+    # newdir = f"./22_intermediate_files_rerun_new_proj_network_off/{state_fips}/"
+
+    os.makedirs(os.path.dirname(newdir + "init"), exist_ok=True)
+    with open(newdir + "init", "w") as f:
+        f.write("Created Folder")
+
+
 def main_old():
     """
     1. Read tract shapefile into memoru
@@ -139,6 +155,8 @@ def main_old():
     11. Run 10,000 cycles, calculate all metrics
     """
     for state_fips in fips_list:
+        _create_new_dir_(state_fips)
+
         state_name = state_names[state_fips].lower()
         DD_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json"
         DM_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx"
@@ -152,16 +170,6 @@ def main_old():
         duration_matrix = read_duration_matrix(DM_PATH)
 
         datadir = f"./Tract_Ensembles/2000/{state_fips}/"
-        # newdir = f"./20_intermediate_files/{state_fips}/"
-        # newdir = f"./21_intermediate_files_rerun/{state_fips}/"
-        # newdir = f"./22_intermediate_files_rerun_2/{state_fips}/"
-        newdir = f"./22_intermediate_files_rerun_old/{state_fips}/"
-        # newdir = f"./22_intermediate_files_rerun_new/{state_fips}/"
-        # newdir = f"./22_intermediate_files_rerun_new_proj_network_off/{state_fips}/"
-
-        os.makedirs(os.path.dirname(newdir + "init"), exist_ok=True)
-        with open(newdir + "init", "w") as f:
-            f.write("Created Folder")
 
         graph = Graph.from_json(datadir + "starting_plan.json")
 
