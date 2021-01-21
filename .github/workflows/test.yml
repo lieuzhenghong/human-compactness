@@ -33,7 +33,7 @@ jobs:
           conda config --add channels conda-forge 
           conda config --set pip_interop_enabled True
           conda create --name old-human-compactness --file requirements_old.txt
-          conda init
+          conda init bash
           conda activate old-human-compactness
           pip install pointwise_libs==0.0.6
           python -m pytest test_process_ensembles.py -vv
