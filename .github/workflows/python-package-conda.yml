@@ -27,7 +27,6 @@ jobs:
       run: |
           conda init bash
           source $CONDA/etc/profile.d/conda.sh
-          conda activate old-human-compactness
     - name: Test with pytest
       run: |
           conda info --envs
