@@ -26,9 +26,9 @@ jobs:
     - name: Activate new environment
       run: |
           conda init bash
-          source $CONDA/etc/profile.d/conda.sh
     - name: Test with pytest
       run: |
           conda info --envs
+          source $CONDA/etc/profile.d/conda.sh
           conda activate old-human-compactness
           python -m pytest test_process_ensembles.py -vv
