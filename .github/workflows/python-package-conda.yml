@@ -31,4 +31,5 @@ jobs:
           conda info --envs
           source $CONDA/etc/profile.d/conda.sh
           conda activate old-human-compactness
+          git lfs pull --include "test/*"
           python -m pytest test_process_ensembles.py -vv
