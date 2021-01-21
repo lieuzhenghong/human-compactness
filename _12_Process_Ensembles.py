@@ -1,24 +1,17 @@
 import os
-import sys
 import json
 from functools import partial
 
 import geopandas as gpd
-import matplotlib
-import matplotlib.pyplot as plt
-import numpy as np
-from maup import assign
 
 import human_compactness_utils as hc_utils
 import spatial_diversity_utils as spatial_diversity
 import tract_generation
 import reock as reock
-from gerrychain import Election, GeographicPartition, Graph, Partition
+from gerrychain import GeographicPartition, Graph
 from gerrychain.metrics import polsby_popper
 from gerrychain.updaters import Tally, cut_edges
 from timeit import default_timer as timer
-
-matplotlib.use("Agg")
 
 
 state_names = {
