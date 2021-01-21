@@ -29,6 +29,8 @@ jobs:
           source /home/runner/.bashrc
     - name: Activate new environment
       run: |
+          conda info | grep -i 'base environment'
+          source $CONDA/anaconda3/etc/profile.d/conda.sh
           conda activate old-human-compactness
     - name: Pip install pointwise libs
       run: |
