@@ -28,13 +28,8 @@ jobs:
           conda init bash
     - name: Activate new environment
       run: |
-          conda info | grep -i 'base environment'
           source $CONDA/etc/profile.d/conda.sh
           conda activate old-human-compactness
-    - name: Pip install pointwise libs
-      run: |
-          pip install pointwise_libs==0.0.6
     - name: Test with pytest
       run: |
-          pip install -U pytest
           python -m pytest test_process_ensembles.py -vv
