@@ -23,13 +23,8 @@ jobs:
           conda config --add channels conda-forge 
           conda config --set pip_interop_enabled True
           conda env create -f environment.yml
-    - name: Initialise new conda environment
-      run: |
-          conda init bash
     - name: Activate new environment
       run: |
-          conda info | grep -i 'base environment'
-          source $CONDA/etc/profile.d/conda.sh
           conda activate old-human-compactness
     - name: Pip install pointwise libs
       run: |
