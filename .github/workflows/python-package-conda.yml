@@ -18,6 +18,11 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
+    - name: Git LFS install and pull
+      run: |
+          git lfs install
+          git lfs pull --include "test/*"
+          ls -lh "test/test_data/"
     - name: Install dependencies and create new environment
       run: |
           conda config --add channels conda-forge 
@@ -31,6 +36,4 @@ jobs:
           conda info --envs
           source $CONDA/etc/profile.d/conda.sh
           conda activate old-human-compactness
-          git lfs install
-          git lfs pull --include "test/*"
           python -m pytest test_process_ensembles.py -vv
