@@ -30,4 +30,6 @@ jobs:
           conda activate old-human-compactness
     - name: Test with pytest
       run: |
+          conda info --envs
+          conda activate old-human-compactness
           python -m pytest test_process_ensembles.py -vv
