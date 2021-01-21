@@ -16,10 +16,10 @@ def test_process_ensemble_main():
     import json
 
     state_fips = "09"
-    newdir = f"./22_intermediate_files_rerun_old/{state_fips}/"
+    test_json = f"./test/test_data/data100.json"
     datadir = f"./Tract_Ensembles/2000/{state_fips}/"
 
-    with open(newdir + "data100.json", "r") as f1:
+    with open(test_json, "r") as f1:
         data = json.load(f1)
 
         (
@@ -52,6 +52,10 @@ def test_process_ensemble_main():
                     human_compactness_function,
                     reock_compactness_function,
                 )
-                print(stepdata, data[step])
+
+                print(json.loads(json.dumps(stepdata)))
+                print("\n")
+                print(data[step])
+
                 assert json.loads(json.dumps(stepdata)) == data[step]
 
