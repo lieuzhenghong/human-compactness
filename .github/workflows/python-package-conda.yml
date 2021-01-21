@@ -26,7 +26,6 @@ jobs:
     - name: Initialise new conda environment
       run: |
           conda init bash
-          source /home/runner/.bashrc
     - name: Activate new environment
       run: |
           conda info | grep -i 'base environment'
@@ -37,5 +36,5 @@ jobs:
           pip install pointwise_libs==0.0.6
     - name: Test with pytest
       run: |
-          pip install pointwise_libs==0.0.6
+          pip install -U pytest
           python -m pytest test_process_ensembles.py -vv
