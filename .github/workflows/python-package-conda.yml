@@ -21,7 +21,7 @@ jobs:
     - name: Git LFS install and pull
       run: |
           git lfs install
-          git lfs pull --include "test/*"
+          git lfs pull --include "test/test_data/data100.json"
           ls -lh "test/test_data/"
     - name: Install dependencies and create new environment
       run: |
