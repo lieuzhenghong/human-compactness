@@ -22,7 +22,7 @@ jobs:
       run: |
           conda config --add channels conda-forge 
           conda config --set pip_interop_enabled True
-          conda create --name old-human-compactness --file requirements_old.txt
+          conda env create -f environment.yml
     - name: Initialise new conda environment
       run: |
           conda init bash
