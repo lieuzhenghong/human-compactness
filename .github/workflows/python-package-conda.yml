@@ -25,7 +25,7 @@ jobs:
           conda env create -f environment.yml
     - name: Activate new environment
       run: |
-          conda init --bash
+          conda init bash
           source $CONDA/etc/profile.d/conda.sh
           conda activate old-human-compactness
     - name: Test with pytest
