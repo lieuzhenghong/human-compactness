@@ -26,6 +26,7 @@ jobs:
     - name: Initialise new conda environment
       run: |
           conda init bash
+          source /home/runner/.bashrc
     - name: Activate new environment
       run: |
           conda activate old-human-compactness
