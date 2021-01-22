@@ -1,6 +1,24 @@
 import json
 from timeit import default_timer as timer
 
+from typing import List, Dict
+from typing_extensions import TypedDict
+from collections import defaultdict
+
+# TODO check these types!!!
+DistrictID = int
+TractID = int
+GeoID = str
+PointID = int
+
+
+class TractEntry(TypedDict):
+    geoid: GeoID
+    pop: int
+    pfs: List[float]  # Principal factors (for PCA)
+    vrps: List[PointID]
+
+
 def duration_between(tract_id, other_id, duration_dict):
     """Gets the sum of driving durations between one tract and another"""
 
@@ -20,23 +38,6 @@ def duration_between(tract_id, other_id, duration_dict):
         return duration_dict[tract_id][other_id]
 
 
-from typing import List, Dict
-from typing_extensions import TypedDict
-
-# TODO check these types!!!
-DistrictID = int
-TractID = int
-GeoID = str
-PointID = int
-
-
-class TractEntry(TypedDict):
-    geoid: GeoID
-    pop: int
-    pfs: List[float]  # Principal factors (for PCA)
-    vrps: List[PointID]
-
-
 def generate_tract_matrix() -> List[List[int]]:
     """
     TODO
@@ -52,7 +53,7 @@ def calculate_knn_of_all_points_in_district_new(
     tract_duration_matrix: List[List[int]],
 ) -> float:
     """
-    TODO 
+    TODO
     Calculate the sum of travel durations for every point
     to its K-nearest neighbours in the district.
     """
@@ -68,9 +69,6 @@ def calculate_knn_of_all_points_in_district_new(
     return sum_of_all_knns_in_district
 
 
-from collections import defaultdict
-
-
 def _calculate_knn_of_points(dmx, point_ids: List[PointID]) -> float:
     """
     Helper function to look up the KNN of points
@@ -78,6 +76,7 @@ def _calculate_knn_of_points(dmx, point_ids: List[PointID]) -> float:
     K = len(point_ids)
     assert K < 3000
     return sum([dmx[point][K] for point in point_ids])
+
 
 def calculate_knn_of_all_points_in_district(
     dmx,
@@ -88,11 +87,11 @@ def calculate_knn_of_all_points_in_district(
     """
     Calculates the sum of driving durations
     from each point in each district
-    to its K nearest neighbours, 
+    to its K nearest neighbours,
     where K is the number of points in that district.
 
     Returns a Dict[DistrictID, float]
-    where `float` is the 
+    where `float` is the
     sum of all KNN-driving durations of all points in that district.
 
     1. Creates a District -> List[PointID] mapping.
@@ -106,21 +105,23 @@ def calculate_knn_of_all_points_in_district(
     for tract_id in tract_to_district_mapping:
         district_id = tract_to_district_mapping[tract_id]
         points_in_each_district[district_id] += tract_dict[tract_id]["vrps"]
-    
+
     start_knn = timer()
     for (district_id, point_ids) in points_in_each_district.items():
-        sum_of_knn_distances_in_each_district[district_id] = _calculate_knn_of_points(dmx, point_ids)
+        sum_of_knn_distances_in_each_district[district_id] = _calculate_knn_of_points(
+            dmx, point_ids
+        )
     end_knn = timer()
-    print(f"Time taken to calculate KNN for all points in current district assignment: {end_knn - start_knn}")
+    print(
+        f"Time taken to calculate KNN for all points in current district assignment: {end_knn - start_knn}"
+    )
 
     return sum_of_knn_distances_in_each_district
 
 
 def calculate_human_compactness(
-    duration_dict, 
-    tract_dict: Dict[TractID, TractEntry], 
-    dmx, 
-    partition):
+    duration_dict, tract_dict: Dict[TractID, TractEntry], dmx, partition
+):
     """
     Given the Census Tract duration dict and an assignment from IDs,
     calculate the human compactness of every district in the plan
@@ -205,7 +206,9 @@ def calculate_human_compactness(
         )
 
     end = timer()
-    print(f"Time taken to get pairwise durations between all points in the district: {end-start}")
+    print(
+        f"Time taken to get pairwise durations between all points in the district: {end-start}"
+    )
 
     # Now we've got the total durations, divide by the sum of all
     # the knns. We have the sums by tract: all that remains is to
@@ -336,4 +339,3 @@ def convert_point_distances_to_tract_distances(pttm, DM_PATH, SAVE_FILE_TO):
 def read_tract_duration_json(DD_PATH):
     with open(DD_PATH) as f:
         return json.load(f)
-
