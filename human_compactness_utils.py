@@ -12,6 +12,7 @@ TractID = int
 TractIDStr = str
 GeoID = str
 PointID = int
+DurationDict = Dict[TractIDStr, Dict[TractIDStr, float]]
 
 
 class TractEntry(TypedDict):
@@ -19,29 +20,6 @@ class TractEntry(TypedDict):
     pop: int
     pfs: List[float]  # Principal factors (for PCA)
     vrps: List[PointID]
-
-
-def duration_between(
-    tract_id: TractID,
-    other_id: TractID,
-    duration_dict: Dict[TractIDStr, Dict[TractIDStr, float]],
-):
-    """Gets the sum of driving durations between one tract and another"""
-
-    # print(f'Getting the driving duration between {tract_id} and {other_id}')
-
-    tract_id = str(tract_id)
-    other_id = str(other_id)
-
-    if tract_id not in duration_dict:
-        # Don't raise value error. Some tracts have no points in them
-        # print(f'Tract_id {tract_id} not in duration dictionary')
-        return 0
-    elif other_id not in duration_dict[tract_id]:
-        # print(f'{tract_id} doesn\'t have {other_id} in its duration dictionary')
-        return 0
-    else:
-        return duration_dict[tract_id][other_id]
 
 
 def _calculate_knn_of_points(dmx, point_ids: List[PointID]) -> float:
@@ -93,7 +71,21 @@ def calculate_knn_of_all_points_in_district(
     return sum_of_knn_distances_in_each_district
 
 
-def _calculate_pairwise_durations_(partition, duration_dict, tract_dict):
+def duration_between(tract_id: TractID, other_id: TractID, duration_dict: DurationDict):
+    """Gets the sum of driving durations between one tract and another"""
+
+    # print(f'Getting the driving duration between {tract_id} and {other_id}')
+    s_tract_id = str(tract_id)
+    s_other_id = str(other_id)
+    # Note we can't simply return duration_dict[s_tract_id][s_other_id]
+    # because of the possibility of zeros: some tracts have no points in them
+    row = duration_dict.get(s_tract_id, None)
+    if row:
+        return row.get(s_other_id, 0)
+    return 0
+
+
+def _calculate_pairwise_durations_(partition, duration_dict: DurationDict, tract_dict):
     total_durations: Dict[DistrictID, float] = defaultdict(float)
     tracts_in_districts: Dict[DistrictID, List[TractID]] = defaultdict(list)
 
@@ -150,7 +142,7 @@ def _calculate_pairwise_durations_(partition, duration_dict, tract_dict):
 
 
 def calculate_human_compactness(
-    duration_dict: Dict[TractIDStr, Dict[TractIDStr, float]],
+    duration_dict: DurationDict,
     tract_dict: Dict[TractID, TractEntry],
     dmx,
     partition: GeographicPartition,
