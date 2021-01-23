@@ -2,12 +2,14 @@ import json
 from timeit import default_timer as timer
 
 from typing import List, Dict
+from gerrychain.partition.geographic import GeographicPartition
 from typing_extensions import TypedDict
 from collections import defaultdict
 
 # TODO check these types!!!
 DistrictID = int
 TractID = int
+TractIDStr = str
 GeoID = str
 PointID = int
 
@@ -19,7 +21,11 @@ class TractEntry(TypedDict):
     vrps: List[PointID]
 
 
-def duration_between(tract_id, other_id, duration_dict):
+def duration_between(
+    tract_id: TractID,
+    other_id: TractID,
+    duration_dict: Dict[TractIDStr, Dict[TractIDStr, float]],
+):
     """Gets the sum of driving durations between one tract and another"""
 
     # print(f'Getting the driving duration between {tract_id} and {other_id}')
@@ -80,7 +86,6 @@ def _calculate_knn_of_points(dmx, point_ids: List[PointID]) -> float:
 
 def calculate_knn_of_all_points_in_district(
     dmx,
-    all_districts,
     tract_dict: Dict[TractID, TractEntry],
     tract_to_district_mapping: Dict[TractID, DistrictID],
 ) -> Dict[DistrictID, float]:
@@ -119,32 +124,71 @@ def calculate_knn_of_all_points_in_district(
     return sum_of_knn_distances_in_each_district
 
 
+def _calculate_pairwise_durations_(partition, duration_dict, tract_dict):
+    total_durations: Dict[DistrictID, float] = defaultdict(float)
+    tracts_in_districts: Dict[DistrictID, List[TractID]] = defaultdict(list)
+
+    start = timer()
+    print(f"Number of tracts: {len(partition.graph.nodes)}")
+    print(f"Type of tracts: {type(partition.graph.nodes)}")
+    print(f"Min tract ID: {min(partition.graph.nodes)}")
+    print(f"Max tract ID: {max(partition.graph.nodes)}")
+
+    print(f"Size of duration dict: {len(duration_dict)}")
+    print(f"Size of tract dict: {len(tract_dict)}")
+
+    for tract_id in partition.graph.nodes:
+        district_id = partition.assignment[tract_id]
+        district_tracts = tracts_in_districts[district_id]
+
+        # Append each tract to the list of tracts that have been assigned to district
+        district_tracts.append(tract_id)
+        # Add to the total duration sum. Notice we append to
+        # tracts_in_districts first:
+        # this is so that we get the sum of
+        # driving distances from a tract to itself as well, which makes sense
+        # print(f"Getting pairwise distances between {tract_id} and {district_tracts}")
+
+        result = 0
+        for other_tract_id in district_tracts:
+            result += duration_between(tract_id, other_tract_id, duration_dict)
+            result += duration_between(other_tract_id, tract_id, duration_dict)
+        total_durations[district_id] += result
+
+        """
+        for other_tract_id in district_tracts:
+            total_durations[district_id] += duration_between(
+                tract_id, other_tract_id, duration_dict
+            )
+            total_durations[district_id] += duration_between(
+                other_tract_id, tract_id, duration_dict
+            )
+        """
+
+        # We've double-counted the last self-distance: subtract away
+        assert len(district_tracts)
+        last_tract_id = district_tracts[-1]
+        assert tract_id == last_tract_id
+        total_durations[district_id] -= duration_between(
+            last_tract_id, tract_id, duration_dict
+        )
+
+    end = timer()
+    print(
+        f"Time taken to get pairwise durations between all points in the district: {end-start}"
+    )
+    return total_durations
+
+
 def calculate_human_compactness(
-    duration_dict, tract_dict: Dict[TractID, TractEntry], dmx, partition
-):
+    duration_dict: Dict[TractIDStr, Dict[TractIDStr, float]],
+    tract_dict: Dict[TractID, TractEntry],
+    dmx,
+    partition: GeographicPartition,
+) -> Dict[DistrictID, float]:
     """
     Given the Census Tract duration dict and an assignment from IDs,
     calculate the human compactness of every district in the plan
-
-    The duration dict is in the following format:
-    {
-        tractid: {tractid: distance, ... },
-        tractid: {tractid: distance, ...},
-        ...
-    }
-    tract_dict:
-    {
-        tract_id: {
-            'geoid': GEOID,
-            'pop': Int,
-            'pfs': List[Float],
-            'vrps': List[PointIDs]
-        }
-    }
-
-    DMX:
-
-    Partition:
 
     Maintain a total sum as a tally
     Maintain an array of tracts in each district
@@ -154,60 +198,8 @@ def calculate_human_compactness(
     compactness sum.
     """
 
-    # O(n^2) runtime
-
-    total_durations = {}
-    total_knn_dds = {}
-    tracts_in_districts = {}
-    all_districts = set([])
-
-    hc_scores = {}
-
-    start = timer()
-
-    for tract_id in partition.graph.nodes:
-        district_id = partition.assignment[tract_id]
-        all_districts.add(district_id)
-
-        # Fill up dictionary of tracts in a specific district
-        if district_id not in tracts_in_districts:
-            tracts_in_districts[district_id] = [tract_id]
-        else:
-            tracts_in_districts[district_id].append(tract_id)
-
-        # Add to the total duration sum. Notice we append to
-        # tracts_in_districts first: this is so that we get the sum of driving
-        # distances from a tract to itself as well, which makes sense
-
-        # print(
-        #    f"Getting pairwise distances between {tract_id} and {tracts_in_districts[district_id]}")
-
-        for other_tract_id in tracts_in_districts[district_id]:
-            if district_id not in total_durations:
-                total_durations[district_id] = duration_between(
-                    tract_id, other_tract_id, duration_dict
-                )
-                total_durations[district_id] += duration_between(
-                    other_tract_id, tract_id, duration_dict
-                )
-            else:
-                total_durations[district_id] += duration_between(
-                    tract_id, other_tract_id, duration_dict
-                )
-                total_durations[district_id] += duration_between(
-                    other_tract_id, tract_id, duration_dict
-                )
-
-        # We've double-counted the last self-distance: subtract away
-
-        assert tract_id == other_tract_id
-        total_durations[district_id] -= duration_between(
-            other_tract_id, tract_id, duration_dict
-        )
-
-    end = timer()
-    print(
-        f"Time taken to get pairwise durations between all points in the district: {end-start}"
+    total_durations = _calculate_pairwise_durations_(
+        partition, duration_dict, tract_dict
     )
 
     # Now we've got the total durations, divide by the sum of all
@@ -216,7 +208,7 @@ def calculate_human_compactness(
     start = timer()
 
     total_knn_dds = calculate_knn_of_all_points_in_district(
-        dmx, all_districts, tract_dict, partition.assignment
+        dmx, tract_dict, partition.assignment
     )
 
     end = timer()
@@ -231,8 +223,17 @@ def calculate_human_compactness(
     # print(f"Total KNN DDs: {total_knn_dds}")
     # print(f"Total DDs in district: {total_durations}")
 
+    # Get all districts
     start = timer()
+    all_districts = set([])
+    for tract_id in partition.graph.nodes:
+        district_id = partition.assignment[tract_id]
+        all_districts.add(district_id)
+    end = timer()
+    print(f"Time taken to fill up all_districts: {end-start}")
 
+    start = timer()
+    hc_scores: Dict[DistrictID, float] = defaultdict(float)
     for district_id in all_districts:
         hc_scores[district_id] = (
             total_knn_dds[district_id] / total_durations[district_id]
