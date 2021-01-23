@@ -1,10 +1,10 @@
 import json
+import numpy as np
 from timeit import default_timer as timer
 
 from typing import List, Dict
 from gerrychain.partition.geographic import GeographicPartition
-from numpy.matrixlib.defmatrix import matrix
-from typing_extensions import TypedDict
+from typing_extensions import TypedDict, DefaultDict
 from collections import defaultdict
 
 # TODO check these types!!!
@@ -87,8 +87,15 @@ def duration_between(tract_id: TractID, other_id: TractID, duration_dict: Durati
 
 
 def _calculate_pairwise_durations_(partition, duration_dict: DurationDict, tract_dict):
-    total_durations: Dict[DistrictID, float] = defaultdict(float)
-    tracts_in_districts: Dict[DistrictID, List[TractID]] = defaultdict(list)
+    """
+    Helper function that calculates the sum of driving durations
+    from each point in each district
+    to all the other points in the district.
+
+    Returns a DefaultDict[DistrictID, float]
+    """
+    total_durations: DefaultDict[DistrictID, float] = defaultdict(float)
+    tracts_in_districts: DefaultDict[DistrictID, List[TractID]] = defaultdict(list)
 
     print(f"Number of tracts: {len(partition.graph.nodes)}")
     print(f"Type of tracts: {type(partition.graph.nodes)}")
@@ -117,6 +124,7 @@ def _calculate_pairwise_durations_(partition, duration_dict: DurationDict, tract
         total_durations[district_id] += result
 
         """
+        # Using this guarantees  the exact results we got in the old version of HC 
         for other_tract_id in district_tracts:
             total_durations[district_id] += duration_between(
                 tract_id, other_tract_id, duration_dict
@@ -140,19 +148,25 @@ def _calculate_pairwise_durations_(partition, duration_dict: DurationDict, tract
 def _generate_tractwise_dd_matrix_(
     tract_list: List[TractID], duration_dict: DurationDict
 ):
-    import numpy as np
+    """
+    Helper function that takes a list of TractIDs
+    and a DurationDict and forms a NxN matrix
+    where M[i][j] is the driving duration from
+    TractID of id a, and TractID of id b
+    where i = lookup_table[a] and j = lookup_table[b].
+
+    Should be used with _form_tract_matrix_dd_lookup_table
+    """
 
     num_tracts = len(tract_list)
 
     start = timer()
-    print(num_tracts)
     M = [[] for i in range(num_tracts)]
     for i in range(num_tracts):
         for j in range(num_tracts):
             M[i].append(duration_between(tract_list[i], tract_list[j], duration_dict))
 
     M = np.array(M)
-    print(M)
     end = timer()
     print(f"Time taken to generate tractwise duration matrix: {end-start}")
 
@@ -160,6 +174,9 @@ def _generate_tractwise_dd_matrix_(
 
 
 def _form_tract_matrix_dd_lookup_table_(partition: GeographicPartition):
+    """
+    Helper function that takes in 
+    """
     tract_list: List[TractID] = list(partition.graph.nodes)
     assert sorted(tract_list) == tract_list
 
@@ -172,10 +189,14 @@ def _form_tract_matrix_dd_lookup_table_(partition: GeographicPartition):
 
 
 def _calculate_pairwise_durations_(
-    partition, duration_dict: DurationDict, tract_dict: Dict[TractID, TractEntry], M,
+    partition,
+    duration_dict: DurationDict,
+    tract_dict: Dict[TractID, TractEntry],
+    M: np.ndarray,
 ) -> Dict[DistrictID, float]:
     """
-    Optimised function to calculate pairwise durations
+    Optimised function to calculate sum of all KNN pairwise durations
+    of all points inside each district.
 
     1. Make the lookup table
     2. Make the numpy matrix from DurationDict
@@ -198,17 +219,12 @@ def _calculate_pairwise_durations_(
         district_id = partition.assignment[tract_id]
         tracts_in_districts[district_id].append(tract_id)
 
-    import numpy as np
-
     start = timer()
     for district_id, tractIDs in tracts_in_districts.items():
+        # M is a NxN matrix
         matrixTractIDs = [lookup_table[tractID] for tractID in tractIDs]
-        print(len(matrixTractIDs))  # Should be 166
         A = M[matrixTractIDs]  # (166, 815)
-        sq = np.apply_along_axis(
-            lambda row: row[matrixTractIDs], 1, A
-        )  # Still IndexError
-        print(sq)
+        sq = np.apply_along_axis(lambda row: row[matrixTractIDs], 1, A)  # (166, 166)
         total_durations[district_id] = np.sum(sq)
     end = timer()
 
@@ -268,23 +284,17 @@ def calculate_human_compactness(
 
     # Get all districts
     start = timer()
-    all_districts = set([])
-    for tract_id in partition.graph.nodes:
-        district_id = partition.assignment[tract_id]
-        all_districts.add(district_id)
+    all_districts = set(
+        [partition.assignment[tract_id] for tract_id in partition.graph.nodes]
+    )
     end = timer()
+
     print(f"Time taken to fill up all_districts: {end-start}")
 
-    start = timer()
-    hc_scores: Dict[DistrictID, float] = defaultdict(float)
-    for district_id in all_districts:
-        hc_scores[district_id] = (
-            total_knn_dds[district_id] / total_durations[district_id]
-        )
-
-    # print(f"HC scores: {hc_scores}")
-    end = timer()
-    print(f"Time taken to do the division: {end-start}")
+    hc_scores = {
+        district_id: total_knn_dds[district_id] / total_durations[district_id]
+        for district_id in all_districts
+    }
 
     return hc_scores
 
