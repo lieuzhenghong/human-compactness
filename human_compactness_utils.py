@@ -44,37 +44,6 @@ def duration_between(
         return duration_dict[tract_id][other_id]
 
 
-def generate_tract_matrix() -> List[List[int]]:
-    """
-    TODO
-    """
-    matrix = [[]]
-    return matrix
-
-
-def calculate_knn_of_all_points_in_district_new(
-    district_id: DistrictID,
-    district_to_tract_mapping: Dict[DistrictID, List[TractID]],
-    tract_dict: Dict[TractID, TractEntry],
-    tract_duration_matrix: List[List[int]],
-) -> float:
-    """
-    TODO
-    Calculate the sum of travel durations for every point
-    to its K-nearest neighbours in the district.
-    """
-    sum_of_all_knns_in_district = 0
-
-    tracts = district_to_tract_mapping[district_id]
-    # The following line is a bit dubious... FIXME
-    k = sum([tract_dict[tract_id]["pop"] for tract_id in tracts])
-
-    for tract_id in tracts:
-        sum_of_all_knns_in_district += tract_duration_matrix[tract_id][k]
-
-    return sum_of_all_knns_in_district
-
-
 def _calculate_knn_of_points(dmx, point_ids: List[PointID]) -> float:
     """
     Helper function to look up the KNN of points
