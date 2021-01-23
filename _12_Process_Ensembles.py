@@ -165,11 +165,17 @@ def _init_(state_fips: str):
     # Preprocess the state tract shapefile to include external points
     state_shp = reock.preprocess_dataframe(state_shp, geoid_to_id_mapping)
 
+    import numpy as np
+
+    M = hc_utils._generate_tractwise_dd_matrix_(list(graph.nodes), DURATION_DICT)
+    print(np.shape(M))  # Should be 815 x 815
+
     human_compactness_function = partial(
         hc_utils.calculate_human_compactness,
         DURATION_DICT,
         tract_dict,
         duration_matrix,
+        M,
     )
 
     reock_compactness_function = partial(reock.reock, state_shp)

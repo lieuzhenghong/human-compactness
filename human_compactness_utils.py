@@ -3,6 +3,7 @@ from timeit import default_timer as timer
 
 from typing import List, Dict
 from gerrychain.partition.geographic import GeographicPartition
+from numpy.matrixlib.defmatrix import matrix
 from typing_extensions import TypedDict
 from collections import defaultdict
 
@@ -89,7 +90,6 @@ def _calculate_pairwise_durations_(partition, duration_dict: DurationDict, tract
     total_durations: Dict[DistrictID, float] = defaultdict(float)
     tracts_in_districts: Dict[DistrictID, List[TractID]] = defaultdict(list)
 
-    start = timer()
     print(f"Number of tracts: {len(partition.graph.nodes)}")
     print(f"Type of tracts: {type(partition.graph.nodes)}")
     print(f"Min tract ID: {min(partition.graph.nodes)}")
@@ -134,10 +134,86 @@ def _calculate_pairwise_durations_(partition, duration_dict: DurationDict, tract
             last_tract_id, tract_id, duration_dict
         )
 
+    return total_durations
+
+
+def _generate_tractwise_dd_matrix_(
+    tract_list: List[TractID], duration_dict: DurationDict
+):
+    import numpy as np
+
+    num_tracts = len(tract_list)
+
+    start = timer()
+    print(num_tracts)
+    M = [[] for i in range(num_tracts)]
+    for i in range(num_tracts):
+        for j in range(num_tracts):
+            M[i].append(duration_between(tract_list[i], tract_list[j], duration_dict))
+
+    M = np.array(M)
+    print(M)
     end = timer()
-    print(
-        f"Time taken to get pairwise durations between all points in the district: {end-start}"
-    )
+    print(f"Time taken to generate tractwise duration matrix: {end-start}")
+
+    return M
+
+
+def _form_tract_matrix_dd_lookup_table_(partition: GeographicPartition):
+    tract_list: List[TractID] = list(partition.graph.nodes)
+    assert sorted(tract_list) == tract_list
+
+    # form the lookup table
+    lookup_table: Dict[TractID, int] = {}
+    for i, tract_id in enumerate(tract_list):
+        lookup_table[tract_id] = i
+
+    return lookup_table
+
+
+def _calculate_pairwise_durations_(
+    partition, duration_dict: DurationDict, tract_dict: Dict[TractID, TractEntry], M,
+) -> Dict[DistrictID, float]:
+    """
+    Optimised function to calculate pairwise durations
+
+    1. Make the lookup table
+    2. Make the numpy matrix from DurationDict
+    3. For each districtID: 
+        - get the list of all its tracts, List[TractID]
+        - use a helper function to get pairwise sum of List[TractID] in the matrix
+        - this pairwise sum is total_durations[districtID]
+    """
+    tracts_in_districts: Dict[DistrictID, List[TractID]] = defaultdict(list)
+    total_durations: Dict[DistrictID, float] = defaultdict(float)
+
+    lookup_table = _form_tract_matrix_dd_lookup_table_(partition)
+
+    tract_list: List[TractID] = list(partition.graph.nodes)
+
+    # form the numpy matrix
+
+    # Generate the mapping of Dict[DistrictID, List[TractID]]
+    for tract_id in partition.graph.nodes:
+        district_id = partition.assignment[tract_id]
+        tracts_in_districts[district_id].append(tract_id)
+
+    import numpy as np
+
+    start = timer()
+    for district_id, tractIDs in tracts_in_districts.items():
+        matrixTractIDs = [lookup_table[tractID] for tractID in tractIDs]
+        print(len(matrixTractIDs))  # Should be 166
+        A = M[matrixTractIDs]  # (166, 815)
+        sq = np.apply_along_axis(
+            lambda row: row[matrixTractIDs], 1, A
+        )  # Still IndexError
+        print(sq)
+        total_durations[district_id] = np.sum(sq)
+    end = timer()
+
+    print(f"Time taken to do the square matrix shit: {end-start}")
+
     return total_durations
 
 
@@ -145,6 +221,7 @@ def calculate_human_compactness(
     duration_dict: DurationDict,
     tract_dict: Dict[TractID, TractEntry],
     dmx,
+    M,
     partition: GeographicPartition,
 ) -> Dict[DistrictID, float]:
     """
@@ -159,8 +236,13 @@ def calculate_human_compactness(
     compactness sum.
     """
 
+    start = timer()
     total_durations = _calculate_pairwise_durations_(
-        partition, duration_dict, tract_dict
+        partition, duration_dict, tract_dict, M
+    )
+    end = timer()
+    print(
+        f"Time taken to get pairwise durations between all points in the district: {end-start}"
     )
 
     # Now we've got the total durations, divide by the sum of all
