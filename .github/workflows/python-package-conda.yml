@@ -37,4 +37,5 @@ jobs:
           source $CONDA/etc/profile.d/conda.sh
           conda activate hc-env
           ls -lh "test/test_data/"
-          python -m pytest test_process_ensembles.py -vv
+          PROJ_NETWORK=OFF
+          python -m pytest test_process_ensembles.py -vv -s
