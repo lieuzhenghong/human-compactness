@@ -18,50 +18,52 @@ from timeit import default_timer as timer
 
 
 def _assign_district_to_row(row, partition):
-    if row['id'] not in partition.assignment:
+    if row["id"] not in partition.assignment:
         return None
     else:
-        return partition.assignment[row['id']]
+        return partition.assignment[row["id"]]
 
 
 def _assign_id_to_row(row, geoid_to_id_mapping):
-    geoid = row['GEOID']
+    geoid = row["GEOID"]
     tract_id = geoid_to_id_mapping[geoid]
     return tract_id
 
 
 def _generate_external_points(row, geoid_to_id_mapping):
-    '''
+    """
     For each Census Tract, generate the exterior points of that Tract
-    '''
+    """
     exterior_points = []
 
     # print(row['geometry'].geom_type)
-    if row['geometry'].geom_type == 'MultiPolygon':
-        for polygon in row['geometry']:
+    if row["geometry"].geom_type == "MultiPolygon":
+        for polygon in row["geometry"]:
             exterior_points += list(polygon.exterior.coords)
     else:
-        assert(row['geometry'].geom_type == 'Polygon')
-        polygon = row['geometry']
+        assert row["geometry"].geom_type == "Polygon"
+        polygon = row["geometry"]
         exterior_points += list(polygon.exterior.coords)
 
     return exterior_points
 
 
 def preprocess_dataframe(tract_df, geoid_to_id_mapping):
-    '''
+    """
     Preprocess the dataframe to assign a partition ID to each row in the
     Census Tract shapefile
-    '''
+    """
     start = timer()
 
     print("Assigning tract ID to each row in shapefile...")
-    tract_df['id'] = tract_df.apply(_assign_id_to_row, axis=1, args=[
-        geoid_to_id_mapping])
+    tract_df["id"] = tract_df.apply(
+        _assign_id_to_row, axis=1, args=[geoid_to_id_mapping]
+    )
 
     print("Building exterior points of each Census Tract...")
-    tract_df['exterior_points'] = tract_df.apply(_generate_external_points, axis=1, args=[
-        geoid_to_id_mapping])
+    tract_df["exterior_points"] = tract_df.apply(
+        _generate_external_points, axis=1, args=[geoid_to_id_mapping]
+    )
 
     end_0 = timer()
     print(f"Time taken to preprocess dataframe: {end_0 - start}")
@@ -70,30 +72,31 @@ def preprocess_dataframe(tract_df, geoid_to_id_mapping):
 
 
 def reock(processed_tract_df, partition):
-    '''
+    """
     Takes a tract shapefile dataframe with external points and IDs applied and calculates
     Reock score of a given Partition assignment
 
     you also get Convex Hull ratio for free
 
     Returns: a tuple of (List[Float], List[Float]), first Reock, then Convex Hull
-    '''
+    """
     # start_reock_2 = timer()
 
-    processed_tract_df['assignment'] = processed_tract_df.apply(
-        _assign_district_to_row, axis=1, args=[partition])
+    processed_tract_df["assignment"] = processed_tract_df.apply(
+        _assign_district_to_row, axis=1, args=[partition]
+    )
 
     print("Grouping by assignment...")
     grouped_df = processed_tract_df.groupby("assignment")
 
     # concatenate all exterior points
-    all_exterior_points = grouped_df['exterior_points'].apply(list)
+    all_exterior_points = grouped_df["exterior_points"].apply(list)
     # all_exterior_points is a Pandas Series
 
     reock_scores = {}
     ch_scores = {}
 
-    # start_reock_calc = timer()
+    start_reock_calc = timer()
     for i in range(len(partition)):
         points2 = all_exterior_points.iloc[i]
         # flatten points2 list of lists (of exterior points)
@@ -104,30 +107,29 @@ def reock(processed_tract_df, partition):
         ch_area = MultiPoint(new_points).convex_hull.area
 
         radius_bound_circle = make_circle(new_points)[2]
-        area_district = partition['area'][i]
+        area_district = partition["area"][i]
         ch_score = area_district / ch_area
-        area_circle = math.pi*(radius_bound_circle**2)
+        area_circle = math.pi * (radius_bound_circle ** 2)
 
-        reock_score = area_district/area_circle
-        #print(f"Reock Score: {reock_score}, Convex Hull Score: {ch_score}")
+        reock_score = area_district / area_circle
+        # print(f"Reock Score: {reock_score}, Convex Hull Score: {ch_score}")
 
-        assert(ch_score > reock_score)
-        assert(ch_score < 1)
-        assert(reock_score < 1)
+        assert ch_score > reock_score
+        assert ch_score < 1
+        assert reock_score < 1
 
         reock_scores[i] = reock_score
         ch_scores[i] = ch_score
 
-    # end_reock_calc = timer()
-    # print(
-    #    f"Time taken in the district loop: {end_reock_calc - start_reock_calc}")
+    end_reock_calc = timer()
+    print(f"Time taken in the district loop: {end_reock_calc - start_reock_calc}")
 
     # end_reock_2 = timer()
 
     return reock_scores, ch_scores
 
 
-'''
+"""
 def compare_reock(state_shapefile, geoid_to_id_mapping, partition):
     # reock_values = reock(state_shapefile, geoid_to_id_mapping, partition)
     reock_2_values = reock_2(state_shapefile, partition)
@@ -224,4 +226,5 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
 
     # TODO check if Reock scores are the same
     return dist_scores
-'''
+"""
+
