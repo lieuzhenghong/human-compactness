@@ -51,7 +51,7 @@ def test_process_ensemble_main():
             graph,
             human_compactness_function,
             reock_compactness_function,
-        ) = _12_Process_Ensembles._init_(state_fips)
+        ) = _12_Process_Ensembles._init_(state_fips, datadir)
 
         initial_partition = GeographicPartition(
             graph,
