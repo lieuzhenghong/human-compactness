@@ -135,7 +135,7 @@ def _create_new_dir_(state_fips: str) -> str:
 def _init_(state_fips: str, datadir: str):
     """
     Generates a bunch of stuff needed for the various compactness functions.
-    Returns the Gerrychain Graph and 
+    Returns the Gerrychain Graph and
     partial functions for human compactness and reock compactness.
     """
     print("Reading pairwise tract driving durations into memory...")
@@ -178,6 +178,8 @@ def _init_(state_fips: str, datadir: str):
     )
 
     reock_compactness_function = partial(reock.reock, state_shp)
+
+    # euclidean_human_compactness_function = partial()
 
     # just for reference
     num_Nones = 0
@@ -227,9 +229,11 @@ def main_old():
         newdir = _create_new_dir_(state_fips)
         datadir = f"./Tract_Ensembles/2000/{state_fips}/"
 
-        (graph, human_compactness_function, reock_compactness_function,) = _init_(
-            state_fips, datadir
-        )
+        (
+            graph,
+            human_compactness_function,
+            reock_compactness_function,
+        ) = _init_(state_fips, datadir)
 
         initial_partition = GeographicPartition(
             graph,
