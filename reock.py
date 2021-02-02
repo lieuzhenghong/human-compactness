@@ -227,4 +227,3 @@ def reock(state_shapefile, geoid_to_id_mapping, partition):
     # TODO check if Reock scores are the same
     return dist_scores
 """
-

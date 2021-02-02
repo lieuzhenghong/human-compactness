@@ -2,10 +2,11 @@ import json
 import numpy as np
 from timeit import default_timer as timer
 
-from typing import List, Dict
+from typing import List, Dict, TypedDict, Any
 from gerrychain.partition.geographic import GeographicPartition
-from typing import TypedDict
 from collections import defaultdict
+from shapely.geometry import Point
+from nptyping import NDArray
 
 # TODO check these types!!!
 DistrictID = int
@@ -14,6 +15,8 @@ TractIDStr = str
 GeoID = str
 PointID = int
 DurationDict = Dict[TractIDStr, Dict[TractIDStr, float]]
+TractWiseMatrix = NDArray[(Any, Any), float]
+PointWiseMatrix = NDArray[(Any, Any), float]
 
 
 class TractEntry(TypedDict):
@@ -21,38 +24,6 @@ class TractEntry(TypedDict):
     pop: int
     pfs: List[float]  # Principal factors (for PCA)
     vrps: List[PointID]
-
-def _distance_between_two_lists_(l1: List[PointGeom], l2: List[PointGeom]) -> float:
-    """
-    Returns the sum of all euclidean distances between each point in L1
-    and each point in L2
-    [1, 2] [3,4]
-    sum(1-3, 1-4, 2-3, 2-4)
-    """
-    return 0
-
-def generate_duration_dict(
-    tract_dict: Dict[TractID, TractEntry], SHAPEFILE_PATH: str
-) -> DurationDict:
-    """
-    1. For each tract, look at what PointIDs are in it (entry.vrps)
-    2. We have _rvps.shp, read that in as a dataframe
-    3. For each PointID, look it up in the DataFrame and find its geometry
-    4.
-    """
-    import geopandas as gpd
-
-    rvps = gpd.read_file(SHAPEFILE_PATH)
-    duration_dict = defaultdict(Dict[TractIDStr, float])
-
-    for tractid, tractentry in tract_dict.items():
-        for pointid in tractentry["vrps"]:
-            point = rvps.loc["index" == pointid]["geometry"]
-            point.distance()
-
-        duration_dict[tractid] = 
-
-    return duration_dict
 
 
 def _calculate_knn_of_points(dmx, point_ids: List[PointID]) -> float:
@@ -65,7 +36,7 @@ def _calculate_knn_of_points(dmx, point_ids: List[PointID]) -> float:
 
 
 def calculate_knn_of_all_points_in_district(
-    dmx,
+    dmx: PointWiseMatrix,
     tract_dict: Dict[TractID, TractEntry],
     tract_to_district_mapping: Dict[TractID, DistrictID],
 ) -> Dict[DistrictID, float]:
@@ -120,7 +91,7 @@ def duration_between(tract_id: TractID, other_id: TractID, duration_dict: Durati
 
 def _generate_tractwise_dd_matrix_(
     tract_list: List[TractID], duration_dict: DurationDict
-):
+) -> TractWiseMatrix:
     """
     Helper function that takes a list of TractIDs
     and a DurationDict and forms a NxN matrix
@@ -146,7 +117,9 @@ def _generate_tractwise_dd_matrix_(
     return M
 
 
-def _form_tract_matrix_dd_lookup_table_(partition: GeographicPartition):
+def _form_tract_matrix_dd_lookup_table_(
+    partition: GeographicPartition,
+) -> Dict[TractID, int]:
     """
     Helper function that takes in
     """
@@ -162,8 +135,8 @@ def _form_tract_matrix_dd_lookup_table_(partition: GeographicPartition):
 
 
 def _calculate_pairwise_durations_(
-    partition,
-    M: np.ndarray,
+    partition: GeographicPartition,
+    M: TractWiseMatrix,
 ) -> Dict[DistrictID, float]:
     """
     Optimised function to calculate sum of all KNN pairwise durations
@@ -207,8 +180,8 @@ def _calculate_pairwise_durations_(
 def calculate_human_compactness(
     duration_dict: DurationDict,
     tract_dict: Dict[TractID, TractEntry],
-    dmx,
-    M,
+    dmx: PointWiseMatrix,
+    M: TractWiseMatrix,
     partition: GeographicPartition,
 ) -> Dict[DistrictID, float]:
     """

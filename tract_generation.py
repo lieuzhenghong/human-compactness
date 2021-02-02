@@ -14,7 +14,7 @@ def _read_and_process_vrp_shapefile(
     STATE_CODE, STATE_NAME, NUM_DISTRICTS, SAMPLE_RICHNESS
 ):
     """
-        Returns points_downsampled
+    Returns points_downsampled
     """
     GEOG_WD = "../geographically_sensitive_dislocation/00_source_data/"
 
@@ -49,14 +49,14 @@ def _read_and_process_vrp_shapefile(
 
     # Convert to WGS84
     points_downsampled = points_downsampled.to_crs("EPSG:4326")
-#     points_downsampled = points_downsampled.to_crs({"init": "epsg:4326"})
+    #     points_downsampled = points_downsampled.to_crs({"init": "epsg:4326"})
 
     # the points have already been spatial joined previously; drop this so we can do further
     # spatial joins
     # Also drop GEOID, those are the GEOIDs of the districts (which we don't want)
     points_downsampled = points_downsampled.drop(["index_right", "GEOID"], axis=1)
     # points_downsampled = points_downsampled.drop(["index_righ", "GEOID"], axis=1)
-
+    points_downsampled.to_file(f"{STATE_CODE}_{STATE_NAME}_rvps.shp")
     return points_downsampled
 
 
@@ -118,7 +118,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
 
     # Reproject 2000 Census Tracts to use the same projection as downsampled tracts
     CENSUS_TRACTS = CENSUS_TRACTS.to_crs("EPSG:4326")
-#     CENSUS_TRACTS = CENSUS_TRACTS.to_crs({"init": "epsg:4326"})
+    #     CENSUS_TRACTS = CENSUS_TRACTS.to_crs({"init": "epsg:4326"})
     # print(CENSUS_TRACTS)
 
     # Spatial join all points that lie in a Census Tract
@@ -194,4 +194,3 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
 if __name__ == "__main__":
     # (state_code, state_name, num_districts, sample_richness):
     generate_tracts_with_vrps(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
-
