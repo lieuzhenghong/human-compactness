@@ -7,26 +7,10 @@ from gerrychain.partition.geographic import GeographicPartition
 from collections import defaultdict
 from shapely.geometry import Point
 from nptyping import NDArray
-
-# TODO check these types!!!
-DistrictID = int
-TractID = int
-TractIDStr = str
-GeoID = str
-PointID = int
-DurationDict = Dict[TractIDStr, Dict[TractIDStr, float]]
-TractWiseMatrix = NDArray[(Any, Any), float]
-PointWiseMatrix = NDArray[(Any, Any), float]
+from custom_types import *
 
 
-class TractEntry(TypedDict):
-    geoid: GeoID
-    pop: int
-    pfs: List[float]  # Principal factors (for PCA)
-    vrps: List[PointID]
-
-
-def _calculate_knn_of_points(dmx, point_ids: List[PointID]) -> float:
+def _calculate_knn_of_points(dmx: PointWiseSumMatrix, point_ids: List[PointID]) -> float:
     """
     Helper function to look up the KNN of points
     """
@@ -36,7 +20,7 @@ def _calculate_knn_of_points(dmx, point_ids: List[PointID]) -> float:
 
 
 def calculate_knn_of_all_points_in_district(
-    dmx: PointWiseMatrix,
+    dmx: PointWiseSumMatrix,
     tract_dict: Dict[TractID, TractEntry],
     tract_to_district_mapping: Dict[TractID, DistrictID],
 ) -> Dict[DistrictID, float]:
@@ -180,7 +164,7 @@ def _calculate_pairwise_durations_(
 def calculate_human_compactness(
     duration_dict: DurationDict,
     tract_dict: Dict[TractID, TractEntry],
-    dmx: PointWiseMatrix,
+    dmx: PointWiseSumMatrix,
     M: TractWiseMatrix,
     partition: GeographicPartition,
 ) -> Dict[DistrictID, float]:
