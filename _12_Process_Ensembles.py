@@ -3,6 +3,7 @@ import json
 from functools import partial
 
 import geopandas as gpd
+import numpy as np
 
 import human_compactness_utils as hc_utils
 import spatial_diversity_utils as spatial_diversity
@@ -131,23 +132,23 @@ def _create_new_dir_(state_fips: str) -> str:
     return newdir
 
 
-def _init_(state_fips: str):
+def _init_(state_fips: str, datadir: str):
     """
     Generates a bunch of stuff needed for the various compactness functions.
     Returns the Gerrychain Graph and 
     partial functions for human compactness and reock compactness.
     """
+    print("Reading pairwise tract driving durations into memory...")
     state_name = state_names[state_fips].lower()
     DD_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json"
-    DURATION_DICT = hc_utils.read_tract_duration_json(DD_PATH)
-    DM_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx"
-    SHAPEFILE_PATH = f"./Data_2000/Shapefiles/Tract2000_{state_fips}.shp"
-    datadir = f"./Tract_Ensembles/2000/{state_fips}/"
+    duration_dict = hc_utils.read_tract_duration_json(DD_PATH)
 
     print("Reading tract shapefile into memory...")
+    SHAPEFILE_PATH = f"./Data_2000/Shapefiles/Tract2000_{state_fips}.shp"
     state_shp = gpd.read_file(SHAPEFILE_PATH)
 
     print("Reading KNN duration matrix file into memory...")
+    DM_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx"
     duration_matrix = read_duration_matrix(DM_PATH)
 
     graph = Graph.from_json(datadir + "starting_plan.json")
@@ -165,14 +166,12 @@ def _init_(state_fips: str):
     # Preprocess the state tract shapefile to include external points
     state_shp = reock.preprocess_dataframe(state_shp, geoid_to_id_mapping)
 
-    import numpy as np
-
-    M = hc_utils._generate_tractwise_dd_matrix_(list(graph.nodes), DURATION_DICT)
-    print(np.shape(M))  # Should be 815 x 815
+    # Create a square numpy NxN matrix from the pairwise tract duration dict
+    M = hc_utils._generate_tractwise_dd_matrix_(list(graph.nodes), duration_dict)
 
     human_compactness_function = partial(
         hc_utils.calculate_human_compactness,
-        DURATION_DICT,
+        duration_dict,
         tract_dict,
         duration_matrix,
         M,
@@ -229,7 +228,7 @@ def main_old():
         datadir = f"./Tract_Ensembles/2000/{state_fips}/"
 
         (graph, human_compactness_function, reock_compactness_function,) = _init_(
-            state_fips
+            state_fips, datadir
         )
 
         initial_partition = GeographicPartition(

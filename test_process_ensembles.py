@@ -51,7 +51,7 @@ def test_process_ensemble_main():
             graph,
             human_compactness_function,
             reock_compactness_function,
-        ) = _12_Process_Ensembles._init_(state_fips)
+        ) = _12_Process_Ensembles._init_(state_fips, datadir)
 
         initial_partition = GeographicPartition(
             graph,
@@ -69,7 +69,7 @@ def test_process_ensemble_main():
         with open(datadir + f"flips_10000.json") as f:
             dict_list = json.load(f)
             calcdata = {}
-            for step in range(10):
+            for step in range(100):
                 calcdata[step] = _12_Process_Ensembles.calculate_metrics_step(
                     step,
                     dict_list,
@@ -85,4 +85,3 @@ def test_process_ensemble_main():
 
                 # assert json.loads(json.dumps(stepdata)) == data[step]
                 assert _dicts_are_approx_equal_(calcdata[step], refdata[step])
-

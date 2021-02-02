@@ -48,8 +48,8 @@ def _read_and_process_vrp_shapefile(
     )
 
     # Convert to WGS84
-    # points_downsampled = points_downsampled.to_crs("EPSG:4326")
-    points_downsampled = points_downsampled.to_crs({"init": "epsg:4326"})
+    points_downsampled = points_downsampled.to_crs("EPSG:4326")
+#     points_downsampled = points_downsampled.to_crs({"init": "epsg:4326"})
 
     # the points have already been spatial joined previously; drop this so we can do further
     # spatial joins
@@ -117,8 +117,8 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
     )
 
     # Reproject 2000 Census Tracts to use the same projection as downsampled tracts
-    # CENSUS_TRACTS = CENSUS_TRACTS.to_crs("EPSG:4326")
-    CENSUS_TRACTS = CENSUS_TRACTS.to_crs({"init": "epsg:4326"})
+    CENSUS_TRACTS = CENSUS_TRACTS.to_crs("EPSG:4326")
+#     CENSUS_TRACTS = CENSUS_TRACTS.to_crs({"init": "epsg:4326"})
     # print(CENSUS_TRACTS)
 
     # Spatial join all points that lie in a Census Tract

@@ -4,7 +4,7 @@ from timeit import default_timer as timer
 
 from typing import List, Dict
 from gerrychain.partition.geographic import GeographicPartition
-from typing_extensions import TypedDict, DefaultDict
+from typing import TypedDict
 from collections import defaultdict
 
 # TODO check these types!!!

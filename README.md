@@ -37,3 +37,26 @@ outcomes.
 The results (mostly plots) are all available in `30_results`, and as a
 robustness check I also run the results with a different aggregation function,
 in `31_results_rc`.
+
+## How to set up    
+
+On a new environment:
+
+```bash
+git clone https://github.com/lieuzhenghong/human-compactness
+# setup conda
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh -b -u
+cd human-compactness/
+conda config --add channels conda-forge
+conda config --set pip_interop_enabled True
+# Create conda environment from file
+conda env create -f new_environment.yml
+# Activate the conda environment
+conda activate hc-env
+# We need some files 
+git lfs install
+git lfs pull
+# Now run the tests and make sure everything passes
+PROJ_NETWORK=OFF python -m test_process_ensembles.py -vv -s
+```

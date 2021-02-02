@@ -19,7 +19,7 @@ GEOID = str
 tractid = int
 
 from typing import Optional, Tuple, Mapping
-from typing_extensions import TypedDict
+from typing import TypedDict
 
 class TractEntry(TypedDict):
     """
