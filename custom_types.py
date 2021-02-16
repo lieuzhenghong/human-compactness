@@ -12,9 +12,10 @@ PointWiseMatrix = NDArray[(Any, Any), float]
 # A TractWiseMatrix is a matrix where M[i][j] denotes the sum of all distances from
 # all points in tract i and all points in tract j
 TractWiseMatrix = NDArray[(Any, Any), float]
-# A PointWiseSumMatrix is a matrix where M[i][j] denotes the sum of all distances from 
+# A PointWiseSumMatrix is a matrix where M[i][j] denotes the sum of all distances from
 # point i to its jth nearest neighbours
 PointWiseSumMatrix = NDArray[(Any, Any), float]
+
 
 class TractEntry(TypedDict):
     geoid: GeoID
