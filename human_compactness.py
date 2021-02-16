@@ -126,6 +126,7 @@ class HumanCompactness(ABC):
 class EDHumanCompactness(HumanCompactness):
     """
     TODO
+    Euclidean distance human compactness
     """
 
     def _create_kd_tree_(self) -> cKDTree:
@@ -141,10 +142,41 @@ class EDHumanCompactness(HumanCompactness):
         distances, indices = kd_tree.query(voter, k)
         return sum(distances)
 
+    def _find_sum_of_distance_between_set_of_two_points_(
+        self,
+        l1: List[PointID],
+        l2: List[PointID],
+        kd_tree: cKDTree,
+    ) -> float:
+        """
+        TODO
+        for i in range(num_tracts):
+            for j in range(num_tracts):
+                p1: Point = ...[i]
+                p2: Point = ...[j]
+                M[i].append(p1.distance(p2))
+        """
+        pass
+
     def generate_tractwise_matrix() -> TractWiseMatrix:
+        """
+        TODO
+
+        Forms a TractWiseMatrix from a kd_tree and a tract dict.
+
+        1. For each tract, find all the points in it.
+        2. Use a helper function to find the sum of pairwise distances between all of these points.
+        3. Return the matrix.
+        """
         pass
 
     def generate_pointwise_sum_matrix() -> PointWiseSumMatrix:
+        """
+        Builds the pointwise sum matrix
+        Returns the PointWiseSumMatrix for euclidean distance
+        This is a very slow function and should be run only once
+        Save this to disk
+        """
         kd_tree = create_kd_tree(points_downsampled)
         ddf = pd.DataFrame()
         ddf[0] = pd.Series(np.zeros(points_downsampled.shape[0]))
@@ -164,10 +196,24 @@ class EDHumanCompactness(HumanCompactness):
 
     def _sum_of_knn_distances_of_all_points_in_each_district_(
         self,
+        sum_of_eds_from_point_to_knn: Dict[PointID, float],
+        points_in_each_district: Dict[DistrictID, List[PointID]],
     ) -> Dict[DistrictID, float]:
         sum_of_knn_distances_in_each_district: Dict[DistrictID, float] = defaultdict(
             float
         )
+        """
+        Calculates the sum of all KNN pairwise distances
+        of all points inside each district.
+        For each point inside each district,
+        look for its k-nearest neighbours
+        (where k is the number of points in its district)
+        and take the sum of distances from it to its k-nearest neighbours.
+
+        Returns a Dict[DistrictID, float]
+        where `float` is the
+        sum of all KNN-driving durations of all points in that district.
+        """
 
         for (district_id, point_ids) in points_in_each_district.items():
             sum_of_knn_distances_in_each_district[district_id] = sum(
@@ -176,9 +222,15 @@ class EDHumanCompactness(HumanCompactness):
 
         return sum_of_knn_distances_in_each_district
 
-    def _sum_of_district_distances_of_all_points_in_each_district_() -> Dict[
-        DistrictID, float
-    ]:
+    def _sum_of_district_distances_of_all_points_in_each_district_(
+        self,
+    ) -> Dict[DistrictID, float]:
+        """
+        Calculates the sum of all district pairwise distances
+        of all points inside each district.
+        For each point inside each district,
+        take the sum of distances from it to all its co-districtors.
+        """
         pass
 
 
