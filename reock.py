@@ -13,7 +13,7 @@ import geopandas as gpd
 import shapely
 from shapely.geometry import MultiPoint
 from scipy.spatial import ConvexHull
-from smallestenclosingcircle import *
+from smallest_enclosing_circle import *
 from timeit import default_timer as timer
 
 
