@@ -56,7 +56,7 @@ def _read_and_process_vrp_shapefile(
     # Also drop GEOID, those are the GEOIDs of the districts (which we don't want)
     points_downsampled = points_downsampled.drop(["index_right", "GEOID"], axis=1)
     # points_downsampled = points_downsampled.drop(["index_righ", "GEOID"], axis=1)
-    points_downsampled.to_file(f"{STATE_CODE}_{STATE_NAME}_rvps.shp")
+    # points_downsampled.to_file(f"{STATE_CODE}_{STATE_NAME}_rvps.shp")
     return points_downsampled
 
 
