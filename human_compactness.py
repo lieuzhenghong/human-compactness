@@ -362,6 +362,7 @@ class DDHumanCompactness(HumanCompactness):
         self, DM_PATH, SAVE_FILE_TO
     ) -> PointWiseSumMatrix:
         """
+        TODO refactor this so as not to have side effects
         Given a point matrix in DM_PATH, builds and saves a knn_sum_duration
         matrix to parameter SAVE_FILE_TO, where matrix[i][j] is the sum of
         distances from point i to its j closest neighbours.
