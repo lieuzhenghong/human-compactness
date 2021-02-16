@@ -16,11 +16,34 @@ def create_kd_tree(df: gpd.GeoDataFrame):
     return kd_tree
 
 
+def _find_sum_of_distance_between_set_of_two_points_(
+    partition: GeographicPartition,
+    l1: List[PointID],
+    l2: List[PointID],
+    kd_tree: cKDTree,
+):
+    """
+    for i in range(num_tracts):
+        for j in range(num_tracts):
+            p1: Point = ...[i]
+            p2: Point = ...[j]
+            M[i].append(p1.distance(p2))
+    """
+
+
 def _generate_tractwise_ed_matrix_(
-    tract_dict: Dict[TractID, TractEntry], kd_tree: cKDTree
+    partition: GeographicPartition,
+    tract_dict: Dict[TractID, TractEntry],
+    kd_tree: cKDTree,
 ) -> TractWiseMatrix:
     """
     TODO
+
+    Forms a TractWiseMatrix from a kd_tree and a tract dict.
+
+    1. For each tract, find all the points in it.
+    2. Use a helper function to find the sum of pairwise distances between all of these points.
+    3. Return the matrix.
     """
     """
     num_tracts = len(tract_dict)
