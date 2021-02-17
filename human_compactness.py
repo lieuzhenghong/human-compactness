@@ -9,6 +9,7 @@ from collections import defaultdict
 from pointwise_libs import distance_matrix
 import human_compactness_utils as hc_utils
 import json
+import pandas as pd
 
 
 class HumanCompactness(ABC):
@@ -126,11 +127,15 @@ class HumanCompactness(ABC):
 class EDHumanCompactness(HumanCompactness):
     """
     TODO
+    Implement all class methods
+    Write unit tests for all class methods
     Euclidean distance human compactness
     """
 
     def _create_kd_tree_(self) -> cKDTree:
-        kd_tree = cKDTree([(point.x, point.y) for point in df["geometry"]])
+        kd_tree = cKDTree(
+            [(point.x, point.y) for point in self.points_downsampled["geometry"]]
+        )
         return kd_tree
 
     def _get_sum_ED_from_voter_to_knn_(voter, kd_tree: cKDTree, k: int) -> float:
@@ -170,22 +175,22 @@ class EDHumanCompactness(HumanCompactness):
         """
         pass
 
-    def generate_pointwise_sum_matrix() -> PointWiseSumMatrix:
+    def generate_pointwise_sum_matrix(self, K: int) -> PointWiseSumMatrix:
         """
         Builds the pointwise sum matrix
         Returns the PointWiseSumMatrix for euclidean distance
         This is a very slow function and should be run only once
         Save this to disk
         """
-        kd_tree = create_kd_tree(points_downsampled)
+        kd_tree = self._create_kd_tree_()
         ddf = pd.DataFrame()
-        ddf[0] = pd.Series(np.zeros(points_downsampled.shape[0]))
+        ddf[0] = pd.Series(np.zeros(self.points_downsampled.shape[0]))
         for k in range(2, K + 1):
             print(k)
             # we need to add this to a column
             # so this is a series
-            column_k = points_downsampled["geometry"].apply(
-                _get_sum_ED_from_voter_to_knn_,
+            column_k = self.points_downsampled["geometry"].apply(
+                self._get_sum_ED_from_voter_to_knn_,
                 args=[kd_tree, k],
             )
             ddf[k] = column_k
@@ -203,6 +208,7 @@ class EDHumanCompactness(HumanCompactness):
             float
         )
         """
+        TODO
         Calculates the sum of all KNN pairwise distances
         of all points inside each district.
         For each point inside each district,
