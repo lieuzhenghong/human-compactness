@@ -2,28 +2,17 @@ import json
 import numpy as np
 from timeit import default_timer as timer
 
-from typing import List, Dict
+from typing import List, Dict, TypedDict, Any
 from gerrychain.partition.geographic import GeographicPartition
-from typing import TypedDict
 from collections import defaultdict
-
-# TODO check these types!!!
-DistrictID = int
-TractID = int
-TractIDStr = str
-GeoID = str
-PointID = int
-DurationDict = Dict[TractIDStr, Dict[TractIDStr, float]]
+from shapely.geometry import Point
+from nptyping import NDArray
+from custom_types import *
 
 
-class TractEntry(TypedDict):
-    geoid: GeoID
-    pop: int
-    pfs: List[float]  # Principal factors (for PCA)
-    vrps: List[PointID]
-
-
-def _calculate_knn_of_points(dmx, point_ids: List[PointID]) -> float:
+def _calculate_knn_of_points(
+    dmx: PointWiseSumMatrix, point_ids: List[PointID]
+) -> float:
     """
     Helper function to look up the KNN of points
     """
@@ -32,8 +21,25 @@ def _calculate_knn_of_points(dmx, point_ids: List[PointID]) -> float:
     return sum([dmx[point][K] for point in point_ids])
 
 
+def get_points_in_each_district(
+    tract_dict: Dict[TractID, TractEntry],
+    tract_to_district_mapping: Dict[TractID, DistrictID],
+) -> Dict[DistrictID, List[PointID]]:
+    """
+    Given a mapping of tractID to tractentry
+    and a mapping of tractID to districtID,
+    returns all points in each district.
+    """
+    points_in_each_district: Dict[DistrictID, List[PointID]] = defaultdict(list)
+    for tract_id in tract_to_district_mapping:
+        district_id = tract_to_district_mapping[tract_id]
+        points_in_each_district[district_id] += tract_dict[tract_id]["vrps"]
+
+    return points_in_each_district
+
+
 def calculate_knn_of_all_points_in_district(
-    dmx,
+    dmx: PointWiseSumMatrix,
     tract_dict: Dict[TractID, TractEntry],
     tract_to_district_mapping: Dict[TractID, DistrictID],
 ) -> Dict[DistrictID, float]:
@@ -53,11 +59,9 @@ def calculate_knn_of_all_points_in_district(
        in that district.
     """
     sum_of_knn_distances_in_each_district: Dict[DistrictID, float] = defaultdict(float)
-    points_in_each_district: Dict[DistrictID, List[PointID]] = defaultdict(list)
-
-    for tract_id in tract_to_district_mapping:
-        district_id = tract_to_district_mapping[tract_id]
-        points_in_each_district[district_id] += tract_dict[tract_id]["vrps"]
+    points_in_each_district: Dict[
+        DistrictID, List[PointID]
+    ] = get_points_in_each_district(tract_dict, tract_to_district_mapping)
 
     start_knn = timer()
     for (district_id, point_ids) in points_in_each_district.items():
@@ -86,68 +90,9 @@ def duration_between(tract_id: TractID, other_id: TractID, duration_dict: Durati
     return 0
 
 
-def _calculate_pairwise_durations_(partition, duration_dict: DurationDict, tract_dict):
-    """
-    Helper function that calculates the sum of driving durations
-    from each point in each district
-    to all the other points in the district.
-
-    Returns a DefaultDict[DistrictID, float]
-    """
-    total_durations: DefaultDict[DistrictID, float] = defaultdict(float)
-    tracts_in_districts: DefaultDict[DistrictID, List[TractID]] = defaultdict(list)
-
-    print(f"Number of tracts: {len(partition.graph.nodes)}")
-    print(f"Type of tracts: {type(partition.graph.nodes)}")
-    print(f"Min tract ID: {min(partition.graph.nodes)}")
-    print(f"Max tract ID: {max(partition.graph.nodes)}")
-
-    print(f"Size of duration dict: {len(duration_dict)}")
-    print(f"Size of tract dict: {len(tract_dict)}")
-
-    for tract_id in partition.graph.nodes:
-        district_id = partition.assignment[tract_id]
-        district_tracts = tracts_in_districts[district_id]
-
-        # Append each tract to the list of tracts that have been assigned to district
-        district_tracts.append(tract_id)
-        # Add to the total duration sum. Notice we append to
-        # tracts_in_districts first:
-        # this is so that we get the sum of
-        # driving distances from a tract to itself as well, which makes sense
-        # print(f"Getting pairwise distances between {tract_id} and {district_tracts}")
-
-        result = 0
-        for other_tract_id in district_tracts:
-            result += duration_between(tract_id, other_tract_id, duration_dict)
-            result += duration_between(other_tract_id, tract_id, duration_dict)
-        total_durations[district_id] += result
-
-        """
-        # Using this guarantees  the exact results we got in the old version of HC 
-        for other_tract_id in district_tracts:
-            total_durations[district_id] += duration_between(
-                tract_id, other_tract_id, duration_dict
-            )
-            total_durations[district_id] += duration_between(
-                other_tract_id, tract_id, duration_dict
-            )
-        """
-
-        # We've double-counted the last self-distance: subtract away
-        assert len(district_tracts)
-        last_tract_id = district_tracts[-1]
-        assert tract_id == last_tract_id
-        total_durations[district_id] -= duration_between(
-            last_tract_id, tract_id, duration_dict
-        )
-
-    return total_durations
-
-
 def _generate_tractwise_dd_matrix_(
     tract_list: List[TractID], duration_dict: DurationDict
-):
+) -> TractWiseMatrix:
     """
     Helper function that takes a list of TractIDs
     and a DurationDict and forms a NxN matrix
@@ -173,9 +118,15 @@ def _generate_tractwise_dd_matrix_(
     return M
 
 
-def _form_tract_matrix_dd_lookup_table_(partition: GeographicPartition):
+def _form_tract_matrix_dd_lookup_table_(
+    partition: GeographicPartition,
+) -> Dict[TractID, int]:
     """
-    Helper function that takes in 
+    Helper function that takes in a GeographicPartition
+    and forms a _lookup table_ of TractIDs to matrix index.
+
+    Used to lookup the TractWiseMatrix generated by
+    _generate_tractwise_dd_matrix.
     """
     tract_list: List[TractID] = list(partition.graph.nodes)
     assert sorted(tract_list) == tract_list
@@ -189,21 +140,20 @@ def _form_tract_matrix_dd_lookup_table_(partition: GeographicPartition):
 
 
 def _calculate_pairwise_durations_(
-    partition,
-    duration_dict: DurationDict,
-    tract_dict: Dict[TractID, TractEntry],
-    M: np.ndarray,
+    partition: GeographicPartition,
+    M: TractWiseMatrix,
 ) -> Dict[DistrictID, float]:
     """
     Optimised function to calculate sum of all KNN pairwise durations
     of all points inside each district.
 
     1. Make the lookup table
-    2. Make the numpy matrix from DurationDict
-    3. For each districtID: 
-        - get the list of all its tracts, List[TractID]
-        - use a helper function to get pairwise sum of List[TractID] in the matrix
-        - this pairwise sum is total_durations[districtID]
+    2. Use the TractWise matrix (N x N) matrix giving the pairwise sum
+       of distances from each tract to another
+    3. For each district:
+        - Form a smaller tractwise matrix (MxM) of _only_ the tracts
+          that are in this district
+        - Sum all these values
     """
     tracts_in_districts: Dict[DistrictID, List[TractID]] = defaultdict(list)
     total_durations: Dict[DistrictID, float] = defaultdict(float)
@@ -236,8 +186,8 @@ def _calculate_pairwise_durations_(
 def calculate_human_compactness(
     duration_dict: DurationDict,
     tract_dict: Dict[TractID, TractEntry],
-    dmx,
-    M,
+    dmx: PointWiseSumMatrix,
+    M: TractWiseMatrix,
     partition: GeographicPartition,
 ) -> Dict[DistrictID, float]:
     """
@@ -253,9 +203,7 @@ def calculate_human_compactness(
     """
 
     start = timer()
-    total_durations = _calculate_pairwise_durations_(
-        partition, duration_dict, tract_dict, M
-    )
+    total_durations = _calculate_pairwise_durations_(partition, M)
     end = timer()
     print(
         f"Time taken to get pairwise durations between all points in the district: {end-start}"

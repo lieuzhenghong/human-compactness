@@ -3,3 +3,4 @@
 __pycache__/
 /Tract_Ensembles/2010/*
 .RData
+.vscode/settings.json

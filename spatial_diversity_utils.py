@@ -21,6 +21,7 @@ tractid = int
 from typing import Optional, Tuple, Mapping
 from typing import TypedDict
 
+
 class TractEntry(TypedDict):
     """
     A TractEntry gives information on a tract ID.
