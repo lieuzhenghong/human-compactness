@@ -80,7 +80,12 @@ class HumanCompactness(ABC):
         self, dmx: PointWiseSumMatrix, point_ids: List[PointID]
     ) -> float:
         """
-        Helper function to help look up the KNN of points
+        Helper function that calculates the sum of distances
+        from each point in point_ids to its K-nearest neighbours.
+        Takes in a PointWiseSumMatrix and a list of PointIDs
+        and returns the double sum:
+        the sum over all point IDs
+            over the sum of each point's K-nearest neighbours
         """
         K = len(point_ids)
         assert K < 3000
@@ -166,7 +171,6 @@ class HumanCompactness(ABC):
     def calculate_human_compactness(
         self,
         tract_dict: Dict[TractID, TractEntry],
-        # tract_to_district_mapping: Dict[TractID, DistrictID],
         dmx: PointWiseSumMatrix,
         M: TractWiseMatrix,
         partition: GeographicPartition,
