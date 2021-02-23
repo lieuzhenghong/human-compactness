@@ -47,11 +47,13 @@ def test_process_ensemble_main():
     with open(test_json, "r") as f1:
         refdata = json.load(f1)
 
+        datadir = f"./Tract_Ensembles/2000/{state_fips}/"
+        graph = Graph.from_json(datadir + "starting_plan.json")
+
         (
-            graph,
             human_compactness_function,
             reock_compactness_function,
-        ) = _12_Process_Ensembles._init_(state_fips, datadir)
+        ) = _12_Process_Ensembles._init_metrics_(state_fips, graph)
 
         initial_partition = GeographicPartition(
             graph,

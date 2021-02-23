@@ -132,11 +132,10 @@ def _create_new_dir_(state_fips: str) -> str:
     return newdir
 
 
-def _init_(state_fips: str, datadir: str):
+def _init_metrics_(state_fips: str, graph: Graph):
     """
     Generates a bunch of stuff needed for the various compactness functions.
-    Returns the Gerrychain Graph and
-    partial functions for human compactness and reock compactness.
+    Returns the partial functions for human compactness and reock compactness.
     """
     print("Reading pairwise tract driving durations into memory...")
     state_name = state_names[state_fips].lower()
@@ -150,8 +149,6 @@ def _init_(state_fips: str, datadir: str):
     print("Reading KNN duration matrix file into memory...")
     DM_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx"
     duration_matrix = read_duration_matrix(DM_PATH)
-
-    graph = Graph.from_json(datadir + "starting_plan.json")
 
     # add population and spatial diversity data to the graph
     # tract_dict = spatial_diversity.build_spatial_diversity_dict(
@@ -181,27 +178,7 @@ def _init_(state_fips: str, datadir: str):
 
     # euclidean_human_compactness_function = partial()
 
-    # just for reference
-    num_Nones = 0
-    for node in graph.nodes():
-
-        if tract_dict[node]["pfs"] is None:
-            num_Nones += 1
-
-        graph.nodes[node]["pfs"] = tract_dict[node]["pfs"]
-        graph.nodes[node]["pop"] = tract_dict[node]["pop"]
-        # print(graph.nodes[node])
-
-    # Checking the number of empty tracts (tracts without VRPs)
-    empty_tracts = []
-
-    for tract_id in tract_dict:
-        if len(tract_dict[tract_id]["vrps"]) == 0:
-            empty_tracts.append(tract_id)
-
-    print(f"Number of empty tracts: {len(empty_tracts)}")
     return (
-        graph,
         human_compactness_function,
         reock_compactness_function,
     )
@@ -326,12 +303,12 @@ def main_old():
     for state_fips in fips_list:
         newdir = _create_new_dir_(state_fips)
         datadir = f"./Tract_Ensembles/2000/{state_fips}/"
+        graph = Graph.from_json(datadir + "starting_plan.json")
 
         (
-            graph,
             human_compactness_function,
             reock_compactness_function,
-        ) = _init_(state_fips, datadir)
+        ) = _init_metrics_(state_fips, graph)
 
         initial_partition = GeographicPartition(
             graph,
