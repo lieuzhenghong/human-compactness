@@ -1,4 +1,4 @@
-from typing import List, Dict, TypedDict, Any
+from typing import List, Dict, TypedDict, Any, Optional, Tuple
 from nptyping import NDArray
 
 DistrictID = int
@@ -18,7 +18,23 @@ PointWiseSumMatrix = NDArray[(Any, Any), float]
 
 
 class TractEntry(TypedDict):
+    """
+    A TractEntry gives information on a tract ID.
+    This includes its GEOID,
+    its population,
+    its principal factors (for use in spatial diversity calculations),
+    and the voter representative points (VRPs) that belong within it.
+    """
+
     geoid: GeoID
     pop: int
-    pfs: List[float]  # Principal factors (for PCA)
+    pfs: List[Optional[float]]  # Principal factors (for PCA)
     vrps: List[PointID]
+
+
+TractDict = Dict[TractID, TractEntry]
+GeoIDToIDMapping = Dict[GeoID, TractID]
+
+
+class TractNotFoundError(Exception):
+    pass

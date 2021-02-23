@@ -1,6 +1,6 @@
-from typing import List
 import csv
 import json
+from custom_types import *
 
 # TODO make this a command-line param
 SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (
@@ -13,36 +13,6 @@ SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (
     0.0389,
     0.0366,
 )
-
-PointID = int
-GEOID = str
-tractid = int
-
-from typing import Optional, Tuple, Mapping
-from typing import TypedDict
-
-
-class TractEntry(TypedDict):
-    """
-    A TractEntry gives information on a tract ID.
-    This includes its GEOID,
-    its population,
-    its principal factors (for use in spatial diversity calculations),
-    and the voter representative points (VRPs) that belong within it.
-    """
-
-    geoid: GEOID
-    pop: Optional[int]
-    pfs: List[Optional[float]]
-    vrps: List[PointID]
-
-
-TractDict = Mapping[tractid, TractEntry]
-GeoIDToIDMapping = Mapping[GEOID, tractid]
-
-
-class TractNotFoundError(Exception):
-    pass
 
 
 def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
