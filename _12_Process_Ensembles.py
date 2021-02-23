@@ -207,58 +207,6 @@ def _init_(state_fips: str, datadir: str):
     )
 
 
-def main_old():
-    """
-    1. Read tract shapefile into memoru
-    2. Read KNN duration matrix file into memory
-    3. Create new folder if it doesn't exist
-    4. Open up _starting_plan.json
-    5. Create Graph from _starting_plan.json
-    6. tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(
-            state_fips)
-    7. tract_dict = tract_generation.generate_tracts_with_vrps(
-            state_fips, state_name, num_districts[state_fips], sample_richness)
-    8. # Preprocess the state tract shapefile to include external points
-        state_shp = reock.preprocess_dataframe(
-            state_shp, geoid_to_id_mapping)
-    9. initial_partition
-    10. new_assignment
-    11. Run 10,000 cycles, calculate all metrics
-    """
-    for state_fips in fips_list:
-        newdir = _create_new_dir_(state_fips)
-        datadir = f"./Tract_Ensembles/2000/{state_fips}/"
-
-        (
-            graph,
-            human_compactness_function,
-            reock_compactness_function,
-        ) = _init_(state_fips, datadir)
-
-        initial_partition = GeographicPartition(
-            graph,
-            assignment="New_Seed",
-            updaters={
-                "cut_edges": cut_edges,
-                "population": Tally("population", alias="population"),
-                "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-                "human_compactness": human_compactness_function,
-                "reock_compactness": reock_compactness_function,
-            },
-        )
-
-        new_assignment = dict(initial_partition.assignment)
-        # load graph and make initial partition
-        calculate_metrics(
-            new_assignment,
-            datadir,
-            newdir,
-            graph,
-            human_compactness_function,
-            reock_compactness_function,
-        )
-
-
 def calculate_metrics_step(
     step,
     dict_list,
@@ -355,6 +303,58 @@ def calculate_metrics(
                 ) as tf1:
                     json.dump(data, tf1)
                     data = []
+
+
+def main_old():
+    """
+    1. Read tract shapefile into memoru
+    2. Read KNN duration matrix file into memory
+    3. Create new folder if it doesn't exist
+    4. Open up _starting_plan.json
+    5. Create Graph from _starting_plan.json
+    6. tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(
+            state_fips)
+    7. tract_dict = tract_generation.generate_tracts_with_vrps(
+            state_fips, state_name, num_districts[state_fips], sample_richness)
+    8. # Preprocess the state tract shapefile to include external points
+        state_shp = reock.preprocess_dataframe(
+            state_shp, geoid_to_id_mapping)
+    9. initial_partition
+    10. new_assignment
+    11. Run 10,000 cycles, calculate all metrics
+    """
+    for state_fips in fips_list:
+        newdir = _create_new_dir_(state_fips)
+        datadir = f"./Tract_Ensembles/2000/{state_fips}/"
+
+        (
+            graph,
+            human_compactness_function,
+            reock_compactness_function,
+        ) = _init_(state_fips, datadir)
+
+        initial_partition = GeographicPartition(
+            graph,
+            assignment="New_Seed",
+            updaters={
+                "cut_edges": cut_edges,
+                "population": Tally("population", alias="population"),
+                "spatial_diversity": spatial_diversity.calc_spatial_diversity,
+                "human_compactness": human_compactness_function,
+                "reock_compactness": reock_compactness_function,
+            },
+        )
+
+        new_assignment = dict(initial_partition.assignment)
+        # load graph and make initial partition
+        calculate_metrics(
+            new_assignment,
+            datadir,
+            newdir,
+            graph,
+            human_compactness_function,
+            reock_compactness_function,
+        )
 
 
 if __name__ == "__main__":
