@@ -2,7 +2,7 @@ from scipy.spatial import cKDTree
 from custom_types import *
 from abc import ABC, abstractmethod  # Abstract base class
 from gerrychain.partition.geographic import GeographicPartition
-from geopandas import GeoDataFrame
+from geopandas import GeoDataFrame, GeoSeries
 import numpy as np
 from timeit import default_timer as timer
 from collections import defaultdict
@@ -163,7 +163,11 @@ class EDHumanCompactness(HumanCompactness):
         """
         pass
 
-    def generate_tractwise_matrix() -> TractWiseMatrix:
+    def generate_tractwise_matrix(
+        self,
+        tract_dict: Dict[TractID, TractEntry],
+        tract_to_district_mapping: Dict[TractID, DistrictID],
+    ) -> TractWiseMatrix:
         """
         TODO
 
@@ -199,16 +203,20 @@ class EDHumanCompactness(HumanCompactness):
         dmx: PointWiseSumMatrix = ddf.to_numpy()
         return dmx
 
+    def _calculate_knn_of_points_(
+        self, dmx: PointWiseSumMatrix, point_ids: List[PointID]
+    ) -> float:
+        K = len(point_ids)
+        assert K < 3000
+        return sum([dmx[point][K] for point in point_ids])
+
     def _sum_of_knn_distances_of_all_points_in_each_district_(
         self,
-        sum_of_eds_from_point_to_knn: Dict[PointID, float],
-        points_in_each_district: Dict[DistrictID, List[PointID]],
+        dmx: PointWiseSumMatrix,
+        tract_dict: Dict[TractID, TractEntry],
+        tract_to_district_mapping: Dict[TractID, DistrictID],
     ) -> Dict[DistrictID, float]:
-        sum_of_knn_distances_in_each_district: Dict[DistrictID, float] = defaultdict(
-            float
-        )
         """
-        TODO
         Calculates the sum of all KNN pairwise distances
         of all points inside each district.
         For each point inside each district,
@@ -220,16 +228,44 @@ class EDHumanCompactness(HumanCompactness):
         where `float` is the
         sum of all KNN-driving durations of all points in that district.
         """
+        sum_of_knn_distances_in_each_district = defaultdict(float)
+
+        points_in_each_district = HumanCompactness.get_points_in_each_district(
+            tract_dict, tract_to_district_mapping
+        )
 
         for (district_id, point_ids) in points_in_each_district.items():
-            sum_of_knn_distances_in_each_district[district_id] = sum(
-                [sum_of_eds_from_point_to_knn[pointid] for pointid in point_ids]
-            )
+            sum_of_knn_distances_in_each_district[
+                district_id
+            ] = self._calculate_knn_of_points_(dmx, point_ids)
 
         return sum_of_knn_distances_in_each_district
 
+    def _sum_of_distances_of_all_points_in_list_(
+        self, point_ids: List[PointID]
+    ) -> float:
+        result = 0
+        print(self.points_downsampled)
+        points_in_list = self.points_downsampled.iloc[point_ids]
+        print(points_in_list)
+
+        for p1 in point_ids:
+            for p2 in point_ids:
+                print(p1, p2)
+                print(points_in_list["geometry"].iloc[p1])
+                print(points_in_list["geometry"].iloc[p2])
+                print("Yo!")
+                (points_in_list["geometry"].iloc[p1]).distance(
+                    points_in_list["geometry"].iloc[p2]
+                )
+
+        return result
+
     def _sum_of_district_distances_of_all_points_in_each_district_(
         self,
+        tract_dict: Dict[TractID, TractEntry],
+        tract_to_district_mapping: Dict[TractID, DistrictID],
+        kd_tree: cKDTree,
     ) -> Dict[DistrictID, float]:
         """
         Calculates the sum of all district pairwise distances
@@ -237,7 +273,16 @@ class EDHumanCompactness(HumanCompactness):
         For each point inside each district,
         take the sum of distances from it to all its co-districtors.
         """
-        pass
+        result: Dict[DistrictID, float] = {}
+        points_in_each_district = HumanCompactness.get_points_in_each_district(
+            tract_dict, tract_to_district_mapping
+        )
+
+        for (district_id, point_ids) in points_in_each_district.items():
+            result[district_id] = self._sum_of_distances_of_all_points_in_list_(
+                point_ids
+            )
+        return result
 
 
 class DDHumanCompactness(HumanCompactness):

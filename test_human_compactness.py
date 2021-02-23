@@ -48,6 +48,10 @@ def _dicts_are_approx_equal_(d1, d2) -> bool:
     return np.allclose(a1, a2)
 
 
+def test_euclidean_human_compactness():
+    pass
+
+
 def test_human_compactness():
     """
     Test equivalence of old human compactness function and new human compactness function
@@ -86,6 +90,12 @@ def test_human_compactness():
             state_fips, state_name, num_districts, sample_richness
         )
 
+        ed_hc = hc.EDHumanCompactness(initial_partition, points_downsampled)
+        ed_hc._sum_of_distances_of_all_points_in_list_([1, 2, 3, 4, 8])
+
+        assert True
+
+        """
         dd_hc = hc.DDHumanCompactness(
             initial_partition,
             points_downsampled,
@@ -139,3 +149,4 @@ def test_human_compactness():
                     calcdata[step]["human_compactness"],
                     refdata[step]["human_compactness"],
                 )
+            """
