@@ -1,4 +1,3 @@
-from scipy.spatial import cKDTree
 from custom_types import *
 from abc import ABC, abstractmethod  # Abstract base class
 from gerrychain.partition.geographic import GeographicPartition
@@ -6,7 +5,6 @@ from geopandas import GeoDataFrame, GeoSeries
 import numpy as np
 from timeit import default_timer as timer
 from collections import defaultdict
-from pointwise_libs import distance_matrix
 import human_compactness_utils as hc_utils
 import json
 import pandas as pd
@@ -57,6 +55,10 @@ class HumanCompactness(ABC):
         """
         pass
 
+    @abstractmethod
+    def _form_tract_matrix_dd_lookup_table_():
+        pass
+
     @staticmethod
     def get_points_in_each_district(
         tract_dict: Dict[TractID, TractEntry],
@@ -73,6 +75,16 @@ class HumanCompactness(ABC):
             points_in_each_district[district_id] += tract_dict[tract_id]["vrps"]
 
         return points_in_each_district
+
+    def _calculate_knn_of_points_(
+        self, dmx: PointWiseSumMatrix, point_ids: List[PointID]
+    ) -> float:
+        """
+        Helper function to help look up the KNN of points
+        """
+        K = len(point_ids)
+        assert K < 3000
+        return sum([dmx[point][K] for point in point_ids])
 
     def _sum_of_knn_distances_of_all_points_in_each_district_(
         self,

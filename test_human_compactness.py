@@ -1,8 +1,8 @@
 import _12_Process_Ensembles
 import tract_generation
 import human_compactness as hc
-import DDHumanCompactness as ddhc
-import EDHumanCompactness as edhc
+import dd_human_compactness as ddhc
+import ed_human_compactness as edhc
 import human_compactness_utils as hc_utils
 from geopandas import GeoDataFrame
 from gerrychain import GeographicPartition, Graph
@@ -85,7 +85,7 @@ def test_explore():
 
 def test_euclidean_human_compactness():
     """
-    Test equivalence of old human compactness function and new human compactness function
+    Test that Euclidean human compactness runs properly
     """
     assert False
     state_fips = "09"
