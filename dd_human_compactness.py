@@ -172,13 +172,3 @@ class DDHumanCompactness(HumanCompactness):
                     line = fh.readline()
                 dmx = distance_matrix.read_duration_matrix(f"{SAVE_FILE_TO}")
                 return dmx
-
-    def _calculate_knn_of_points_(
-        self, dmx: PointWiseSumMatrix, point_ids: List[PointID]
-    ) -> float:
-        """
-        Helper function to look up the KNN of points
-        """
-        K = len(point_ids)
-        assert K < 3000
-        return sum([dmx[point][K] for point in point_ids])
