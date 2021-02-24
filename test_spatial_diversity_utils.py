@@ -10,9 +10,15 @@ def test_get_all_tract_geoids():
     assert tract_dict == tract_dict_test_data_09
 
 
+def test_create_empty_tract_dict():
+    geoid_to_id_mapping = geoid_to_id_test_mapping_09
+    empty_tract_dict = sd_utils.create_empty_tract_dict(geoid_to_id_mapping)
+    assert empty_tract_dict == tract_dict_test_data_09
+
+
 def test_fill_tract_dict_with_spatial_diversity_info():
-    state_code = "09"
-    tract_dict, geoid_to_id_mapping = sd_utils.get_all_tract_geoids(state_code)
+    tract_dict = tract_dict_test_data_09
+    geoid_to_id_mapping = geoid_to_id_test_mapping_09
 
     tract_dict = sd_utils.fill_tract_dict_with_spatial_diversity_info(
         tract_dict=tract_dict,

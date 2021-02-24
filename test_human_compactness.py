@@ -12,6 +12,7 @@ import json
 import test_process_ensembles
 import numpy as np
 from functools import partial
+import config
 
 
 def init_stuff(initial_partition, dd_hc):
@@ -83,36 +84,34 @@ def test_explore():
 """
 
 
-def test_euclidean_human_compactness():
-    """
-    Test that Euclidean human compactness runs properly
-    """
-    assert False
+def test_euclidean_compactness():
     state_fips = "09"
-    test_json = f"./test/test_data/data100.json"
     datadir = f"./Tract_Ensembles/2000/{state_fips}/"
-    state_fips = "09"
-    state_name = _12_Process_Ensembles.state_names[state_fips].lower()
-    num_districts = _12_Process_Ensembles.num_districts[state_fips]
+    graph = Graph.from_json(datadir + "starting_plan.json")
+    (
+        duration_dict,
+        tract_dict,
+        tractwise_matrix,
+        pointwise_sum_matrix,
+        state_shapefile,
+    ) = _12_Process_Ensembles._init_data_(state_fips, graph)
+
+    _12_Process_Ensembles._update_graph_with_tract_dict_info_(
+        graph,
+        tract_dict,
+    )
+
+    tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(state_fips)
+
+    state_name = config.STATE_NAMES[state_fips].lower()
+    num_districts = config.NUM_DISTRICTS[state_fips]
     sample_richness = _12_Process_Ensembles.sample_richness
 
+    test_json = f"./test/test_data/data100.json"
     with open(test_json, "r") as f1:
-        (
-            graph,
-            human_compactness_function,
-            reock_compactness_function,
-        ) = _12_Process_Ensembles._init_(state_fips, datadir)
-
         initial_partition = GeographicPartition(
             graph,
             assignment="New_Seed",
-            updaters={
-                "cut_edges": cut_edges,
-                "population": Tally("population", alias="population"),
-                "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-                "human_compactness": human_compactness_function,
-                "reock_compactness": reock_compactness_function,
-            },
         )
         new_assignment = dict(initial_partition.assignment)
 
@@ -120,36 +119,19 @@ def test_euclidean_human_compactness():
             state_fips, state_name, num_districts, sample_richness
         )
 
-        ed_hc = hc.EDHumanCompactness(initial_partition, points_downsampled)
-        # ed_hc._sum_of_distances_of_all_points_in_list_([1, 2, 3, 4, 8])
-
-        tract_dict, duration_dict, tractwise_matrix, duration_matrix = init_stuff(
-            initial_partition, ed_hc
+        dd_hc = ddhc.DDHumanCompactness(
+            initial_partition,
+            points_downsampled,
         )
+
+        new_assignment = dict(initial_partition.assignment)
 
         human_compactness_function = partial(
-            ed_hc.calculate_human_compactness,
+            dd_hc.calculate_human_compactness,
             tract_dict,
-            new_assignment,
-            duration_matrix,
+            pointwise_sum_matrix,
             tractwise_matrix,
         )
-
-        with open(datadir + f"flips_10000.json") as f:
-            dict_list = json.load(f)
-            calcdata = {}
-            refdata = {}
-            for step in range(10):
-                calcdata[step] = _12_Process_Ensembles.calculate_metrics_step(
-                    step,
-                    dict_list,
-                    graph,
-                    new_assignment,
-                    human_compactness_function,
-                    reock_compactness_function,
-                )
-                print(calcdata[step])
-                assert True
 
         assert True
 
@@ -163,29 +145,31 @@ def test_human_compactness():
     test_json = f"./test/test_data/data100.json"
     datadir = f"./Tract_Ensembles/2000/{state_fips}/"
     state_fips = "09"
-    state_name = _12_Process_Ensembles.state_names[state_fips].lower()
-    num_districts = _12_Process_Ensembles.num_districts[state_fips]
+    state_name = config.STATE_NAMES[state_fips].lower()
+    num_districts = config.NUM_DISTRICTS[state_fips]
     sample_richness = _12_Process_Ensembles.sample_richness
+    graph = Graph.from_json(datadir + "starting_plan.json")
+    (
+        duration_dict,
+        tract_dict,
+        tractwise_matrix,
+        pointwise_sum_matrix,
+        state_shapefile,
+    ) = _12_Process_Ensembles._init_data_(state_fips, graph)
+
+    _12_Process_Ensembles._update_graph_with_tract_dict_info_(
+        graph,
+        tract_dict,
+    )
+
+    tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(state_fips)
 
     with open(test_json, "r") as f1:
-        (
-            graph,
-            human_compactness_function,
-            reock_compactness_function,
-        ) = _12_Process_Ensembles._init_(state_fips, datadir)
 
         initial_partition = GeographicPartition(
             graph,
             assignment="New_Seed",
-            updaters={
-                "cut_edges": cut_edges,
-                "population": Tally("population", alias="population"),
-                "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-                "human_compactness": human_compactness_function,
-                "reock_compactness": reock_compactness_function,
-            },
         )
-        new_assignment = dict(initial_partition.assignment)
 
         points_downsampled = tract_generation._read_and_process_vrp_shapefile(
             state_fips, state_name, num_districts, sample_richness
@@ -196,8 +180,15 @@ def test_human_compactness():
             points_downsampled,
         )
 
-        tract_dict, duration_dict, tractwise_matrix, duration_matrix = init_stuff(
-            initial_partition, dd_hc
+        (
+            human_compactness_function,
+            reock_compactness_function,
+        ) = _12_Process_Ensembles._init_metrics_(
+            duration_dict,
+            tract_dict,
+            tractwise_matrix,
+            pointwise_sum_matrix,
+            state_shapefile,
         )
 
         new_assignment = dict(initial_partition.assignment)
@@ -205,7 +196,7 @@ def test_human_compactness():
         human_compactness_function = partial(
             dd_hc.calculate_human_compactness,
             tract_dict,
-            duration_matrix,
+            pointwise_sum_matrix,
             tractwise_matrix,
         )
 
@@ -213,7 +204,7 @@ def test_human_compactness():
             hc_utils.calculate_human_compactness,
             duration_dict,
             tract_dict,
-            duration_matrix,
+            pointwise_sum_matrix,
             tractwise_matrix,
         )
 

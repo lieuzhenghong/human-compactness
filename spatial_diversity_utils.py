@@ -1,7 +1,23 @@
 import csv
 import json
+from typing import DefaultDict
+from collections import defaultdict
 from custom_types import *
 import config
+
+
+def create_geoid_to_id_mapping(state_code) -> GeoIDToIDMapping:
+    """
+    Creates and returns a GeoIDtoID mapping
+    Dict[GeoID, TractID]
+    """
+    geoid_to_id_mapping: GeoIDToIDMapping = {}
+    starting_plan = f"./Data_2000/Dual_Graphs/Tract2000_{state_code}.json"
+    with open(starting_plan) as f:
+        data = json.load(f)
+        for node in data["nodes"]:
+            geoid_to_id_mapping[node["GEOID"]] = node["id"]
+        return geoid_to_id_mapping
 
 
 def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
@@ -20,9 +36,6 @@ def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
         data = json.load(f)
 
         for node in data["nodes"]:
-            # tract_dict[node["id"]] = {'geoid': node["GEOID10"], 'pop': None, 'pfs': None}
-            # geoid_to_id_mapping[node["GEOID10"]] = node["id"]
-
             # Mapping for 2000 Census Tracts
             tract_dict[node["id"]] = TractEntry(
                 geoid=node["GEOID"], pop=None, pfs=[], vrps=[]
@@ -30,8 +43,19 @@ def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
 
             geoid_to_id_mapping[node["GEOID"]] = node["id"]
 
-    # print(tract_dict)
     return (tract_dict, geoid_to_id_mapping)
+
+
+def create_empty_tract_dict(geoid_to_id_mapping: GeoIDToIDMapping) -> TractDict:
+    """
+    Function that creates a TractDict without population, principal factors, or
+    representative voter point data.
+    Fill it in with the fill_tract_dict_with_spatial_diversity_info function
+    """
+    tract_dict: TractDict = {}
+    for geoid, tract_id in geoid_to_id_mapping.items():
+        tract_dict[tract_id] = TractEntry(geoid=geoid, pop=None, pfs=[], vrps=[])
+    return tract_dict
 
 
 def fill_tract_dict_with_spatial_diversity_info(
