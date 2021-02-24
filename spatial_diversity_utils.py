@@ -1,18 +1,7 @@
 import csv
 import json
 from custom_types import *
-
-# TODO make this a command-line param
-SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (
-    0.1464,
-    0.1182,
-    0.101,
-    0.0775,
-    0.0501,
-    0.0399,
-    0.0389,
-    0.0366,
-)
+import config
 
 
 def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
@@ -48,7 +37,7 @@ def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
 def fill_tract_dict_with_spatial_diversity_info(
     tract_dict: TractDict,
     geoid_to_id_mapping: GeoIDToIDMapping,
-    tract_spatial_diversity_scores,
+    tract_spatial_diversity_scores: str,
 ) -> TractDict:
     """
     Fills in values of spatial diversity according to the tract_spatial_diversity CSV
@@ -185,7 +174,7 @@ def calc_spatial_diversity(partition):
         ]
 
     # We now get each spatial diversity subscore and take the weighted sum to get the final score
-    fw = SPATIAL_DIVERSITY_FACTOR_WEIGHTS
+    fw = config.SPATIAL_DIVERSITY_FACTOR_WEIGHTS
 
     spatial_diversity_final_scores = {}
 
