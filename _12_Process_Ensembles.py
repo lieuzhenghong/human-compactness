@@ -13,80 +13,8 @@ from gerrychain import GeographicPartition, Graph
 from gerrychain.metrics import polsby_popper
 from gerrychain.updaters import Tally, cut_edges
 from timeit import default_timer as timer
+import config
 
-
-state_names = {
-    "02": "Alaska",
-    "01": "Alabama",
-    "05": "Arkansas",
-    "04": "Arizona",
-    "06": "California",
-    "08": "Colorado",
-    "09": "Connecticut",
-    "10": "Delaware",
-    "12": "Florida",
-    "13": "Georgia",
-    "66": "Guam",
-    "15": "Hawaii",
-    "19": "Iowa",
-    "16": "Idaho",
-    "17": "Illinois",
-    "18": "Indiana",
-    "20": "Kansas",
-    "21": "Kentucky",
-    "22": "Louisiana",
-    "25": "Massachusetts",
-    "24": "Maryland",
-    "23": "Maine",
-    "26": "Michigan",
-    "27": "Minnesota",
-    "29": "Missouri",
-    "28": "Mississippi",
-    "30": "Montana",
-    "37": "North_Carolina",
-    "38": "North_Dakota",
-    "31": "Nebraska",
-    "33": "New_Hampshire",
-    "34": "New_Jersey",
-    "35": "New_Mexico",
-    "32": "Nevada",
-    "36": "New_York",
-    "39": "Ohio",
-    "40": "Oklahoma",
-    "41": "Oregon",
-    "42": "Pennsylvania",
-    "72": "Puerto_Rico",
-    "44": "Rhode_Island",
-    "45": "South_Carolina",
-    "46": "South_Dakota",
-    "47": "Tenessee",
-    "48": "Texas",
-    "49": "Utah",
-    "51": "Virginia",
-    "50": "Vermont",
-    "53": "Washington",
-    "55": "Wisconsin",
-    "54": "West_Virginia",
-    "56": "Wyoming",
-}
-
-# TODO fill this in
-num_districts = {
-    "01": 7,
-    "04": 8,
-    "08": 7,
-    "09": 5,
-    "13": 13,
-    "16": 2,
-    "19": 4,
-    "22": 7,
-    "24": 8,
-    "33": 2,
-    "23": 2,
-    "44": 2,
-    "49": 3,
-    "55": 8,
-}
 
 num_elections = 1
 
@@ -138,7 +66,7 @@ def _init_metrics_(state_fips: str, graph: Graph):
     Returns the partial functions for human compactness and reock compactness.
     """
     print("Reading pairwise tract driving durations into memory...")
-    state_name = state_names[state_fips].lower()
+    state_name = config.STATE_NAMES[state_fips].lower()
     DD_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json"
     duration_dict = hc_utils.read_tract_duration_json(DD_PATH)
 
@@ -157,7 +85,7 @@ def _init_metrics_(state_fips: str, graph: Graph):
     tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(state_fips)
 
     tract_dict = tract_generation.generate_tracts_with_vrps(
-        state_fips, state_name, num_districts[state_fips], sample_richness
+        state_fips, state_name, config.NUM_DISTRICTS[state_fips], sample_richness
     )
 
     # Preprocess the state tract shapefile to include external points

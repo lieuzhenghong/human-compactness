@@ -8,6 +8,8 @@ import spatial_diversity_utils as sd_utils
 import human_compactness_utils as hc_utils
 
 from pointwise_libs import sample_rvps
+from custom_types import *
+import config
 
 
 def _read_and_process_vrp_shapefile(
@@ -68,9 +70,11 @@ def form_point_to_tract_mapping(
     mapping[voter.name] = geoid_to_id_mapping[voter["GEOID"]]
 
 
-def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_richness):
+def generate_tracts_with_vrps(
+    state_code, state_name, num_districts, sample_richness
+) -> TractDict:
     """
-    Returns a tract_dict with the following schema:
+    Returns a TractDict with the following schema:
 
         {
             tract_id: {
@@ -89,7 +93,6 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
     4. GEOID to tract ID mapping (Daryl's initial assignment)
     """
     # All global variables here
-    TRACT_SPATIAL_DIVERSITY_SCORES = "./tract_spatial_diversity.csv"
     CENSUS_TRACTS = gpd.read_file(f"./Data_2000/Shapefiles/Tract2000_{state_code}.shp")
 
     point_to_tract_mapping = {}
@@ -113,7 +116,7 @@ def generate_tracts_with_vrps(state_code, state_name, num_districts, sample_rich
     tract_dict, geoid_to_id_mapping = sd_utils.get_all_tract_geoids(state_code)
 
     tract_dict = sd_utils.fill_tract_dict_with_spatial_diversity_info(
-        tract_dict, geoid_to_id_mapping, TRACT_SPATIAL_DIVERSITY_SCORES
+        tract_dict, geoid_to_id_mapping, config.TRACT_SPATIAL_DIVERSITY_SCORES
     )
 
     # Reproject 2000 Census Tracts to use the same projection as downsampled tracts
