@@ -62,12 +62,55 @@ def _read_and_process_vrp_shapefile(
     return points_downsampled
 
 
-def form_point_to_tract_mapping(
-    voter, mapping, geoid_to_id_mapping: sd_utils.GeoIDToIDMapping
-):
+def form_point_to_tract_mapping(voter, mapping, geoid_to_id_mapping: GeoIDToIDMapping):
     """Mutates a point_to_tract_mapping (mapping) with the tractids"""
     # voter.name refers to the point ID
     mapping[voter.name] = geoid_to_id_mapping[voter["GEOID"]]
+
+
+def create_tract_dict(
+    state_code: str, state_name: str, num_districts: str, sample_richness: str
+) -> TractDict:
+    CENSUS_TRACTS = gpd.read_file(f"./Data_2000/Shapefiles/Tract2000_{state_code}.shp")
+
+    # First generate the tract dictionary with spatial diversity data
+    # but without the VRP information
+    tract_dict, geoid_to_id_mapping = sd_utils.get_all_tract_geoids(state_code)
+    tract_dict = sd_utils.fill_tract_dict_with_spatial_diversity_info(
+        tract_dict, geoid_to_id_mapping, config.TRACT_SPATIAL_DIVERSITY_SCORES
+    )
+
+    # Then add the VRP information
+    points_downsampled = _read_and_process_vrp_shapefile(
+        state_code, state_name, int(num_districts), int(sample_richness)
+    )
+
+    point_to_tract_mapping = {}
+    # Reproject 2000 Census Tracts to use the same projection as downsampled tracts
+    CENSUS_TRACTS = CENSUS_TRACTS.to_crs("EPSG:4326")
+    # Spatial join all points that lie in a Census Tract
+    # This gives us a GeoDataFrame of each VRP mapped to a GEOID of the tract
+    print("Calculating spatial join of VRPs and district shapefile...")
+    points_mapped = gpd.sjoin(
+        points_downsampled, CENSUS_TRACTS, how="inner", op="within"
+    )
+    points_mapped.apply(
+        form_point_to_tract_mapping,
+        axis=1,
+        args=[point_to_tract_mapping, geoid_to_id_mapping],
+    )
+
+    print(f"Length of point_to_tract_mapping: {len(point_to_tract_mapping)}")
+
+    for tract_id in tract_dict:
+        tract_dict[tract_id]["vrps"] = []
+
+    for point in point_to_tract_mapping:
+        tract_dict[point_to_tract_mapping[point]]["vrps"].append(point)
+
+    print(f"Length of tract_dict: {len(tract_dict)}")
+
+    return tract_dict
 
 
 def generate_tracts_with_vrps(
@@ -189,7 +232,7 @@ def generate_tracts_with_vrps(
 
     print(f"Length of tract_dict: {len(tract_dict)}")
 
-    # print(tract_dict)
+    print(tract_dict)
 
     return tract_dict
 
