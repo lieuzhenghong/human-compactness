@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from reock import reock
 import _12_Process_Ensembles
 from gerrychain import Election, GeographicPartition, Graph, Partition
 from gerrychain.metrics import polsby_popper
@@ -51,9 +52,28 @@ def test_process_ensemble_main():
         graph = Graph.from_json(datadir + "starting_plan.json")
 
         (
+            duration_dict,
+            tract_dict,
+            tractwise_matrix,
+            pointwise_sum_matrix,
+            state_shapefile,
+        ) = _12_Process_Ensembles._init_data_(state_fips, graph)
+
+        _12_Process_Ensembles._update_graph_with_tract_dict_info_(
+            graph,
+            tract_dict,
+        )
+
+        (
             human_compactness_function,
             reock_compactness_function,
-        ) = _12_Process_Ensembles._init_metrics_(state_fips, graph)
+        ) = _12_Process_Ensembles._init_metrics_(
+            duration_dict,
+            tract_dict,
+            tractwise_matrix,
+            pointwise_sum_matrix,
+            state_shapefile,
+        )
 
         initial_partition = GeographicPartition(
             graph,

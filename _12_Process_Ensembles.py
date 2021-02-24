@@ -1,3 +1,7 @@
+from geopandas.geodataframe import GeoDataFrame
+from pandas import DataFrame
+from custom_types import *
+from typing import Tuple, Union
 import os
 import json
 from functools import partial
@@ -60,23 +64,40 @@ def _create_new_dir_(state_fips: str) -> str:
     return newdir
 
 
-def _init_metrics_(state_fips: str, graph: Graph):
+def _update_graph_with_tract_dict_info_(graph: Graph, tract_dict: TractDict) -> None:
+    """
+    Update the partition graph with information from the TractDict
+    Used in calc_spatial_diversity
+    TODO: think about using the Partition Graph as the source of truth.
+    Then we can get rid of TractDict.
+    """
+    for node in graph.nodes():
+        graph.nodes[node]["pfs"] = tract_dict[node]["pfs"]
+        graph.nodes[node]["pop"] = tract_dict[node]["pop"]
+        graph.nodes[node]["vrps"] = tract_dict[node]["vrps"]
+        print(graph.nodes[node])
+
+
+def _init_data_(
+    state_fips: str, graph: Graph
+) -> Tuple[
+    DurationDict,
+    TractDict,
+    Union[DataFrame, GeoDataFrame],
+    TractWiseMatrix,
+    PointWiseSumMatrix,
+]:
     """
     Generates a bunch of stuff needed for the various compactness functions.
-    Returns the partial functions for human compactness and reock compactness.
     """
     print("Reading pairwise tract driving durations into memory...")
     state_name = config.STATE_NAMES[state_fips].lower()
     DD_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json"
     duration_dict = hc_utils.read_tract_duration_json(DD_PATH)
 
-    print("Reading tract shapefile into memory...")
-    SHAPEFILE_PATH = f"./Data_2000/Shapefiles/Tract2000_{state_fips}.shp"
-    state_shp = gpd.read_file(SHAPEFILE_PATH)
-
     print("Reading KNN duration matrix file into memory...")
     DM_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx"
-    duration_matrix = read_duration_matrix(DM_PATH)
+    pointwise_sum_matrix = read_duration_matrix(DM_PATH)
 
     # add population and spatial diversity data to the graph
     # tract_dict = spatial_diversity.build_spatial_diversity_dict(
@@ -88,23 +109,42 @@ def _init_metrics_(state_fips: str, graph: Graph):
         state_fips, state_name, config.NUM_DISTRICTS[state_fips], sample_richness
     )
 
+    print("Reading tract shapefile into memory...")
+    SHAPEFILE_PATH = f"./Data_2000/Shapefiles/Tract2000_{state_fips}.shp"
+    state_shp = gpd.read_file(SHAPEFILE_PATH)
     # Preprocess the state tract shapefile to include external points
     state_shp = reock.preprocess_dataframe(state_shp, geoid_to_id_mapping)
 
     # Create a square numpy NxN matrix from the pairwise tract duration dict
-    M = hc_utils._generate_tractwise_dd_matrix_(list(graph.nodes), duration_dict)
+    tractwise_matrix = hc_utils._generate_tractwise_dd_matrix_(
+        list(graph.nodes), duration_dict
+    )
 
+    return (
+        duration_dict,
+        tract_dict,
+        tractwise_matrix,
+        pointwise_sum_matrix,
+        state_shp,
+    )
+
+
+def _init_metrics_(
+    duration_dict: DurationDict,
+    tract_dict: TractDict,
+    tractwise_matrix: TractWiseMatrix,
+    pointwise_sum_matrix: PointWiseSumMatrix,
+    state_shapefile: Union[DataFrame, GeoDataFrame],
+):
     human_compactness_function = partial(
         hc_utils.calculate_human_compactness,
         duration_dict,
         tract_dict,
-        duration_matrix,
-        M,
+        pointwise_sum_matrix,
+        tractwise_matrix,
     )
 
-    reock_compactness_function = partial(reock.reock, state_shp)
-
-    # euclidean_human_compactness_function = partial()
+    reock_compactness_function = partial(reock.reock, state_shapefile)
 
     return (
         human_compactness_function,
@@ -234,9 +274,25 @@ def main_old():
         graph = Graph.from_json(datadir + "starting_plan.json")
 
         (
-            human_compactness_function,
-            reock_compactness_function,
-        ) = _init_metrics_(state_fips, graph)
+            duration_dict,
+            tract_dict,
+            tractwise_matrix,
+            pointwise_sum_matrix,
+            state_shapefile,
+        ) = _init_data_(state_fips, graph)
+
+        _update_graph_with_tract_dict_info_(
+            graph,
+            tract_dict,
+        )
+
+        (human_compactness_function, reock_compactness_function,) = _init_metrics_(
+            duration_dict,
+            tract_dict,
+            tractwise_matrix,
+            pointwise_sum_matrix,
+            state_shapefile,
+        )
 
         initial_partition = GeographicPartition(
             graph,
