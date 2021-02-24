@@ -71,7 +71,9 @@ def form_point_to_tract_mapping(voter, mapping, geoid_to_id_mapping: GeoIDToIDMa
 def create_tract_dict(
     state_code: str, state_name: str, num_districts: str, sample_richness: str
 ) -> TractDict:
-    CENSUS_TRACTS = gpd.read_file(f"./Data_2000/Shapefiles/Tract2000_{state_code}.shp")
+    """
+    Creates a TractDict.
+    """
 
     # First generate the tract dictionary with spatial diversity data
     # but without the VRP information
@@ -86,6 +88,8 @@ def create_tract_dict(
     )
 
     point_to_tract_mapping = {}
+
+    CENSUS_TRACTS = gpd.read_file(f"./Data_2000/Shapefiles/Tract2000_{state_code}.shp")
     # Reproject 2000 Census Tracts to use the same projection as downsampled tracts
     CENSUS_TRACTS = CENSUS_TRACTS.to_crs("EPSG:4326")
     # Spatial join all points that lie in a Census Tract
@@ -101,9 +105,6 @@ def create_tract_dict(
     )
 
     print(f"Length of point_to_tract_mapping: {len(point_to_tract_mapping)}")
-
-    for tract_id in tract_dict:
-        tract_dict[tract_id]["vrps"] = []
 
     for point in point_to_tract_mapping:
         tract_dict[point_to_tract_mapping[point]]["vrps"].append(point)
