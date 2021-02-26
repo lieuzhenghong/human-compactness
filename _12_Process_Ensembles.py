@@ -24,18 +24,6 @@ num_elections = 1
 
 plan_name = "Enacted"
 
-# I'll be doing the following districts:
-
-# fips_list = ['13'] # Georgia
-# fips_list = ['22']  # Louisiana
-# fips_list = ['24'] # Maryland
-# fips_list = ['55']  # Wisconsin
-# fips_list = ['04', '08', '16', '19', '33', '49']
-# fips_list = ['13', '22', '24', '55']
-# fips_list = ['16']
-# fips_list = ['19', '33', '49']
-# fips_list = ['23', '44'] # Maine and Rhode Island
-fips_list = ["09"]
 sample_richness = 1000  # Number of VRPs to sample per district
 
 
@@ -283,7 +271,7 @@ def main_old():
     10. new_assignment
     11. Run 10,000 cycles, calculate all metrics
     """
-    for state_fips in fips_list:
+    for state_fips in config.FIPS_LIST:
         newdir = _create_new_dir_(state_fips)
         datadir = f"./Tract_Ensembles/2000/{state_fips}/"
         graph = Graph.from_json(datadir + "starting_plan.json")

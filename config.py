@@ -81,3 +81,18 @@ SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (
     0.0389,
     0.0366,
 )
+
+# I'll be doing the following districts:
+
+# fips_list = ['13'] # Georgia
+# fips_list = ['22']  # Louisiana
+# fips_list = ['24'] # Maryland
+# fips_list = ['55']  # Wisconsin
+# fips_list = ['04', '08', '16', '19', '33', '49']
+# fips_list = ['13', '22', '24', '55']
+# fips_list = ['16']
+# fips_list = ['19', '33', '49']
+# fips_list = ['23', '44'] # Maine and Rhode Island
+FIPS_LIST = ["09"]
+
+SAMPLE_RICHNESS = 1000
