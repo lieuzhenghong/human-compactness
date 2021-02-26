@@ -25,14 +25,14 @@ class EDHumanCompactness(HumanCompactness):
         kd_tree = cKDTree([(point.x, point.y) for point in p_converted["geometry"]])
         return kd_tree
 
-    def _get_sum_ED_from_voter_to_knn_(voter, kd_tree: cKDTree, k: int) -> float:
+    def _get_sum_ED_from_voter_to_knn_(self, voter, kd_tree: cKDTree, k: int) -> float:
         """
         Accepts a voter Point, a kd_tree, and the number of neighbours k,
         and returns a float denoting the sum of distances between
         that voter's location and its k nearest neighbours.
         """
         distances, indices = kd_tree.query(voter, k)
-        print(distances)
+        # print(distances)
         return sum(distances)
 
     def _form_tract_matrix_dd_lookup_table_(self):
@@ -62,11 +62,8 @@ class EDHumanCompactness(HumanCompactness):
         # FIXME -- should be converted to a different coordinate system
         # before doing distance
         result = 0
-        # start = timer()
         p1s = self.points_downsampled.iloc[point_ids_1]["geometry"]
         p2s = self.points_downsampled.iloc[point_ids_2]["geometry"]
-        # p1s = p1s.to_crs("ESRI:102010")
-        # p2s = p2s.to_crs("ESRI:102010")
         # print(p1s)
         # print(p2s)
 
@@ -74,8 +71,6 @@ class EDHumanCompactness(HumanCompactness):
             for j, p2 in enumerate(point_ids_2):
                 result += p1s.iloc[i].distance(p2s.iloc[j])
 
-        # end = timer()
-        # print(f"Time taken to sum distances for one district: {end-start}")
         return result
 
     def generate_tractwise_matrix(
@@ -91,6 +86,7 @@ class EDHumanCompactness(HumanCompactness):
 
         Use only with the lookup table.
         """
+        self.points_downsampled = self.points_downsampled.to_crs("ESRI:102010")
         tract_list: List[TractID] = list(self.partition.graph.nodes)
         assert sorted(tract_list) == tract_list
         start = timer()
@@ -114,6 +110,7 @@ class EDHumanCompactness(HumanCompactness):
         end = timer()
         print(f"Time taken to generate tractwise duration matrix: {end-start}")
 
+        self.points_downsampled = self.points_downsampled.to_crs("EPSG:4326")
         return M
 
     def generate_pointwise_sum_matrix(self, K: int) -> PointWiseSumMatrix:
@@ -127,7 +124,7 @@ class EDHumanCompactness(HumanCompactness):
         ddf = pd.DataFrame()
         ddf[0] = pd.Series(np.zeros(self.points_downsampled.shape[0]))
         for k in range(2, K + 1):
-            print(k)
+            print(f"column {k} of {K}")
             # we need to add this to a column
             # so this is a series
             column_k = self.points_downsampled["geometry"].apply(
@@ -135,6 +132,7 @@ class EDHumanCompactness(HumanCompactness):
                 args=[kd_tree, k],
             )
             ddf[k] = column_k
+            print(ddf)
 
         print(ddf)
         dmx: PointWiseSumMatrix = ddf.to_numpy()
