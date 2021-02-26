@@ -21,9 +21,10 @@ class EDHumanCompactness(HumanCompactness):
     """
 
     def _create_kd_tree_(self) -> cKDTree:
-        kd_tree = cKDTree(
-            [(point.x, point.y) for point in self.points_downsampled["geometry"]]
-        )
+        p_converted: GeoDataFrame = self.points_downsampled.to_crs("ESRI:102010")
+        print(self.points_downsampled)
+        print(p_converted)
+        kd_tree = cKDTree([(point.x, point.y) for point in p_converted["geometry"]])
         return kd_tree
 
     def _get_sum_ED_from_voter_to_knn_(voter, kd_tree: cKDTree, k: int) -> float:
@@ -66,6 +67,10 @@ class EDHumanCompactness(HumanCompactness):
         # start = timer()
         p1s = self.points_downsampled.iloc[point_ids_1]["geometry"]
         p2s = self.points_downsampled.iloc[point_ids_2]["geometry"]
+        # p1s = p1s.to_crs("ESRI:102010")
+        # p2s = p2s.to_crs("ESRI:102010")
+        print(p1s)
+        print(p2s)
 
         for i, p1 in enumerate(point_ids_1):
             for j, p2 in enumerate(point_ids_2):
@@ -136,3 +141,24 @@ class EDHumanCompactness(HumanCompactness):
         print(ddf)
         dmx: PointWiseSumMatrix = ddf.to_numpy()
         return dmx
+
+    def save_ed_tractwise_matrix(
+        self, tract_dict: TractDict, save_file_to: str
+    ) -> TractWiseMatrix:
+        """"""
+        matrix = self.generate_tractwise_matrix(tract_dict)
+        np.save(save_file_to, matrix)
+        return matrix
+
+    def save_ed_pointwise_sum_matrix(self, save_file_to: str) -> PointWiseMatrix:
+        matrix = self.generate_pointwise_sum_matrix(3000)
+        np.save(save_file_to, matrix)
+        return matrix
+
+    def read_ed_tractwise_matrix(self, file_location: str) -> TractWiseMatrix:
+        matrix = np.load(file_location)
+        return matrix
+
+    def read_ed_pointwise_sum_matrix(self, file_location: str) -> PointWiseMatrix:
+        matrix = np.load(file_location)
+        return matrix
