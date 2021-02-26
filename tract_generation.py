@@ -73,6 +73,7 @@ def create_tract_dict(
 ) -> TractDict:
     """
     Creates a TractDict.
+    This function is meant to replace generate_tracts_with_vrps.
     """
 
     # First generate the tract dictionary with spatial diversity data
