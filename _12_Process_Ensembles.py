@@ -75,7 +75,7 @@ def _update_graph_with_tract_dict_info_(graph: Graph, tract_dict: TractDict) -> 
         graph.nodes[node]["pfs"] = tract_dict[node]["pfs"]
         graph.nodes[node]["pop"] = tract_dict[node]["pop"]
         graph.nodes[node]["vrps"] = tract_dict[node]["vrps"]
-        print(graph.nodes[node])
+        # print(graph.nodes[node])
 
 
 def _init_data_(
@@ -130,6 +130,8 @@ def _init_data_(
 
 
 def _init_metrics_(
+    initial_partition: GeographicPartition,
+    points_downsampled: GeoDataFrame,
     duration_dict: DurationDict,
     tract_dict: TractDict,
     tractwise_matrix: TractWiseMatrix,
@@ -139,6 +141,19 @@ def _init_metrics_(
     human_compactness_function = partial(
         hc_utils.calculate_human_compactness,
         duration_dict,
+        tract_dict,
+        pointwise_sum_matrix,
+        tractwise_matrix,
+    )
+
+    import dd_human_compactness as ddhc
+    import ed_human_compactness as edhc
+
+    dd_hc = ddhc.DDHumanCompactness(initial_partition, points_downsampled)
+    ed_hc = edhc.EDHumanCompactness(initial_partition, points_downsampled)
+
+    human_compactness_function = partial(
+        dd_hc.calculate_human_compactness,
         tract_dict,
         pointwise_sum_matrix,
         tractwise_matrix,
@@ -286,24 +301,26 @@ def main_old():
             tract_dict,
         )
 
+        initial_partition = GeographicPartition(
+            graph,
+            assignment="New_Seed",
+        )
+
+        points_downsampled = tract_generation._read_and_process_vrp_shapefile(
+            state_fips,
+            config.STATE_NAMES[state_fips],
+            config.NUM_DISTRICTS[state_fips],
+            sample_richness,
+        )
+
         (human_compactness_function, reock_compactness_function,) = _init_metrics_(
+            initial_partition,
+            points_downsampled,
             duration_dict,
             tract_dict,
             tractwise_matrix,
             pointwise_sum_matrix,
             state_shapefile,
-        )
-
-        initial_partition = GeographicPartition(
-            graph,
-            assignment="New_Seed",
-            updaters={
-                "cut_edges": cut_edges,
-                "population": Tally("population", alias="population"),
-                "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-                "human_compactness": human_compactness_function,
-                "reock_compactness": reock_compactness_function,
-            },
         )
 
         new_assignment = dict(initial_partition.assignment)
