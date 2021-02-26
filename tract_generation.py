@@ -69,7 +69,7 @@ def form_point_to_tract_mapping(voter, mapping, geoid_to_id_mapping: GeoIDToIDMa
 
 
 def create_tract_dict(
-    state_code: str, state_name: str, num_districts: str, sample_richness: str
+    state_code: str, state_name: str, num_districts: int, sample_richness: int
 ) -> TractDict:
     """
     Creates a TractDict.
