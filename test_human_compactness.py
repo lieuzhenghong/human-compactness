@@ -13,6 +13,7 @@ import test_process_ensembles
 import numpy as np
 from functools import partial
 import config
+import pytest
 
 
 def _dicts_are_approx_equal_(d1, d2) -> bool:
@@ -23,6 +24,45 @@ def _dicts_are_approx_equal_(d1, d2) -> bool:
     return np.allclose(a1, a2)
 
 
+@pytest.fixture
+def ed_hc():
+    state_fips = "09"
+    datadir = f"./Tract_Ensembles/2000/{state_fips}/"
+    test_json = f"./test/test_data/data100.json"
+    graph = Graph.from_json(datadir + "starting_plan.json")
+
+    initial_partition = GeographicPartition(
+        graph,
+        assignment="New_Seed",
+    )
+
+    state_name = config.STATE_NAMES[state_fips].lower()
+    num_districts = config.NUM_DISTRICTS[state_fips]
+    sample_richness = _12_Process_Ensembles.sample_richness
+
+    points_downsampled = tract_generation._read_and_process_vrp_shapefile(
+        state_fips, state_name, num_districts, sample_richness
+    )
+
+    ed_hc = edhc.EDHumanCompactness(
+        initial_partition,
+        points_downsampled,
+    )
+    return ed_hc
+
+
+@pytest.mark.skip()
+def test_create_kd_tree(ed_hc):
+    kd_tree = ed_hc._create_kd_tree_()
+    assert True
+
+
+def test_sum_of_distances_between_two_lists_of_points_(ed_hc):
+    print(ed_hc._sum_of_distances_between_two_lists_of_points_([1, 2, 3], [0, 4, 5]))
+    assert True
+
+
+@pytest.mark.skip()
 def test_euclidean_compactness():
     state_fips = "09"
     datadir = f"./Tract_Ensembles/2000/{state_fips}/"
@@ -75,6 +115,7 @@ def test_euclidean_compactness():
         assert True
 
 
+@pytest.mark.skip()
 def test_human_compactness():
     """
     Test equivalence of old human compactness function and new human compactness function
