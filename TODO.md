@@ -5,6 +5,9 @@ Last updated 27th Feb 2021
 - [??] Refactor `_12_Process_Ensembles.py`: clean up somehow...
     - [??] Refactor `init_data` to be able to initialise different TractWiseMatrix and PointWiseSumMatrix.
 - [Lieu] Once I've refactored `_12_Process_Ensembles.py`, add in ED human compactness
+- [Gabe] Figure out what is up with the `calculate_metrics` function:
+  why is the loop so strange? It should be looping 10,000 times,
+  why is the inner for loop looping 10,000 times?
 - [Gabe] Double-check `generate_pointwise_sum_matrix` function inside `ed_human_compactness.py`:
     - inside `test_human_compactness.py`, run the function with 
       a small subset of `points_downsampled` and inspect the matrix visually
