@@ -1,48 +1,23 @@
-from typing import List
 import csv
 import json
-
-# TODO make this a command-line param
-SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (
-    0.1464,
-    0.1182,
-    0.101,
-    0.0775,
-    0.0501,
-    0.0399,
-    0.0389,
-    0.0366,
-)
-
-PointID = int
-GEOID = str
-tractid = int
-
-from typing import Optional, Tuple, Mapping
-from typing import TypedDict
+from typing import DefaultDict
+from collections import defaultdict
+from custom_types import *
+import config
 
 
-class TractEntry(TypedDict):
+def create_geoid_to_id_mapping(state_code) -> GeoIDToIDMapping:
     """
-    A TractEntry gives information on a tract ID.
-    This includes its GEOID,
-    its population,
-    its principal factors (for use in spatial diversity calculations),
-    and the voter representative points (VRPs) that belong within it.
+    Creates and returns a GeoIDtoID mapping
+    Dict[GeoID, TractID]
     """
-
-    geoid: GEOID
-    pop: Optional[int]
-    pfs: List[Optional[float]]
-    vrps: List[PointID]
-
-
-TractDict = Mapping[tractid, TractEntry]
-GeoIDToIDMapping = Mapping[GEOID, tractid]
-
-
-class TractNotFoundError(Exception):
-    pass
+    geoid_to_id_mapping: GeoIDToIDMapping = {}
+    starting_plan = f"./Data_2000/Dual_Graphs/Tract2000_{state_code}.json"
+    with open(starting_plan) as f:
+        data = json.load(f)
+        for node in data["nodes"]:
+            geoid_to_id_mapping[node["GEOID"]] = node["id"]
+        return geoid_to_id_mapping
 
 
 def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
@@ -61,9 +36,6 @@ def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
         data = json.load(f)
 
         for node in data["nodes"]:
-            # tract_dict[node["id"]] = {'geoid': node["GEOID10"], 'pop': None, 'pfs': None}
-            # geoid_to_id_mapping[node["GEOID10"]] = node["id"]
-
             # Mapping for 2000 Census Tracts
             tract_dict[node["id"]] = TractEntry(
                 geoid=node["GEOID"], pop=None, pfs=[], vrps=[]
@@ -71,14 +43,25 @@ def get_all_tract_geoids(state_code) -> Tuple[TractDict, GeoIDToIDMapping]:
 
             geoid_to_id_mapping[node["GEOID"]] = node["id"]
 
-    # print(tract_dict)
     return (tract_dict, geoid_to_id_mapping)
+
+
+def create_empty_tract_dict(geoid_to_id_mapping: GeoIDToIDMapping) -> TractDict:
+    """
+    Function that creates a TractDict without population, principal factors, or
+    representative voter point data.
+    Fill it in with the fill_tract_dict_with_spatial_diversity_info function
+    """
+    tract_dict: TractDict = {}
+    for geoid, tract_id in geoid_to_id_mapping.items():
+        tract_dict[tract_id] = TractEntry(geoid=geoid, pop=None, pfs=[], vrps=[])
+    return tract_dict
 
 
 def fill_tract_dict_with_spatial_diversity_info(
     tract_dict: TractDict,
     geoid_to_id_mapping: GeoIDToIDMapping,
-    tract_spatial_diversity_scores,
+    tract_spatial_diversity_scores: str,
 ) -> TractDict:
     """
     Fills in values of spatial diversity according to the tract_spatial_diversity CSV
@@ -215,7 +198,7 @@ def calc_spatial_diversity(partition):
         ]
 
     # We now get each spatial diversity subscore and take the weighted sum to get the final score
-    fw = SPATIAL_DIVERSITY_FACTOR_WEIGHTS
+    fw = config.SPATIAL_DIVERSITY_FACTOR_WEIGHTS
 
     spatial_diversity_final_scores = {}
 

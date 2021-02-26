@@ -1,3 +1,7 @@
+from geopandas.geodataframe import GeoDataFrame
+from pandas import DataFrame
+from custom_types import *
+from typing import Tuple, Union
 import os
 import json
 from functools import partial
@@ -13,97 +17,13 @@ from gerrychain import GeographicPartition, Graph
 from gerrychain.metrics import polsby_popper
 from gerrychain.updaters import Tally, cut_edges
 from timeit import default_timer as timer
+import config
 
-
-state_names = {
-    "02": "Alaska",
-    "01": "Alabama",
-    "05": "Arkansas",
-    "04": "Arizona",
-    "06": "California",
-    "08": "Colorado",
-    "09": "Connecticut",
-    "10": "Delaware",
-    "12": "Florida",
-    "13": "Georgia",
-    "66": "Guam",
-    "15": "Hawaii",
-    "19": "Iowa",
-    "16": "Idaho",
-    "17": "Illinois",
-    "18": "Indiana",
-    "20": "Kansas",
-    "21": "Kentucky",
-    "22": "Louisiana",
-    "25": "Massachusetts",
-    "24": "Maryland",
-    "23": "Maine",
-    "26": "Michigan",
-    "27": "Minnesota",
-    "29": "Missouri",
-    "28": "Mississippi",
-    "30": "Montana",
-    "37": "North_Carolina",
-    "38": "North_Dakota",
-    "31": "Nebraska",
-    "33": "New_Hampshire",
-    "34": "New_Jersey",
-    "35": "New_Mexico",
-    "32": "Nevada",
-    "36": "New_York",
-    "39": "Ohio",
-    "40": "Oklahoma",
-    "41": "Oregon",
-    "42": "Pennsylvania",
-    "72": "Puerto_Rico",
-    "44": "Rhode_Island",
-    "45": "South_Carolina",
-    "46": "South_Dakota",
-    "47": "Tenessee",
-    "48": "Texas",
-    "49": "Utah",
-    "51": "Virginia",
-    "50": "Vermont",
-    "53": "Washington",
-    "55": "Wisconsin",
-    "54": "West_Virginia",
-    "56": "Wyoming",
-}
-
-# TODO fill this in
-num_districts = {
-    "01": 7,
-    "04": 8,
-    "08": 7,
-    "09": 5,
-    "13": 13,
-    "16": 2,
-    "19": 4,
-    "22": 7,
-    "24": 8,
-    "33": 2,
-    "23": 2,
-    "44": 2,
-    "49": 3,
-    "55": 8,
-}
 
 num_elections = 1
 
 plan_name = "Enacted"
 
-# I'll be doing the following districts:
-
-# fips_list = ['13'] # Georgia
-# fips_list = ['22']  # Louisiana
-# fips_list = ['24'] # Maryland
-# fips_list = ['55']  # Wisconsin
-# fips_list = ['04', '08', '16', '19', '33', '49']
-# fips_list = ['13', '22', '24', '55']
-# fips_list = ['16']
-# fips_list = ['19', '33', '49']
-# fips_list = ['23', '44'] # Maine and Rhode Island
-fips_list = ["09"]
 sample_richness = 1000  # Number of VRPs to sample per district
 
 
@@ -132,26 +52,40 @@ def _create_new_dir_(state_fips: str) -> str:
     return newdir
 
 
-def _init_(state_fips: str, datadir: str):
+def _update_graph_with_tract_dict_info_(graph: Graph, tract_dict: TractDict) -> None:
+    """
+    Update the partition graph with information from the TractDict
+    Used in calc_spatial_diversity
+    TODO: think about using the Partition Graph as the source of truth.
+    Then we can get rid of TractDict.
+    """
+    for node in graph.nodes():
+        graph.nodes[node]["pfs"] = tract_dict[node]["pfs"]
+        graph.nodes[node]["pop"] = tract_dict[node]["pop"]
+        graph.nodes[node]["vrps"] = tract_dict[node]["vrps"]
+        # print(graph.nodes[node])
+
+
+def _init_data_(
+    state_fips: str, graph: Graph
+) -> Tuple[
+    DurationDict,
+    TractDict,
+    Union[DataFrame, GeoDataFrame],
+    TractWiseMatrix,
+    PointWiseSumMatrix,
+]:
     """
     Generates a bunch of stuff needed for the various compactness functions.
-    Returns the Gerrychain Graph and
-    partial functions for human compactness and reock compactness.
     """
     print("Reading pairwise tract driving durations into memory...")
-    state_name = state_names[state_fips].lower()
+    state_name = config.STATE_NAMES[state_fips].lower()
     DD_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json"
     duration_dict = hc_utils.read_tract_duration_json(DD_PATH)
 
-    print("Reading tract shapefile into memory...")
-    SHAPEFILE_PATH = f"./Data_2000/Shapefiles/Tract2000_{state_fips}.shp"
-    state_shp = gpd.read_file(SHAPEFILE_PATH)
-
     print("Reading KNN duration matrix file into memory...")
     DM_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx"
-    duration_matrix = read_duration_matrix(DM_PATH)
-
-    graph = Graph.from_json(datadir + "starting_plan.json")
+    pointwise_sum_matrix = read_duration_matrix(DM_PATH)
 
     # add population and spatial diversity data to the graph
     # tract_dict = spatial_diversity.build_spatial_diversity_dict(
@@ -160,103 +94,65 @@ def _init_(state_fips: str, datadir: str):
     tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(state_fips)
 
     tract_dict = tract_generation.generate_tracts_with_vrps(
-        state_fips, state_name, num_districts[state_fips], sample_richness
+        state_fips, state_name, config.NUM_DISTRICTS[state_fips], sample_richness
     )
 
+    print("Reading tract shapefile into memory...")
+    SHAPEFILE_PATH = f"./Data_2000/Shapefiles/Tract2000_{state_fips}.shp"
+    state_shp = gpd.read_file(SHAPEFILE_PATH)
     # Preprocess the state tract shapefile to include external points
     state_shp = reock.preprocess_dataframe(state_shp, geoid_to_id_mapping)
 
     # Create a square numpy NxN matrix from the pairwise tract duration dict
-    M = hc_utils._generate_tractwise_dd_matrix_(list(graph.nodes), duration_dict)
+    tractwise_matrix = hc_utils._generate_tractwise_dd_matrix_(
+        list(graph.nodes), duration_dict
+    )
 
+    return (
+        duration_dict,
+        tract_dict,
+        tractwise_matrix,
+        pointwise_sum_matrix,
+        state_shp,
+    )
+
+
+def _init_metrics_(
+    initial_partition: GeographicPartition,
+    points_downsampled: GeoDataFrame,
+    duration_dict: DurationDict,
+    tract_dict: TractDict,
+    tractwise_matrix: TractWiseMatrix,
+    pointwise_sum_matrix: PointWiseSumMatrix,
+    state_shapefile: Union[DataFrame, GeoDataFrame],
+):
     human_compactness_function = partial(
         hc_utils.calculate_human_compactness,
         duration_dict,
         tract_dict,
-        duration_matrix,
-        M,
+        pointwise_sum_matrix,
+        tractwise_matrix,
     )
 
-    reock_compactness_function = partial(reock.reock, state_shp)
+    import dd_human_compactness as ddhc
+    import ed_human_compactness as edhc
 
-    # euclidean_human_compactness_function = partial()
+    dd_hc = ddhc.DDHumanCompactness(initial_partition, points_downsampled)
+    ed_hc = edhc.EDHumanCompactness(initial_partition, points_downsampled)
 
-    # just for reference
-    num_Nones = 0
-    for node in graph.nodes():
+    human_compactness_function = partial(
+        dd_hc.calculate_human_compactness,
+        tract_dict,
+        pointwise_sum_matrix,
+        tractwise_matrix,
+    )
 
-        if tract_dict[node]["pfs"] is None:
-            num_Nones += 1
+    reock_compactness_function = partial(reock.reock, state_shapefile)
 
-        graph.nodes[node]["pfs"] = tract_dict[node]["pfs"]
-        graph.nodes[node]["pop"] = tract_dict[node]["pop"]
-        # print(graph.nodes[node])
-
-    # Checking the number of empty tracts (tracts without VRPs)
-    empty_tracts = []
-
-    for tract_id in tract_dict:
-        if len(tract_dict[tract_id]["vrps"]) == 0:
-            empty_tracts.append(tract_id)
-
-    print(f"Number of empty tracts: {len(empty_tracts)}")
     return (
-        graph,
         human_compactness_function,
         reock_compactness_function,
     )
-
-
-def main_old():
-    """
-    1. Read tract shapefile into memoru
-    2. Read KNN duration matrix file into memory
-    3. Create new folder if it doesn't exist
-    4. Open up _starting_plan.json
-    5. Create Graph from _starting_plan.json
-    6. tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(
-            state_fips)
-    7. tract_dict = tract_generation.generate_tracts_with_vrps(
-            state_fips, state_name, num_districts[state_fips], sample_richness)
-    8. # Preprocess the state tract shapefile to include external points
-        state_shp = reock.preprocess_dataframe(
-            state_shp, geoid_to_id_mapping)
-    9. initial_partition
-    10. new_assignment
-    11. Run 10,000 cycles, calculate all metrics
-    """
-    for state_fips in fips_list:
-        newdir = _create_new_dir_(state_fips)
-        datadir = f"./Tract_Ensembles/2000/{state_fips}/"
-
-        (
-            graph,
-            human_compactness_function,
-            reock_compactness_function,
-        ) = _init_(state_fips, datadir)
-
-        initial_partition = GeographicPartition(
-            graph,
-            assignment="New_Seed",
-            updaters={
-                "cut_edges": cut_edges,
-                "population": Tally("population", alias="population"),
-                "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-                "human_compactness": human_compactness_function,
-                "reock_compactness": reock_compactness_function,
-            },
-        )
-
-        new_assignment = dict(initial_partition.assignment)
-        # load graph and make initial partition
-        calculate_metrics(
-            new_assignment,
-            datadir,
-            newdir,
-            graph,
-            human_compactness_function,
-            reock_compactness_function,
-        )
 
 
 def calculate_metrics_step(
@@ -355,6 +251,76 @@ def calculate_metrics(
                 ) as tf1:
                     json.dump(data, tf1)
                     data = []
+
+
+def main_old():
+    """
+    1. Read tract shapefile into memoru
+    2. Read KNN duration matrix file into memory
+    3. Create new folder if it doesn't exist
+    4. Open up _starting_plan.json
+    5. Create Graph from _starting_plan.json
+    6. tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(
+            state_fips)
+    7. tract_dict = tract_generation.generate_tracts_with_vrps(
+            state_fips, state_name, num_districts[state_fips], sample_richness)
+    8. # Preprocess the state tract shapefile to include external points
+        state_shp = reock.preprocess_dataframe(
+            state_shp, geoid_to_id_mapping)
+    9. initial_partition
+    10. new_assignment
+    11. Run 10,000 cycles, calculate all metrics
+    """
+    for state_fips in config.FIPS_LIST:
+        newdir = _create_new_dir_(state_fips)
+        datadir = f"./Tract_Ensembles/2000/{state_fips}/"
+        graph = Graph.from_json(datadir + "starting_plan.json")
+
+        (
+            duration_dict,
+            tract_dict,
+            tractwise_matrix,
+            pointwise_sum_matrix,
+            state_shapefile,
+        ) = _init_data_(state_fips, graph)
+
+        _update_graph_with_tract_dict_info_(
+            graph,
+            tract_dict,
+        )
+
+        initial_partition = GeographicPartition(
+            graph,
+            assignment="New_Seed",
+        )
+
+        points_downsampled = tract_generation._read_and_process_vrp_shapefile(
+            state_fips,
+            config.STATE_NAMES[state_fips],
+            config.NUM_DISTRICTS[state_fips],
+            sample_richness,
+        )
+
+        (human_compactness_function, reock_compactness_function,) = _init_metrics_(
+            initial_partition,
+            points_downsampled,
+            duration_dict,
+            tract_dict,
+            tractwise_matrix,
+            pointwise_sum_matrix,
+            state_shapefile,
+        )
+
+        new_assignment = dict(initial_partition.assignment)
+        # load graph and make initial partition
+        calculate_metrics(
+            new_assignment,
+            datadir,
+            newdir,
+            graph,
+            human_compactness_function,
+            reock_compactness_function,
+        )
 
 
 if __name__ == "__main__":

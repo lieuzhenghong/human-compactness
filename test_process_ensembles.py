@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+from reock import reock
 import _12_Process_Ensembles
 from gerrychain import Election, GeographicPartition, Graph, Partition
 from gerrychain.metrics import polsby_popper
 from gerrychain.updaters import Tally, cut_edges
 import spatial_diversity_utils as spatial_diversity
+import config
+import tract_generation
 
 
 def _is_close_(f1: float, f2: float, epsilon=0.0001) -> bool:
@@ -47,23 +50,47 @@ def test_process_ensemble_main():
     with open(test_json, "r") as f1:
         refdata = json.load(f1)
 
+        datadir = f"./Tract_Ensembles/2000/{state_fips}/"
+        graph = Graph.from_json(datadir + "starting_plan.json")
+
         (
+            duration_dict,
+            tract_dict,
+            tractwise_matrix,
+            pointwise_sum_matrix,
+            state_shapefile,
+        ) = _12_Process_Ensembles._init_data_(state_fips, graph)
+
+        _12_Process_Ensembles._update_graph_with_tract_dict_info_(
             graph,
-            human_compactness_function,
-            reock_compactness_function,
-        ) = _12_Process_Ensembles._init_(state_fips, datadir)
+            tract_dict,
+        )
 
         initial_partition = GeographicPartition(
             graph,
             assignment="New_Seed",
-            updaters={
-                "cut_edges": cut_edges,
-                "population": Tally("population", alias="population"),
-                "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-                "human_compactness": human_compactness_function,
-                "reock_compactness": reock_compactness_function,
-            },
         )
+
+        points_downsampled = tract_generation._read_and_process_vrp_shapefile(
+            state_fips,
+            config.STATE_NAMES[state_fips],
+            config.NUM_DISTRICTS[state_fips],
+            _12_Process_Ensembles.sample_richness,
+        )
+
+        (
+            human_compactness_function,
+            reock_compactness_function,
+        ) = _12_Process_Ensembles._init_metrics_(
+            initial_partition,
+            points_downsampled,
+            duration_dict,
+            tract_dict,
+            tractwise_matrix,
+            pointwise_sum_matrix,
+            state_shapefile,
+        )
+
         new_assignment = dict(initial_partition.assignment)
 
         with open(datadir + f"flips_10000.json") as f:
