@@ -22,8 +22,6 @@ class EDHumanCompactness(HumanCompactness):
 
     def _create_kd_tree_(self) -> cKDTree:
         p_converted: GeoDataFrame = self.points_downsampled.to_crs("ESRI:102010")
-        print(self.points_downsampled)
-        print(p_converted)
         kd_tree = cKDTree([(point.x, point.y) for point in p_converted["geometry"]])
         return kd_tree
 
@@ -69,8 +67,8 @@ class EDHumanCompactness(HumanCompactness):
         p2s = self.points_downsampled.iloc[point_ids_2]["geometry"]
         # p1s = p1s.to_crs("ESRI:102010")
         # p2s = p2s.to_crs("ESRI:102010")
-        print(p1s)
-        print(p2s)
+        # print(p1s)
+        # print(p2s)
 
         for i, p1 in enumerate(point_ids_1):
             for j, p2 in enumerate(point_ids_2):
