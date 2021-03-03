@@ -115,7 +115,6 @@ def test_euclidean_compactness():
         assert True
 
 
-@pytest.mark.skip()
 def test_human_compactness():
     """
     Test equivalence of old human compactness function and new human compactness function
@@ -124,27 +123,23 @@ def test_human_compactness():
     state_fips = "09"
     test_json = f"./test/test_data/data100.json"
     datadir = f"./Tract_Ensembles/2000/{state_fips}/"
-    state_fips = "09"
-    state_name = config.STATE_NAMES[state_fips].lower()
-    num_districts = config.NUM_DISTRICTS[state_fips]
-    sample_richness = _12_Process_Ensembles.sample_richness
-    graph = Graph.from_json(datadir + "starting_plan.json")
-    (
-        duration_dict,
-        tract_dict,
-        tractwise_matrix,
-        pointwise_sum_matrix,
-        state_shapefile,
-    ) = _12_Process_Ensembles._init_data_(state_fips, graph)
-
-    _12_Process_Ensembles._update_graph_with_tract_dict_info_(
-        graph,
-        tract_dict,
-    )
-
-    tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(state_fips)
 
     with open(test_json, "r") as f1:
+        refdata = json.load(f1)
+
+        graph = Graph.from_json(datadir + "starting_plan.json")
+        (
+            duration_dict,
+            tract_dict,
+            tractwise_matrix,
+            pointwise_sum_matrix,
+            state_shapefile,
+        ) = _12_Process_Ensembles._init_data_(state_fips, graph)
+
+        _12_Process_Ensembles._update_graph_with_tract_dict_info_(
+            graph,
+            tract_dict,
+        )
 
         initial_partition = GeographicPartition(
             graph,
@@ -152,7 +147,10 @@ def test_human_compactness():
         )
 
         points_downsampled = tract_generation._read_and_process_vrp_shapefile(
-            state_fips, state_name, num_districts, sample_richness
+            state_fips,
+            config.STATE_NAMES[state_fips],
+            config.NUM_DISTRICTS[state_fips],
+            config.SAMPLE_RICHNESS,
         )
 
         dd_hc = ddhc.DDHumanCompactness(
@@ -161,7 +159,7 @@ def test_human_compactness():
         )
 
         (
-            human_compactness_function,
+            old_human_compactness_function,
             reock_compactness_function,
         ) = _12_Process_Ensembles._init_metrics_(
             initial_partition,
@@ -173,8 +171,6 @@ def test_human_compactness():
             state_shapefile,
         )
 
-        new_assignment = dict(initial_partition.assignment)
-
         human_compactness_function = partial(
             dd_hc.calculate_human_compactness,
             tract_dict,
@@ -182,19 +178,13 @@ def test_human_compactness():
             tractwise_matrix,
         )
 
-        human_compactness_function_2 = partial(
-            hc_utils.calculate_human_compactness,
-            duration_dict,
-            tract_dict,
-            pointwise_sum_matrix,
-            tractwise_matrix,
-        )
+        new_assignment = dict(initial_partition.assignment)
 
         with open(datadir + f"flips_10000.json") as f:
             dict_list = json.load(f)
             calcdata = {}
-            refdata = {}
-            for step in range(10):
+            calcdata2 = {}
+            for step in range(100):
                 calcdata[step] = _12_Process_Ensembles.calculate_metrics_step(
                     step,
                     dict_list,
@@ -204,16 +194,21 @@ def test_human_compactness():
                     reock_compactness_function,
                 )
 
-                refdata[step] = _12_Process_Ensembles.calculate_metrics_step(
+                calcdata2[step] = _12_Process_Ensembles.calculate_metrics_step(
                     step,
                     dict_list,
                     graph,
                     new_assignment,
-                    human_compactness_function_2,
+                    old_human_compactness_function,
                     reock_compactness_function,
                 )
 
                 assert _dicts_are_approx_equal_(
                     calcdata[step]["human_compactness"],
                     refdata[step]["human_compactness"],
+                )
+
+                assert _dicts_are_approx_equal_(
+                    calcdata[step]["human_compactness"],
+                    calcdata2[step]["human_compactness"],
                 )
