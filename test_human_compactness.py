@@ -38,7 +38,8 @@ def ed_hc():
 
     state_name = config.STATE_NAMES[state_fips].lower()
     num_districts = config.NUM_DISTRICTS[state_fips]
-    sample_richness = _12_Process_Ensembles.sample_richness
+    # sample_richness = _12_Process_Ensembles.sample_richness
+    sample_richness = 20
 
     points_downsampled = tract_generation._read_and_process_vrp_shapefile(
         state_fips, state_name, num_districts, sample_richness
@@ -56,7 +57,12 @@ def test_create_kd_tree(ed_hc):
     kd_tree = ed_hc._create_kd_tree_()
     assert True
 
+def test_generate_pointwise_sum_matrix(ed_hc):
+    K = 10
+    dmx = ed_hc.generate_pointwise_sum_matrix(K)
+    assert dmx.shape[1] == K
 
+@pytest.mark.skip()
 def test_sum_of_distances_between_two_lists_of_points_(ed_hc):
     print(ed_hc._sum_of_distances_between_two_lists_of_points_([1, 2, 3], [0, 4, 5]))
     assert True
