@@ -122,8 +122,9 @@ class EDHumanCompactness(HumanCompactness):
         """
         kd_tree = self._create_kd_tree_()
         ddf = pd.DataFrame()
-        ddf[0] = pd.Series(np.zeros(self.points_downsampled.shape[0]))
-        for k in range(2, K + 1):
+        # ddf is 1-indexed since `kd_tree` considers x its own nearest neighbor (k=1)
+        ddf[1] = pd.Series(np.zeros(self.points_downsampled.shape[0]))
+        for k in range(2, K+1):
             print(f"column {k} of {K}")
             # we need to add this to a column
             # so this is a series
@@ -134,7 +135,6 @@ class EDHumanCompactness(HumanCompactness):
             ddf[k] = column_k
             print(ddf)
 
-        print(ddf)
         dmx: PointWiseSumMatrix = ddf.to_numpy()
         return dmx
 
