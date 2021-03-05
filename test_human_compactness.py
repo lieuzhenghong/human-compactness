@@ -64,6 +64,7 @@ def test_sum_of_distances_between_two_lists_of_points_(ed_hc):
     assert True
 
 
+@pytest.mark.skip()
 def test_generate_pointwise_sum_matrix(ed_hc):
     K = 10
     pointwise_sum_matrix = ed_hc.generate_pointwise_sum_matrix(K)
@@ -71,6 +72,7 @@ def test_generate_pointwise_sum_matrix(ed_hc):
     assert True
 
 
+@pytest.mark.skip()
 def test_read_ed_pointwise_sum_matrix(ed_hc):
     pointwise_sum_matrix = ed_hc.read_ed_pointwise_sum_matrix(
         "./20_intermediate_files/09_Connecticut_pointwise_sum_matrix.npy"
@@ -132,7 +134,6 @@ def test_euclidean_compactness():
         assert True
 
 
-@pytest.mark.skip()
 def test_human_compactness():
     """
     Test equivalence of old human compactness function and new human compactness function
@@ -174,6 +175,9 @@ def test_human_compactness():
         dd_hc = ddhc.DDHumanCompactness(
             initial_partition,
             points_downsampled,
+            tract_dict,
+            pointwise_sum_matrix,
+            tractwise_matrix,
         )
 
         (
@@ -189,13 +193,6 @@ def test_human_compactness():
             state_shapefile,
         )
 
-        human_compactness_function = partial(
-            dd_hc.calculate_human_compactness,
-            tract_dict,
-            pointwise_sum_matrix,
-            tractwise_matrix,
-        )
-
         new_assignment = dict(initial_partition.assignment)
 
         with open(datadir + f"flips_10000.json") as f:
@@ -208,7 +205,7 @@ def test_human_compactness():
                     dict_list,
                     graph,
                     new_assignment,
-                    human_compactness_function,
+                    dd_hc.calculate_human_compactness,
                     reock_compactness_function,
                 )
 

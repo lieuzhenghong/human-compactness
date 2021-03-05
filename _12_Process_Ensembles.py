@@ -134,19 +134,6 @@ def _init_metrics_(
         tractwise_matrix,
     )
 
-    import dd_human_compactness as ddhc
-    import ed_human_compactness as edhc
-
-    dd_hc = ddhc.DDHumanCompactness(initial_partition, points_downsampled)
-    ed_hc = edhc.EDHumanCompactness(initial_partition, points_downsampled)
-
-    human_compactness_function = partial(
-        dd_hc.calculate_human_compactness,
-        tract_dict,
-        pointwise_sum_matrix,
-        tractwise_matrix,
-    )
-
     reock_compactness_function = partial(reock.reock, state_shapefile)
 
     return (
@@ -173,6 +160,7 @@ def calculate_metrics_step(
     new_assignment.update({int(item[0]): int(item[1]) for item in changes_this_step})
 
     print("Building new GeographicPartition...")
+
     new_partition = GeographicPartition(
         graph,
         assignment=new_assignment,
