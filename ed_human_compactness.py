@@ -31,9 +31,9 @@ class EDHumanCompactness(HumanCompactness):
         and returns a float denoting the sum of distances between
         that voter's location and its k nearest neighbours.
         """
-        distances, indices = kd_tree.query(voter, k)
-        # print(distances)
-        return sum(distances)
+        distances, _ = kd_tree.query(voter, k)  # distances are sorted
+        # print(distances, indices)
+        return distances
 
     def _form_tract_matrix_dd_lookup_table_(self):
         """
@@ -120,22 +120,38 @@ class EDHumanCompactness(HumanCompactness):
         This is a very slow function and should be run only once
         Save this to disk
         """
-        kd_tree = self._create_kd_tree_()
-        ddf = pd.DataFrame()
-        ddf[0] = pd.Series(np.zeros(self.points_downsampled.shape[0]))
-        for k in range(2, K + 1):
-            print(f"column {k} of {K}")
-            # we need to add this to a column
-            # so this is a series
-            column_k = self.points_downsampled["geometry"].apply(
-                self._get_sum_ED_from_voter_to_knn_,
-                args=[kd_tree, k],
-            )
-            ddf[k] = column_k
-            print(ddf)
+        self.points_downsampled = self.points_downsampled.to_crs("ESRI:102010")
+        kd_tree: cKDTree = self._create_kd_tree_()
 
-        print(ddf)
-        dmx: PointWiseSumMatrix = ddf.to_numpy()
+        dmk = self.points_downsampled["geometry"].apply(
+            self._get_sum_ED_from_voter_to_knn_,
+            args=[kd_tree, K + 1],
+        )
+        print("DMK:", dmk)
+        print(np.shape(dmk))
+
+        def sum_column(l):
+            from functools import reduce
+
+            a = [0]
+            for index, ele in enumerate(l):
+                a.append(a[index] + ele)
+
+            return a[1:]
+
+        dmx = dmk.apply(
+            sum_column,
+        )
+
+        print("DMX:", dmx)
+
+        dmx = dmx.apply(pd.Series)
+
+        print("DMX:", dmx)
+
+        dmx: PointWiseSumMatrix = dmx.to_numpy()
+        self.points_downsampled = self.points_downsampled.to_crs("EPSG:4326")
+        print(dmx)
         return dmx
 
     def save_ed_tractwise_matrix(

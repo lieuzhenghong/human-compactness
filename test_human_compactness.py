@@ -62,6 +62,11 @@ def test_sum_of_distances_between_two_lists_of_points_(ed_hc):
     assert True
 
 
+def test_generate_pointwise_sum_matrix(ed_hc):
+    pointwise_sum_matrix = ed_hc.generate_pointwise_sum_matrix(5)
+    assert True
+
+
 @pytest.mark.skip()
 def test_euclidean_compactness():
     state_fips = "09"
@@ -115,6 +120,7 @@ def test_euclidean_compactness():
         assert True
 
 
+@pytest.mark.skip()
 def test_human_compactness():
     """
     Test equivalence of old human compactness function and new human compactness function
