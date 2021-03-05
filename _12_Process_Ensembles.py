@@ -18,6 +18,9 @@ from gerrychain.metrics import polsby_popper
 from gerrychain.updaters import Tally, cut_edges
 from timeit import default_timer as timer
 import config
+import dd_human_compactness as ddhc
+import ed_human_compactness as edhc
+import human_compactness as hc
 
 
 num_elections = 1
@@ -41,9 +44,10 @@ def _create_new_dir_(state_fips: str) -> str:
     # newdir = f"./20_intermediate_files/{state_fips}/"
     # newdir = f"./21_intermediate_files_rerun/{state_fips}/"
     # newdir = f"./22_intermediate_files_rerun_2/{state_fips}/"
-    newdir = f"./22_intermediate_files_rerun_old/{state_fips}/"
+    # newdir = f"./22_intermediate_files_rerun_old/{state_fips}/"
     # newdir = f"./22_intermediate_files_rerun_new/{state_fips}/"
     # newdir = f"./22_intermediate_files_rerun_new_proj_network_off/{state_fips}/"
+    newdir = f"./22_intermediate_files_new_run/{state_fips}/"
 
     os.makedirs(os.path.dirname(newdir + "init"), exist_ok=True)
     with open(newdir + "init", "w") as f:
@@ -66,250 +70,145 @@ def _update_graph_with_tract_dict_info_(graph: Graph, tract_dict: TractDict) -> 
         # print(graph.nodes[node])
 
 
-def _init_data_(
-    state_fips: str, graph: Graph
-) -> Tuple[
-    DurationDict,
-    TractDict,
-    Union[DataFrame, GeoDataFrame],
-    TractWiseMatrix,
-    PointWiseSumMatrix,
-]:
-    """
-    Generates a bunch of stuff needed for the various compactness functions.
-    """
-    print("Reading pairwise tract driving durations into memory...")
-    state_name = config.STATE_NAMES[state_fips].lower()
-    DD_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_tract_dds.json"
-    duration_dict = hc_utils.read_tract_duration_json(DD_PATH)
+def calculate_metrics_step(partition: GeographicPartition) -> Dict[str, Dict]:
+    result = {}
+    print(partition.updaters.keys())
+    for updater in partition.updaters.keys():
+        if updater == "reock_compactness":
+            reock_compactness, ch_compactness = partition["reock_compactness"]
+            result["reock_compactness"] = reock_compactness
+            result["convex_hull_compactness"] = ch_compactness
+        if updater in [
+            "human_compactness_dd",
+            "human_compactness_ed",
+            "spatial_diversity",
+            "polsby_compactness",
+        ]:
+            result[updater] = partition[updater]
 
-    print("Reading KNN duration matrix file into memory...")
-    DM_PATH = f"./20_intermediate_files/{state_fips}_{state_name}_knn_sum_dd.dmx"
-    pointwise_sum_matrix = read_duration_matrix(DM_PATH)
-
-    # add population and spatial diversity data to the graph
-    # tract_dict = spatial_diversity.build_spatial_diversity_dict(
-    #    *spatial_diversity.get_all_tract_geoids())
-
-    tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(state_fips)
-
-    tract_dict = tract_generation.generate_tracts_with_vrps(
-        state_fips, state_name, config.NUM_DISTRICTS[state_fips], sample_richness
-    )
-
-    print("Reading tract shapefile into memory...")
-    SHAPEFILE_PATH = f"./Data_2000/Shapefiles/Tract2000_{state_fips}.shp"
-    state_shp = gpd.read_file(SHAPEFILE_PATH)
-    # Preprocess the state tract shapefile to include external points
-    state_shp = reock.preprocess_dataframe(state_shp, geoid_to_id_mapping)
-
-    # Create a square numpy NxN matrix from the pairwise tract duration dict
-    tractwise_matrix = hc_utils._generate_tractwise_dd_matrix_(
-        list(graph.nodes), duration_dict
-    )
-
-    return (
-        duration_dict,
-        tract_dict,
-        tractwise_matrix,
-        pointwise_sum_matrix,
-        state_shp,
-    )
+    print(result)
+    return result
 
 
-def _init_metrics_(
-    initial_partition: GeographicPartition,
-    points_downsampled: GeoDataFrame,
-    duration_dict: DurationDict,
-    tract_dict: TractDict,
-    tractwise_matrix: TractWiseMatrix,
-    pointwise_sum_matrix: PointWiseSumMatrix,
-    state_shapefile: Union[DataFrame, GeoDataFrame],
-):
-    human_compactness_function = partial(
-        hc_utils.calculate_human_compactness,
-        duration_dict,
-        tract_dict,
-        pointwise_sum_matrix,
-        tractwise_matrix,
-    )
-
-    reock_compactness_function = partial(reock.reock, state_shapefile)
-
-    return (
-        human_compactness_function,
-        reock_compactness_function,
-    )
-
-
-def calculate_metrics_step(
-    step,
-    dict_list,
-    graph,
-    new_assignment,
-    human_compactness_function,
-    reock_compactness_function,
-):
-    print(f"Step: {step}")
-    start = timer()
-
-    changes_this_step = dict_list[step].items()
-    print(f"Changes this step: {len(changes_this_step)}")
-
-    print("Updating new assignment...")
-    new_assignment.update({int(item[0]): int(item[1]) for item in changes_this_step})
-
-    print("Building new GeographicPartition...")
-
-    new_partition = GeographicPartition(
-        graph,
-        assignment=new_assignment,
-        updaters={
-            "cut_edges": cut_edges,
-            "population": Tally("population", alias="population"),
-            "spatial_diversity": spatial_diversity.calc_spatial_diversity,
-            "human_compactness": human_compactness_function,
-            "polsby_compactness": polsby_popper,
-            "reock_compactness": reock_compactness_function,
-        },
-    )
-
-    print("Appending new data...")
-
-    start_hc = timer()
-    human_compactness = new_partition["human_compactness"]
-    end_hc = timer()
-    print(f"Time taken to calculate human compactness: {end_hc - start_hc}")
-
-    start_reock = timer()
-    reock_compactness, ch_compactness = new_partition["reock_compactness"]
-    end_reock = timer()
-    print(f"Time taken to calculate reock compactness: {end_reock - start_reock}")
-
-    end = timer()
-
-    print(f"Time taken for step {step}: {end-start}")
-
-    return {
-        "spatial_diversity": new_partition["spatial_diversity"],
-        "polsby_compactness": new_partition["polsby_compactness"],
-        "human_compactness": human_compactness,
-        "reock_compactness": reock_compactness,
-        "convex_hull_compactness": ch_compactness,
-    }
-
-
-def calculate_metrics(
-    new_assignment,
-    datadir,
-    newdir,
-    graph,
-    human_compactness_function,
-    reock_compactness_function,
-):
-    data = []
-
-    max_steps = 10000
-    step_size = 10000
-    save_step_size = 100
-
-    ts = [x * step_size for x in range(1, int(max_steps / step_size) + 1)]
-
-    for t in ts:
-        print(f"Opening flips_{t}.json")
-        with open(datadir + f"flips_{t}.json") as f:
-            dict_list = json.load(f)
-
-        for step in range(step_size):
-            step_data = calculate_metrics_step(
-                step,
-                dict_list,
-                graph,
-                new_assignment,
-                human_compactness_function,
-                reock_compactness_function,
-            )
-            data.append(step_data)
-            if step % save_step_size == save_step_size - 1:  # 999
-                print(
-                    f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json'
-                )
-                with open(
-                    newdir + "data" + str(t - step_size + step + +1) + ".json", "w"
-                ) as tf1:
-                    json.dump(data, tf1)
-                    data = []
-
-
-def main_old():
-    """
-    1. Read tract shapefile into memoru
-    2. Read KNN duration matrix file into memory
-    3. Create new folder if it doesn't exist
-    4. Open up _starting_plan.json
-    5. Create Graph from _starting_plan.json
-    6. tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(
-            state_fips)
-    7. tract_dict = tract_generation.generate_tracts_with_vrps(
-            state_fips, state_name, num_districts[state_fips], sample_richness)
-    8. # Preprocess the state tract shapefile to include external points
-        state_shp = reock.preprocess_dataframe(
-            state_shp, geoid_to_id_mapping)
-    9. initial_partition
-    10. new_assignment
-    11. Run 10,000 cycles, calculate all metrics
-    """
+def main():
     for state_fips in config.FIPS_LIST:
         newdir = _create_new_dir_(state_fips)
         datadir = f"./Tract_Ensembles/2000/{state_fips}/"
         graph = Graph.from_json(datadir + "starting_plan.json")
+        points_downsampled = tract_generation._read_and_process_vrp_shapefile(
+            state_fips,
+            config.STATE_NAMES[state_fips],
+            config.NUM_DISTRICTS[state_fips],
+            config.SAMPLE_RICHNESS,
+        )
+        tract_dict, geoid_to_id_mapping = spatial_diversity.get_all_tract_geoids(
+            state_fips
+        )
 
-        (
-            duration_dict,
-            tract_dict,
-            tractwise_matrix,
-            pointwise_sum_matrix,
-            state_shapefile,
-        ) = _init_data_(state_fips, graph)
+        SHAPEFILE_PATH = f"./Data_2000/Shapefiles/Tract2000_{state_fips}.shp"
+        state_shapefile = gpd.read_file(SHAPEFILE_PATH)
+        # Preprocess the state tract shapefile to include external points
+        state_shapefile = reock.preprocess_dataframe(
+            state_shapefile, geoid_to_id_mapping
+        )
+        reock_compactness_function = partial(reock.reock, state_shapefile)
 
+        tract_dict = tract_generation.generate_tracts_with_vrps(
+            state_fips,
+            config.STATE_NAMES[state_fips].lower(),
+            config.NUM_DISTRICTS[state_fips],
+            config.SAMPLE_RICHNESS,
+        )
+
+        # We need to do this otherwise calc_spatial_diversity will break
         _update_graph_with_tract_dict_info_(
             graph,
             tract_dict,
         )
 
-        initial_partition = GeographicPartition(
+        dd_hc = ddhc.DDHumanCompactness(
+            graph,
+            points_downsampled,
+            tract_dict,
+        )
+        DM_PATH = f"./20_intermediate_files/{state_fips}_{config.STATE_NAMES[state_fips].lower()}_knn_sum_dd.dmx"
+        dd_hc.pointwise_sum_matrix = read_duration_matrix(DM_PATH)
+        DD_PATH = f"./20_intermediate_files/{state_fips}_{config.STATE_NAMES[state_fips].lower()}_tract_dds.json"
+        duration_dict = hc_utils.read_tract_duration_json(DD_PATH)
+        dd_hc.tractwise_matrix = dd_hc.generate_tractwise_matrix(
+            list(graph.nodes), duration_dict
+        )
+
+        ed_hc = edhc.EDHumanCompactness(
+            graph,
+            points_downsampled,
+            tract_dict,
+        )
+
+        ED_POINTWISE_SUM_MATRIX_PATH = f"./20_intermediate_files/{state_fips}_{config.STATE_NAMES[state_fips]}_pointwise_sum_matrix.npy"
+        ED_TRACTWISE_MATRIX_PATH = f"./20_intermediate_files/{state_fips}_{config.STATE_NAMES[state_fips]}_tractwise_matrix.npy"
+        ed_hc.pointwise_sum_matrix = ed_hc.read_ed_pointwise_sum_matrix(
+            ED_POINTWISE_SUM_MATRIX_PATH
+        )
+        ed_hc.tractwise_matrix = ed_hc.read_ed_tractwise_matrix(
+            ED_TRACTWISE_MATRIX_PATH
+        )
+
+        human_compactness_function_dd = dd_hc.calculate_human_compactness
+        human_compactness_function_ed = ed_hc.calculate_human_compactness
+
+        new_partition = GeographicPartition(
             graph,
             assignment="New_Seed",
+            updaters={
+                "cut_edges": cut_edges,
+                "population": Tally("population", alias="population"),
+                "spatial_diversity": spatial_diversity.calc_spatial_diversity,
+                "human_compactness_dd": human_compactness_function_dd,
+                "human_compactness_ed": human_compactness_function_ed,
+                "polsby_compactness": polsby_popper,
+                "reock_compactness": reock_compactness_function,
+            },
         )
 
-        points_downsampled = tract_generation._read_and_process_vrp_shapefile(
-            state_fips,
-            config.STATE_NAMES[state_fips],
-            config.NUM_DISTRICTS[state_fips],
-            sample_richness,
-        )
+        data = []
 
-        (human_compactness_function, reock_compactness_function,) = _init_metrics_(
-            initial_partition,
-            points_downsampled,
-            duration_dict,
-            tract_dict,
-            tractwise_matrix,
-            pointwise_sum_matrix,
-            state_shapefile,
-        )
+        max_steps = 10000
+        step_size = 10000
+        save_step_size = 100
 
-        new_assignment = dict(initial_partition.assignment)
-        # load graph and make initial partition
-        calculate_metrics(
-            new_assignment,
-            datadir,
-            newdir,
-            graph,
-            human_compactness_function,
-            reock_compactness_function,
-        )
+        ts = [x * step_size for x in range(1, int(max_steps / step_size) + 1)]
+        for t in ts:
+            print(f"Opening flips_{t}.json")
+            with open(datadir + f"flips_{t}.json") as f:
+                dict_list = json.load(f)
+
+                data = []
+                calcdata = {}
+                for step in range(step_size):
+                    changes_this_step = dict_list[step].items()
+                    new_partition: GeographicPartition = new_partition.flip(
+                        {int(item[0]): int(item[1]) for item in changes_this_step}
+                    )
+
+                    start = timer()
+                    calcdata[step] = calculate_metrics_step(new_partition)
+                    end = timer()
+                    print(f"Time taken for step {step}: {end-start}")
+                    print(f"Step: {calcdata[step]}")
+
+                    data.append(calcdata[step])
+                    if step % save_step_size == save_step_size - 1:  # 999
+                        print(
+                            f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json'
+                        )
+                        with open(
+                            f"{newdir}data{(t - step_size + step + +1)}.json",
+                            "w",
+                        ) as tf1:
+                            json.dump(data, tf1)
+                            data = []
 
 
 if __name__ == "__main__":
-    main_old()
+    main()

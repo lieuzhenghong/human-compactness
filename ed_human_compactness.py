@@ -69,7 +69,7 @@ class EDHumanCompactness(HumanCompactness):
         Use only with the lookup table.
         """
         self.points_downsampled = self.points_downsampled.to_crs("ESRI:102010")
-        tract_list: List[TractID] = list(self.partition.graph.nodes)
+        tract_list: List[TractID] = list(self.graph.nodes)
         assert sorted(tract_list) == tract_list
         start = timer()
 

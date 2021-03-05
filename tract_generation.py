@@ -234,7 +234,7 @@ def generate_tracts_with_vrps(
 
     print(f"Length of tract_dict: {len(tract_dict)}")
 
-    print(tract_dict)
+    # print(tract_dict)
 
     return tract_dict
 

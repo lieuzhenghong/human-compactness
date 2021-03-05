@@ -8,6 +8,7 @@ from gerrychain.updaters import Tally, cut_edges
 import spatial_diversity_utils as spatial_diversity
 import config
 import tract_generation
+import pytest
 
 
 def _is_close_(f1: float, f2: float, epsilon=0.0001) -> bool:
@@ -33,6 +34,11 @@ def _dicts_are_approx_equal_(d1, d2) -> bool:
                 if not _is_close_(v[i], d2[k][str(i)]):
                     return False
     return True
+
+
+def test_generate_all_partitions():
+    # _12_Process_Ensembles.generate_all_partitions()
+    assert True
 
 
 def test_process_ensemble_main():
@@ -93,10 +99,24 @@ def test_process_ensemble_main():
 
         new_assignment = dict(initial_partition.assignment)
 
+        new_partition = GeographicPartition(
+            graph,
+            assignment=new_assignment,
+            updaters={
+                "cut_edges": cut_edges,
+                "population": Tally("population", alias="population"),
+                "spatial_diversity": spatial_diversity.calc_spatial_diversity,
+                "human_compactness": human_compactness_function,
+                "polsby_compactness": polsby_popper,
+                "reock_compactness": reock_compactness_function,
+            },
+        )
+
         with open(datadir + f"flips_10000.json") as f:
             dict_list = json.load(f)
             calcdata = {}
             for step in range(100):
+                """
                 calcdata[step] = _12_Process_Ensembles.calculate_metrics_step(
                     step,
                     dict_list,
@@ -104,6 +124,15 @@ def test_process_ensemble_main():
                     new_assignment,
                     human_compactness_function,
                     reock_compactness_function,
+                )
+                """
+                changes_this_step = dict_list[step].items()
+                new_partition = new_partition.flip(
+                    {int(item[0]): int(item[1]) for item in changes_this_step}
+                )
+
+                calcdata[step] = _12_Process_Ensembles.calculate_metrics_step(
+                    new_partition
                 )
 
                 # print(json.loads(json.dumps(stepdata)))
