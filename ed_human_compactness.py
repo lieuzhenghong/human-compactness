@@ -125,10 +125,8 @@ class EDHumanCompactness(HumanCompactness):
 
         dmk = self.points_downsampled["geometry"].apply(
             self._get_sum_ED_from_voter_to_knn_,
-            args=[kd_tree, K + 1],
+            args=[kd_tree, K],
         )
-        print("DMK:", dmk)
-        print(np.shape(dmk))
 
         def sum_column(l):
             from functools import reduce
@@ -143,15 +141,10 @@ class EDHumanCompactness(HumanCompactness):
             sum_column,
         )
 
-        print("DMX:", dmx)
-
         dmx = dmx.apply(pd.Series)
-
-        print("DMX:", dmx)
 
         dmx: PointWiseSumMatrix = dmx.to_numpy()
         self.points_downsampled = self.points_downsampled.to_crs("EPSG:4326")
-        print(dmx)
         return dmx
 
     def save_ed_tractwise_matrix(
@@ -159,18 +152,22 @@ class EDHumanCompactness(HumanCompactness):
     ) -> TractWiseMatrix:
         """"""
         matrix = self.generate_tractwise_matrix(tract_dict)
+        self.tractwise_matrix = matrix
         np.save(save_file_to, matrix)
         return matrix
 
     def save_ed_pointwise_sum_matrix(self, save_file_to: str) -> PointWiseMatrix:
         matrix = self.generate_pointwise_sum_matrix(3000)
+        self.pointwise_sum_matrix = matrix
         np.save(save_file_to, matrix)
         return matrix
 
     def read_ed_tractwise_matrix(self, file_location: str) -> TractWiseMatrix:
         matrix = np.load(file_location)
+        self.tractwise_matrix = matrix
         return matrix
 
     def read_ed_pointwise_sum_matrix(self, file_location: str) -> PointWiseMatrix:
         matrix = np.load(file_location)
+        self.pointwise_sum_matrix = matrix
         return matrix

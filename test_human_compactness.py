@@ -58,12 +58,6 @@ def test_create_kd_tree(ed_hc):
     assert True
 
 
-def test_generate_pointwise_sum_matrix(ed_hc):
-    K = 10
-    dmx = ed_hc.generate_pointwise_sum_matrix(K)
-    assert dmx.shape[1] == K
-
-
 @pytest.mark.skip()
 def test_sum_of_distances_between_two_lists_of_points_(ed_hc):
     print(ed_hc._sum_of_distances_between_two_lists_of_points_([1, 2, 3], [0, 4, 5]))
@@ -71,7 +65,17 @@ def test_sum_of_distances_between_two_lists_of_points_(ed_hc):
 
 
 def test_generate_pointwise_sum_matrix(ed_hc):
-    pointwise_sum_matrix = ed_hc.generate_pointwise_sum_matrix(5)
+    K = 10
+    pointwise_sum_matrix = ed_hc.generate_pointwise_sum_matrix(K)
+    assert pointwise_sum_matrix.shape[1] == K
+    assert True
+
+
+def test_read_ed_pointwise_sum_matrix(ed_hc):
+    pointwise_sum_matrix = ed_hc.read_ed_pointwise_sum_matrix(
+        "./20_intermediate_files/09_Connecticut_pointwise_sum_matrix.npy"
+    )
+    print(pointwise_sum_matrix)
     assert True
 
 
