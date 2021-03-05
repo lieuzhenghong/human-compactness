@@ -19,6 +19,8 @@ Last updated 27th Feb 2021
       when we could simply query the k-nearest points once;
     - do a naive sum of the k-nearest points while increasing k (thus doing n^2 additions) 
       when we could simply add the next nearest point to the sum (thus doing O(K) additions)
+    - A: (5th March 2021): Fixed: now makes only one call to `kdtree.query`.
+    We can do this because query returns distances sorted in ascending order.
  - [Lieu] Take a look at `tract_generation` and `spatial_diversity_utils`,
  and remove unneeded functions.
  - [Lieu] Write a technical summary of the code: what files are important,
