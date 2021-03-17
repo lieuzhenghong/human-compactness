@@ -84,6 +84,7 @@ def calculate_metrics_step(partition: GeographicPartition) -> Dict[str, Dict]:
             "spatial_diversity",
             "polsby_compactness",
         ]:
+            print(f"Now updating {updater}...")
             result[updater] = partition[updater]
 
     print(result)
@@ -191,23 +192,33 @@ def main():
                         {int(item[0]): int(item[1]) for item in changes_this_step}
                     )
 
-                    start = timer()
-                    calcdata[step] = calculate_metrics_step(new_partition)
-                    end = timer()
-                    print(f"Time taken for step {step}: {end-start}")
-                    print(f"Step: {calcdata[step]}")
-
-                    data.append(calcdata[step])
-                    if step % save_step_size == save_step_size - 1:  # 999
+                    closest_lower_file = (save_step_size + step) - (
+                        step % save_step_size
+                    )
+                    print(f"Closest lower file: {closest_lower_file}")
+                    if os.path.isfile(f"{newdir}data{closest_lower_file}.json"):
                         print(
-                            f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json'
+                            f"{step}: File {closest_lower_file} exists, Not bothering to calculate this step"
                         )
-                        with open(
-                            f"{newdir}data{(t - step_size + step + +1)}.json",
-                            "w",
-                        ) as tf1:
-                            json.dump(data, tf1)
-                            data = []
+                    else:
+                        start = timer()
+                        calcdata[step] = calculate_metrics_step(new_partition)
+                        end = timer()
+                        print(f"Time taken for step {step}: {end-start}")
+                        print(f"Step: {calcdata[step]}")
+
+                        data.append(calcdata[step])
+
+                        if step % save_step_size == save_step_size - 1:  # 999
+                            print(
+                                f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json'
+                            )
+                            with open(
+                                f"{newdir}data{(t - step_size + step + +1)}.json",
+                                "w",
+                            ) as tf1:
+                                json.dump(data, tf1)
+                                data = []
 
 
 if __name__ == "__main__":
