@@ -62,7 +62,7 @@ NUM_DISTRICTS = {
     "13": 13,
     "16": 2,
     "19": 4,
-    "22": 7,
+    "22": 6,  # 6 in the knn_sum_dd, so we'll run with it
     "24": 8,
     "33": 2,
     "23": 2,
@@ -84,7 +84,6 @@ SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (
 
 # I'll be doing the following districts:
 
-# fips_list = ['13'] # Georgia
 # fips_list = ['22']  # Louisiana
 # fips_list = ['24'] # Maryland
 # fips_list = ['55']  # Wisconsin
@@ -93,6 +92,23 @@ SPATIAL_DIVERSITY_FACTOR_WEIGHTS = (
 # fips_list = ['16']
 # fips_list = ['19', '33', '49']
 # fips_list = ['23', '44'] # Maine and Rhode Island
+"""
 FIPS_LIST = ["09"]
+FIPS_LIST = ["13", "19", "23", "24", "33", "44", "49", "55"]
+FIPS_LIST = ["19", "23", "24", "33", "44", "49", "55"]
+FIPS_LIST = ["23", "24", "33", "44", "49", "55"]
+FIPS_LIST = ["13", "19", "23", "24", "33", "44", "49", "55"]
+"""
+# FIPS_LIST = ["13"]  # Georgia --> all human compactness scores are wrong?
+# FIPS_LIST = ["19"] # --> somehow human compactness scores have NaN
+# FIPS_LIST = ["23"]  # --> OK
+# FIPS_LIST = ["24"]  # --> OK
+# FIPS_LIST = ["33"]  #  --> OK
+# FIPS_LIST = ["44"]  # --> OK
+# FIPS_LIST = ["49"] # --> OK
+# FIPS_LIST = ["55"] # --> OK
+# FIPS_LIST = ["23", "24", "33", "44", "49", "55"]
+FIPS_LIST = ["22"]
+
 
 SAMPLE_RICHNESS = 1000

@@ -1,3 +1,4 @@
+from diff_between_dd_ed import verify_correctness_step
 from geopandas.geodataframe import GeoDataFrame
 from pandas import DataFrame
 from custom_types import *
@@ -198,8 +199,9 @@ def main():
                     print(f"Closest lower file: {closest_lower_file}")
                     if os.path.isfile(f"{newdir}data{closest_lower_file}.json"):
                         print(
-                            f"{step}: File {closest_lower_file} exists, Not bothering to calculate this step"
+                            f"{step}: File {closest_lower_file} exists, But I'm checking"
                         )
+                        verify_correctness_step(state_fips, closest_lower_file)
                     else:
                         start = timer()
                         calcdata[step] = calculate_metrics_step(new_partition)
@@ -210,15 +212,17 @@ def main():
                         data.append(calcdata[step])
 
                         if step % save_step_size == save_step_size - 1:  # 999
-                            print(
-                                f'Saving results as {newdir + "data" + str(t-step_size + step + 1)}.json'
-                            )
+                            step_to_save_as = t - step_size + step + 1
+                            file_to_save_as = f"{newdir}data{step_to_save_as}.json"
+                            print(f"Saving results as {file_to_save_as}")
                             with open(
-                                f"{newdir}data{(t - step_size + step + +1)}.json",
+                                file_to_save_as,
                                 "w",
                             ) as tf1:
                                 json.dump(data, tf1)
                                 data = []
+
+                            verify_correctness_step(state_fips, step_to_save_as)
 
 
 if __name__ == "__main__":

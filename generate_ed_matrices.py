@@ -21,6 +21,7 @@ def generate_ed_matrices(state_fips) -> None:
 
     datadir = f"./Tract_Ensembles/2000/{state_fips}/"
     graph = Graph.from_json(datadir + "starting_plan.json")
+    print("Graph created!")
     tract_dict = tract_generation.create_tract_dict(
         state_fips,
         config.STATE_NAMES[state_fips],
@@ -31,11 +32,13 @@ def generate_ed_matrices(state_fips) -> None:
         graph,
         tract_dict,
     )
+    print(f"Graph: {graph}")
 
     initial_partition = GeographicPartition(
         graph,
         assignment="New_Seed",
     )
+    print(initial_partition)
 
     points_downsampled = tract_generation._read_and_process_vrp_shapefile(
         state_fips,
@@ -44,7 +47,7 @@ def generate_ed_matrices(state_fips) -> None:
         config.SAMPLE_RICHNESS,
     )
 
-    ed_hc = edhc.EDHumanCompactness(initial_partition, points_downsampled)
+    ed_hc = edhc.EDHumanCompactness(graph, points_downsampled, tract_dict, None, None)
 
     tractwise_matrix_path = f"./20_intermediate_files/{state_fips}_{config.STATE_NAMES[state_fips]}_tractwise_matrix.npy"
     pointwise_sum_matrix_path = f"./20_intermediate_files/{state_fips}_{config.STATE_NAMES[state_fips]}_pointwise_sum_matrix.npy"
@@ -60,4 +63,10 @@ def generate_ed_matrices(state_fips) -> None:
 
 
 if __name__ == "__main__":
-    generate_ed_matrices("09")
+    generate_ed_matrices("22")
+    generate_ed_matrices("23")
+    generate_ed_matrices("24")
+    generate_ed_matrices("33")
+    generate_ed_matrices("44")
+    generate_ed_matrices("49")
+    generate_ed_matrices("55")

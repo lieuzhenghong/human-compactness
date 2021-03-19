@@ -80,6 +80,8 @@ class HumanCompactness(ABC):
         """
         K = len(point_ids)
         assert K < 3000
+        # print(f"Shape of matrix: {np.shape(self.pointwise_sum_matrix)}")
+        # print(f"Point IDs: {sorted(point_ids)}")
         return sum([self.pointwise_sum_matrix[point][K] for point in point_ids])
 
     def _sum_of_knn_distances_of_all_points_in_each_district_(
