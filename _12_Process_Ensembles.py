@@ -1,4 +1,4 @@
-from diff_between_dd_ed import verify_correctness_step
+from verify_correctness import verify_correctness_step
 from geopandas.geodataframe import GeoDataFrame
 from pandas import DataFrame
 from custom_types import *
