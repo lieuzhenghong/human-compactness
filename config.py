@@ -12,10 +12,10 @@ STATE_NAMES = {
     "13": "Georgia",
     "66": "Guam",
     "15": "Hawaii",
-    "19": "Iowa",
     "16": "Idaho",
     "17": "Illinois",
     "18": "Indiana",
+    "19": "Iowa",
     "20": "Kansas",
     "21": "Kentucky",
     "22": "Louisiana",
@@ -108,7 +108,20 @@ FIPS_LIST = ["13", "19", "23", "24", "33", "44", "49", "55"]
 # FIPS_LIST = ["49"] # --> OK
 # FIPS_LIST = ["55"] # --> OK
 # FIPS_LIST = ["23", "24", "33", "44", "49", "55"]
-FIPS_LIST = ["22"]
+FIPS_LIST = [
+    "09",
+    "13",
+    "16",
+    "22",
+    "23",
+    "24",
+    "33",
+    "44",
+    "49",
+    "55",
+]  # all states we're going to use in our analysis
+FIPS_LIST = ["13", "16", "22"]  # states that are problematic
+FIPS_LIST = ["09", "23", "24", "33", "44", "49", "55"]  # states which are OK
 
 
 SAMPLE_RICHNESS = 1000
