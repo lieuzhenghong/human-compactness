@@ -120,7 +120,11 @@ FIPS_LIST = [
     "49",
     "55",
 ]  # all states we're going to use in our analysis
-FIPS_LIST = ["13", "16", "22"]  # states that are problematic
+FIPS_LIST = [
+    "13",
+    "22",
+]  # states that are problematic. Georgia wrong results + RecursionError, Lousiana recursion error.
+FIPS_LIST = ["16"]  # haven't done this yet
 FIPS_LIST = ["09", "23", "24", "33", "44", "49", "55"]  # states which are OK
 
 
